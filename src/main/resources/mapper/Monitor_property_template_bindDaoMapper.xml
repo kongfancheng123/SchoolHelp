@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agioe.tool.data.dao.Monitor_property_template_bindDao">
+    <resultMap id="BaseResultMap" type="com.agioe.tool.data.entity.Monitor_property_template_bind">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="create_date"/>
+        <result column="create_uid" jdbcType="INTEGER" property="create_uid"/>
+        <result column="write_date" jdbcType="TIMESTAMP" property="write_date"/>
+        <result column="write_uid" jdbcType="INTEGER" property="write_uid"/>
+        <result column="equipment_type" jdbcType="VARCHAR" property="equipment_type"/>
+        <result column="equipment_property_template_code" jdbcType="VARCHAR"
+                property="equipment_property_template_code"/>
+        <result column="equipment_property_code" jdbcType="VARCHAR" property="equipment_property_code"/>
+    </resultMap>
+
+    <insert id="insertMonitor_property_template_bind"
+            parameterType="com.agioe.tool.data.entity.Monitor_property_template_bind">
+         insert into dt_monitor_property_template_bind
+        (
+        equipment_type,
+        equipment_property_template_code,
+        equipment_property_code
+        )values
+            (
+            #{monitor_property_template_bind.equipment_type},
+            #{monitor_property_template_bind.equipment_property_template_code},
+            #{monitor_property_template_bind.equipment_property_code}
+            )
+    </insert>
+
+    <delete id="deleteMonitor_property_template_bind" parameterType="integer">
+        delete from dt_monitor_property_template_bind
+        where id=#{id}
+    </delete>
+
+    <select id="selectByMonitor_property_template_bind"
+            parameterType="com.agioe.tool.data.entity.Monitor_property_template_bind"
+            resultMap="BaseResultMap">
+        select *
+        from dt_monitor_property_template_bind
+        where 1=1
+        <if test="monitor_property_template_bind.id != null">
+            and id = #{monitor_property_template_bind.id}
+        </if>
+        <if test="monitor_property_template_bind.equipment_type != null">
+            and equipment_type = #{monitor_property_template_bind.equipment_type}
+        </if>
+        <if test="monitor_property_template_bind.equipment_property_template_code != null">
+            and equipment_property_template_code = #{monitor_property_template_bind.equipment_property_template_code}
+        </if>
+        <if test="monitor_property_template_bind.equipment_property_code != null">
+            and equipment_property_code = #{monitor_property_template_bind.equipment_property_code}
+        </if>
+        order by id
+    </select>
+
+    <update id="updateMonitor_property_template_bind"
+            parameterType="com.agioe.tool.data.entity.Monitor_property_template_bind">
+        UPDATE dt_monitor_property_template_bind
+        <set>
+            <if test="monitor_property_template_bind.equipment_type != null">
+                equipment_type = #{monitor_property_template_bind.equipment_type},
+            </if>
+            <if test="monitor_property_template_bind.equipment_property_template_code != null">
+                equipment_property_template_code = #{monitor_property_template_bind.equipment_property_template_code},
+            </if>
+            <if test="monitor_property_template_bind.equipment_property_code != null">
+                equipment_property_code = #{monitor_property_template_bind.equipment_property_code},
+            </if>
+        </set>
+        WHERE id=#{monitor_property_template_bind.id}
+
+    </update>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select * from dt_monitor_property_template_bind
+        order by id
+    </select>
+
+    <select id="selectByid" resultMap="BaseResultMap">
+        select * from dt_monitor_property_template_bind
+        where id=#{id}
+    </select>
+
+
+</mapper>

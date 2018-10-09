@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agioe.tool.data.dao.Equipment_realtime_dataDao">
+    <resultMap id="BaseResultMap" type="com.agioe.tool.data.entity.Equipment_realtime_data">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="create_date"/>
+        <result column="create_uid" jdbcType="INTEGER" property="create_uid"/>
+        <result column="write_date" jdbcType="TIMESTAMP" property="write_date"/>
+        <result column="write_uid" jdbcType="INTEGER" property="write_uid"/>
+        <result column="data_code" jdbcType="VARCHAR" property="data_code"/>
+        <result column="data_name" jdbcType="VARCHAR" property="data_name"/>
+        <result column="data_value" jdbcType="VARCHAR" property="data_value"/>
+        <result column="equipment_code" jdbcType="VARCHAR" property="equipment_code"/>
+        <result column="keyword" jdbcType="VARCHAR" property="keyword"/>
+    </resultMap>
+
+    <insert id="insertEquipment_realtime_data" parameterType="com.agioe.tool.data.entity.Equipment_realtime_data">
+         insert into dt_equipment_realtime_data
+        (
+        data_code,
+        data_name,
+        data_value,
+        equipment_code,
+        keyword
+        )values
+            (
+            #{equipment_realtime_data.data_code},
+            #{equipment_realtime_data.data_name},
+            #{equipment_realtime_data.data_value},
+            #{equipment_realtime_data.equipment_code},
+            #{equipment_realtime_data.keyword}
+            )
+    </insert>
+
+    <delete id="deleteEquipment_realtime_data" parameterType="integer">
+        delete from dt_equipment_realtime_data
+        where id=#{id}
+    </delete>
+
+    <select id="selectByEquipment_realtime_data" parameterType="com.agioe.tool.data.entity.Equipment_realtime_data"
+            resultMap="BaseResultMap">
+        select *
+        from dt_equipment_realtime_data
+        where 1=1
+        <if test="equipment_realtime_data.id != null">
+            and id = #{equipment_realtime_data.id}
+        </if>
+        <if test="equipment_realtime_data.data_code != null">
+            and data_code = #{equipment_realtime_data.data_code}
+        </if>
+        <if test="equipment_realtime_data.data_name != null">
+            and data_name = #{equipment_realtime_data.data_name}
+        </if>
+        <if test="equipment_realtime_data.data_value != null">
+            and data_value = #{equipment_realtime_data.data_value}
+        </if>
+        <if test="equipment_realtime_data.equipment_code != null">
+            and equipment_code = #{equipment_realtime_data.equipment_code}
+        </if>
+        <if test="equipment_realtime_data.keyword != null">
+            and keyword = #{equipment_realtime_data.keyword}
+        </if>
+        order by id
+    </select>
+
+    <update id="updateEquipment_realtime_data" parameterType="com.agioe.tool.data.entity.Equipment_realtime_data">
+        UPDATE dt_equipment_realtime_data
+        <set>
+            <if test="equipment_realtime_data.data_code != null">
+                data_code = #{equipment_realtime_data.data_code},
+            </if>
+            <if test="equipment_realtime_data.data_name != null">
+                data_name = #{equipment_realtime_data.data_name},
+            </if>
+            <if test="equipment_realtime_data.data_value != null">
+                data_value = #{equipment_realtime_data.data_value},
+            </if>
+            <if test="equipment_realtime_data.equipment_code != null">
+                equipment_code = #{equipment_realtime_data.equipment_code},
+            </if>
+            <if test="equipment_realtime_data.keyword != null">
+                keyword = #{equipment_realtime_data.keyword},
+            </if>
+        </set>
+        WHERE id=#{equipment_realtime_data.id}
+
+    </update>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select * from dt_equipment_realtime_data
+        order by id
+    </select>
+
+    <select id="selectByid" resultMap="BaseResultMap">
+        select * from dt_equipment_realtime_data
+        where id=#{id}
+    </select>
+
+
+</mapper>

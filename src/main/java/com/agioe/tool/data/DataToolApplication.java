@@ -4,6 +4,7 @@ import com.agioe.tool.data.common.SpringContextUtil;
 import com.agioe.tool.data.log.LoggerMessage;
 import com.agioe.tool.data.log.LoggerQueue;
 import com.agioe.tool.data.tcp.Server;
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import java.util.concurrent.Executors;
 @SpringBootApplication
 @EnableScheduling
 @EnableWebSocketMessageBroker
+@MapperScan("com.agioe.tool.data.dao")
 public class DataToolApplication implements CommandLineRunner {
 
     private Logger logger = LoggerFactory.getLogger(DataToolApplication.class);
@@ -39,6 +41,7 @@ public class DataToolApplication implements CommandLineRunner {
         SpringApplication application = new SpringApplication(DataToolApplication.class);
         application.setBannerMode(Banner.Mode.OFF);
         application.run(args);
+        System.out.println("=========================启动成功=======================");
     }
 
     @Bean

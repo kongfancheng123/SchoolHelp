@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agioe.tool.data.dao.Equipment_typeDao">
+    <resultMap id="BaseResultMap" type="com.agioe.tool.data.entity.Equipment_type">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="create_date"/>
+        <result column="create_uid" jdbcType="INTEGER" property="create_uid"/>
+        <result column="write_date" jdbcType="TIMESTAMP" property="write_date"/>
+        <result column="write_uid" jdbcType="INTEGER" property="write_uid"/>
+        <result column="equipment_type_code" jdbcType="VARCHAR" property="equipment_type_code"/>
+        <result column="equipment_type_name" jdbcType="VARCHAR" property="equipment_type_name"/>
+        <result column="default1" jdbcType="VARCHAR" property="default1"/>
+        <result column="default2" jdbcType="VARCHAR" property="default2"/>
+        <result column="default3" jdbcType="VARCHAR" property="default3"/>
+        <result column="default4" jdbcType="OTHER" property="default4"/>
+    </resultMap>
+
+    <insert id="insertEquipment_type" parameterType="com.agioe.tool.data.entity.Equipment_type">
+         insert into dt_equipment_type_info
+        (
+        equipment_type_code,
+        equipment_type_name
+        )values
+            (
+            #{equipment_type.equipment_type_code},
+            #{equipment_type.equipment_type_name}
+            )
+    </insert>
+
+    <delete id="deleteEquipment_type" parameterType="integer">
+        delete from dt_equipment_type_info
+        where id=#{id}
+    </delete>
+
+    <select id="selectByEquipment_type" parameterType="com.agioe.tool.data.entity.Equipment_type"
+            resultMap="BaseResultMap">
+        select *
+        from dt_equipment_type_info
+        where 1=1
+        <if test="equipment_type.id != null">
+            and id = #{equipment_type.id}
+        </if>
+        <if test="equipment_type.equipment_type_code != null">
+            and equipment_type_code = #{equipment_type.equipment_type_code}
+        </if>
+        <if test="equipment_type.equipment_type_name != null">
+            and equipment_type_name = #{equipment_type.equipment_type_name}
+        </if>
+        order by id
+    </select>
+
+    <update id="updateEquipment_type" parameterType="com.agioe.tool.data.entity.Equipment_type">
+        UPDATE dt_equipment_type_info
+        <set>
+            <if test="equipment_type.equipment_type_code != null">
+                equipment_type_code = #{equipment_type.equipment_type_code},
+            </if>
+            <if test="equipment_type.equipment_type_name != null">
+                equipment_type_name = #{equipment_type.equipment_type_name},
+            </if>
+        </set>
+        WHERE id=#{equipment_type.id}
+
+    </update>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select * from dt_equipment_type_info
+        order by id
+    </select>
+
+    <select id="selectByid" resultMap="BaseResultMap">
+        select * from dt_equipment_type_info
+        where id=#{id}
+    </select>
+
+
+</mapper>

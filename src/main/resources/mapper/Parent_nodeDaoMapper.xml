@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agioe.tool.data.dao.Parent_nodeDao">
+    <resultMap id="BaseResultMap" type="com.agioe.tool.data.entity.Parent_node">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="create_date"/>
+        <result column="create_uid" jdbcType="INTEGER" property="create_uid"/>
+        <result column="write_date" jdbcType="TIMESTAMP" property="write_date"/>
+        <result column="write_uid" jdbcType="INTEGER" property="write_uid"/>
+        <result column="parent_node_code" jdbcType="VARCHAR" property="parent_node_code"/>
+        <result column="parent_node_name" jdbcType="VARCHAR" property="parent_node_name"/>
+    </resultMap>
+
+    <insert id="insertParent_node" parameterType="com.agioe.tool.data.entity.Parent_node">
+         insert into dt_parent_node_info
+        (
+        parent_node_code,
+        parent_node_name
+        )values
+            (
+            #{parent_node.parent_node_code},
+            #{parent_node.parent_node_name}
+            )
+    </insert>
+
+    <delete id="deleteParent_node" parameterType="integer">
+        delete from dt_parent_node_info
+        where id=#{id}
+    </delete>
+
+    <select id="selectByParent_node" parameterType="com.agioe.tool.data.entity.Parent_node"
+            resultMap="BaseResultMap">
+        select *
+        from dt_parent_node_info
+        where 1=1
+        <if test="parent_node.id != null">
+            and id = #{parent_node.id}
+        </if>
+        <if test="parent_node.parent_node_code != null">
+            and parent_node_code = #{parent_node.parent_node_code}
+        </if>
+        <if test="parent_node.parent_node_name != null">
+            and parent_node_name = #{parent_node.parent_node_name}
+        </if>
+        order by id
+    </select>
+
+    <update id="updateParent_node" parameterType="com.agioe.tool.data.entity.Parent_node">
+        UPDATE dt_parent_node_info
+        <set>
+            <if test="parent_node.parent_node_code != null">
+                parent_node_code = #{parent_node.parent_node_code},
+            </if>
+            <if test="parent_node.parent_node_name != null">
+                parent_node_name = #{parent_node.parent_node_name},
+            </if>
+        </set>
+        WHERE id=#{parent_node.id}
+
+    </update>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select * from dt_parent_node_info
+        order by id
+    </select>
+
+    <select id="selectByid" resultMap="BaseResultMap">
+        select * from dt_parent_node_info
+        where id=#{id}
+    </select>
+
+
+</mapper>
