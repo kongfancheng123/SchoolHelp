@@ -81,4 +81,9 @@ public interface Monitor_property_template_bindService {
      * @return
      */
     WebResponse deleteMonitor_property_template_bind1(DeleteMonitor_property_template_bind1Qo deleteMonitor_property_template_bind1Qo);
+
+    /**
+     * 获取设备类型属性模板树
+     */
+    WebResponse getEquipment_type_template_link();
 }

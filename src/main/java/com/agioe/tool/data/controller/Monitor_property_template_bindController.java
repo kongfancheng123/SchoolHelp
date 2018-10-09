@@ -16,7 +16,7 @@ public class Monitor_property_template_bindController {
     private Monitor_property_template_bindService monitor_property_template_bindService;
 
     /**
-     * 展示所有监控模板
+     * 展示所有监控模板关联
      *
      * @return
      */
@@ -27,7 +27,7 @@ public class Monitor_property_template_bindController {
     }
 
     /**
-     * 添加监控模板
+     * 添加监控模板关联
      *
      * @param addMonitor_property_template_bind1Qo
      * @return
@@ -39,7 +39,7 @@ public class Monitor_property_template_bindController {
     }
 
     /**
-     * 更新监控模板
+     * 更新监控模板关联
      *
      * @param updateMonitor_property_template_bind1Qo
      * @return
@@ -51,7 +51,7 @@ public class Monitor_property_template_bindController {
     }
 
     /**
-     * 删除监控模板
+     * 删除监控模板关联
      *
      * @param deleteMonitor_property_template_bind1Qo
      * @return
@@ -60,6 +60,19 @@ public class Monitor_property_template_bindController {
     @ResponseBody
     public WebResponse deleteMonitor_property_template_bind1(@RequestBody DeleteMonitor_property_template_bind1Qo deleteMonitor_property_template_bind1Qo) {
         return monitor_property_template_bindService.deleteMonitor_property_template_bind1(deleteMonitor_property_template_bind1Qo);
+    }
+
+
+    /**
+     * 获取设备类型模板树
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/getEquipment_type_template_link", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse getEquipment_type_template_link() {
+        return monitor_property_template_bindService.getEquipment_type_template_link();
     }
 
 

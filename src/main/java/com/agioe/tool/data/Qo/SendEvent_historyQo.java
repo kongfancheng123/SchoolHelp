@@ -11,14 +11,13 @@ public class SendEvent_historyQo {
     /**
      * 事件类型
      */
-    private Integer event_type;
+    private String event_type;
     /**
      * 事件值
      */
     private String event_value;
     /**
-     * 事件状态
-     * 0-未解除,1-已解除
+     * 关键字
      */
-    private Integer event_state;
+    private String keyword;
 }

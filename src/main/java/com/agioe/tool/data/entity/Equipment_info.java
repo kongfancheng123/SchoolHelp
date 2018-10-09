@@ -64,5 +64,17 @@ public class Equipment_info {
      * 参数更新时间
      */
     private Date params_update;
+    /**
+     * 数据更新时间
+     */
+    private Date data_update;
+    /**
+     * 报警更新时间
+     */
+    private Date alarm_update;
+    /**
+     * 控制更新时间
+     */
+    private Date controller_update;
 
 }

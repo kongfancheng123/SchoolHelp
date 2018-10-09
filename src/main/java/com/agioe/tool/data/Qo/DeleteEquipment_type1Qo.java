@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class DeleteEquipment_type1Qo {
-    private Integer id;
+    private String equipment_type_code;
 }

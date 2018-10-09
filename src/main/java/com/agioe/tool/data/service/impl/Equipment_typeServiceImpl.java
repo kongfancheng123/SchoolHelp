@@ -35,8 +35,8 @@ public class Equipment_typeServiceImpl implements Equipment_typeService {
     }
 
     @Override
-    public Integer deleteEquipment_type(Integer id) {
-        return equipment_typeDao.deleteEquipment_type(id);
+    public Integer deleteEquipment_type(String equipment_type_code) {
+        return equipment_typeDao.deleteEquipment_type(equipment_type_code);
     }
 
     @Override
@@ -103,23 +103,24 @@ public class Equipment_typeServiceImpl implements Equipment_typeService {
 
     @Override
     public WebResponse updateEquipment_type1(UpdateEquipment_type1Qo updateEquipment_type1Qo) {
-        Integer id = updateEquipment_type1Qo.getId();
         String equipment_type_code = updateEquipment_type1Qo.getEquipment_type_code();
         String equipment_type_name = updateEquipment_type1Qo.getEquipment_type_name();
-        //根据id进行查询
-        Equipment_type equipment_type = equipment_typeDao.selectByid(id);
+        //根据编码进行查询
+        Equipment_type equipment_type = new Equipment_type();
         equipment_type.setEquipment_type_code(equipment_type_code);
-        equipment_type.setEquipment_type_name(equipment_type_name);
-        //更新
-        equipment_typeDao.updateEquipment_type(equipment_type);
+        List<Equipment_type> equipment_types = equipment_typeDao.selectByEquipment_type(equipment_type);
+        if (equipment_types.size() > 0) {
+            Equipment_type equipment_type1 = equipment_types.get(0);
+            equipment_type1.setEquipment_type_name(equipment_type_name);
+            //更新
+            equipment_typeDao.updateEquipment_type(equipment_type);
+        }
         return WebResponse.success();
     }
 
     @Override
     public WebResponse deleteEquipment_type1(DeleteEquipment_type1Qo deleteEquipment_type1Qo) {
-        Integer id = deleteEquipment_type1Qo.getId();
-        Equipment_type equipment_type = equipment_typeDao.selectByid(id);
-        String equipment_type_code = equipment_type.getEquipment_type_code();
+        String equipment_type_code = deleteEquipment_type1Qo.getEquipment_type_code();
         //确认是否与模板信息有绑定
         Monitor_property_template monitor_property_template = new Monitor_property_template();
         monitor_property_template.setEquipment_type(equipment_type_code);
@@ -135,7 +136,7 @@ public class Equipment_typeServiceImpl implements Equipment_typeService {
             return WebResponse.error(400, "有绑定关系,删除失败");
         }
         //删除
-        equipment_typeDao.deleteEquipment_type(id);
+        equipment_typeDao.deleteEquipment_type(equipment_type_code);
         return WebResponse.success();
     }
 }

@@ -198,12 +198,50 @@ public class Equipment_infoServiceImpl implements Equipment_infoService {
         if (equipment_infos.size() > 0) {
             Equipment_info equipment_info1 = equipment_infos.get(0);
             equipment_info1.setData_val(data_value);
-            equipment_info1.setUpdate_time(new Date());
+            equipment_info1.setData_update(new Date());
             equipment_infoDao.updateEquipment_info(equipment_info1);
         }
         //todo:发送实时数据
         return WebResponse.success();
     }
 
+    @Override
+    public WebResponse sendEvent_history(SendEvent_historyQo sendEvent_historyQo) {
+        String event_code = sendEvent_historyQo.getEvent_code();
+        String event_type = sendEvent_historyQo.getEvent_type();
+        String event_value = sendEvent_historyQo.getEvent_value();
+        String keyword = sendEvent_historyQo.getKeyword();
+        Equipment_info equipment_info = new Equipment_info();
+        String alarm_val = "事件类型:" + event_type + ",事件码:" + event_code + ",事件值:" + event_value;
+        equipment_info.setKeyword(keyword);
+        List<Equipment_info> equipment_infos = equipment_infoDao.selectByEquipment_info(equipment_info);
+        if (equipment_infos.size() > 0) {
+            Equipment_info equipment_info1 = equipment_infos.get(0);
+            equipment_info1.setAlarm_val(alarm_val);
+            equipment_info1.setAlarm_update(new Date());
+            equipment_infoDao.updateEquipment_info(equipment_info1);
+        }
 
+        //event_history==>Message==>ByteBuf==>发送
+        //todo:发送事件
+//        ByteBuf msgBuf = Unpooled.buffer();
+//        Worker.send(msgBuf);
+        return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse dealEvent_history(DealEvent_historyQo dealEvent_historyQo) {
+        String keyword = dealEvent_historyQo.getKeyword();
+        Equipment_info equipment_info = new Equipment_info();
+        equipment_info.setKeyword(keyword);
+        List<Equipment_info> equipment_infos = equipment_infoDao.selectByEquipment_info(equipment_info);
+        if (equipment_infos.size() > 0) {
+            Equipment_info equipment_info1 = equipment_infos.get(0);
+            equipment_info1.setAlarm_val("");
+            equipment_info1.setAlarm_update(new Date());
+            equipment_infoDao.updateEquipment_info(equipment_info1);
+            //todo:发送消息
+        }
+        return WebResponse.success();
+    }
 }

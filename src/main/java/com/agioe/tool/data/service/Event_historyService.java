@@ -1,8 +1,6 @@
 package com.agioe.tool.data.service;
 
-import com.agioe.tool.data.Qo.SendEvent_historyQo;
 import com.agioe.tool.data.entity.Event_history;
-import com.agioe.tool.data.entity.WebResponse;
 
 import java.util.List;
 
@@ -49,11 +47,5 @@ public interface Event_historyService {
      */
     Event_history selectByid(Integer id);
 
-    /**
-     * 发送历史事件
-     *
-     * @param sendEvent_historyQo
-     * @return
-     */
-    WebResponse sendEvent_history(SendEvent_historyQo sendEvent_historyQo);
+
 }

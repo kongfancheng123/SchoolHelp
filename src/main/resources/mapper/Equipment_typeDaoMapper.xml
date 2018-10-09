@@ -29,9 +29,9 @@
             )
     </insert>
 
-    <delete id="deleteEquipment_type" parameterType="integer">
+    <delete id="deleteEquipment_type" parameterType="String">
         delete from dt_equipment_type_info
-        where id=#{id}
+        where equipment_type_code=#{equipment_type_code}
     </delete>
 
     <select id="selectByEquipment_type" parameterType="com.agioe.tool.data.entity.Equipment_type"

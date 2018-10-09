@@ -19,10 +19,10 @@ public interface Equipment_typeDao {
     /**
      * 删除设备类型
      *
-     * @param id
+     * @param equipment_type_code
      * @return
      */
-    Integer deleteEquipment_type(Integer id);
+    Integer deleteEquipment_type(String equipment_type_code);
 
     /**
      * 多条件查询设备类型

@@ -3,10 +3,17 @@ package com.agioe.tool.data.service.impl;
 import com.agioe.tool.data.Qo.AddMonitor_property_template_bind1Qo;
 import com.agioe.tool.data.Qo.DeleteMonitor_property_template_bind1Qo;
 import com.agioe.tool.data.Qo.UpdateMonitor_property_template_bind1Qo;
+import com.agioe.tool.data.Vo.Equip_typeVo1;
+import com.agioe.tool.data.Vo.GetEquipment_type_template_linkVo;
 import com.agioe.tool.data.Vo.ShowAllMonitor_property_template_bindVo;
+import com.agioe.tool.data.Vo.TemplateVo;
 import com.agioe.tool.data.dao.Monitor_property_template_bindDao;
+import com.agioe.tool.data.entity.Equipment_type;
+import com.agioe.tool.data.entity.Monitor_property_template;
 import com.agioe.tool.data.entity.Monitor_property_template_bind;
 import com.agioe.tool.data.entity.WebResponse;
+import com.agioe.tool.data.service.Equipment_typeService;
+import com.agioe.tool.data.service.Monitor_property_templateService;
 import com.agioe.tool.data.service.Monitor_property_template_bindService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +25,12 @@ import java.util.List;
 public class Monitor_property_template_bindServiceImpl implements Monitor_property_template_bindService {
     @Autowired
     private Monitor_property_template_bindDao monitor_property_template_bindDao;
+
+    @Autowired
+    private Equipment_typeService equipment_typeService;
+
+    @Autowired
+    private Monitor_property_templateService monitor_property_templateService;
 
     @Override
     public Integer insertMonitor_property_template_bind(Monitor_property_template_bind monitor_property_template_bind) {
@@ -103,5 +116,36 @@ public class Monitor_property_template_bindServiceImpl implements Monitor_proper
         Integer id = deleteMonitor_property_template_bind1Qo.getId();
         monitor_property_template_bindDao.deleteMonitor_property_template_bind(id);
         return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse getEquipment_type_template_link() {
+        GetEquipment_type_template_linkVo getEquipment_type_template_linkVo = new GetEquipment_type_template_linkVo();
+        List<Equip_typeVo1> equip_typeVo1s = new ArrayList<>();
+        List<Equipment_type> equipment_types = equipment_typeService.selectAll();
+        if (equipment_types.size() > 0) {
+            for (Equipment_type equipment_type : equipment_types) {
+                Equip_typeVo1 equip_typeVo1 = new Equip_typeVo1();
+                equip_typeVo1.setEquipment_type_code(equipment_type.getEquipment_type_code());
+                equip_typeVo1.setEquipment_type_name(equipment_type.getEquipment_type_name());
+                //根据设备类型编码查询模板
+                Monitor_property_template monitor_property_template = new Monitor_property_template();
+                monitor_property_template.setEquipment_type(equipment_type.getEquipment_type_code());
+                List<Monitor_property_template> monitor_property_templates = monitor_property_templateService.selectByMonitor_property_template(monitor_property_template);
+                List<TemplateVo> templateLists = new ArrayList<>();
+                if (monitor_property_templates.size() > 0) {
+                    for (Monitor_property_template monitor_property_template1 : monitor_property_templates) {
+                        TemplateVo templateVo = new TemplateVo();
+                        templateVo.setEquipment_property_template_code(monitor_property_template1.getEquipment_property_template_code());
+                        templateVo.setEquipment_property_template_name(monitor_property_template.getEquipment_property_template_name());
+                        templateLists.add(templateVo);
+                    }
+                }
+                equip_typeVo1.setTemplateLists(templateLists);
+                equip_typeVo1s.add(equip_typeVo1);
+            }
+        }
+        getEquipment_type_template_linkVo.setEquip_typeVo1s(equip_typeVo1s);
+        return WebResponse.success(getEquipment_type_template_linkVo);
     }
 }

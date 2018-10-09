@@ -94,5 +94,19 @@ public interface Equipment_infoService {
      */
     WebResponse sendEquipment_realtime_data(SendEquipment_realtime_dataQo sendEquipment_realtime_dataQo);
 
+    /**
+     * 发送历史事件
+     *
+     * @param sendEvent_historyQo
+     * @return
+     */
+    WebResponse sendEvent_history(SendEvent_historyQo sendEvent_historyQo);
 
+    /**
+     * 解除事件
+     *
+     * @param dealEvent_historyQo
+     * @return
+     */
+    WebResponse dealEvent_history(DealEvent_historyQo dealEvent_historyQo);
 }

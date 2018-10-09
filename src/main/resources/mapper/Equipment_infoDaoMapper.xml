@@ -18,6 +18,9 @@
         <result column="control_val" jdbcType="VARCHAR" property="control_val"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
         <result column="params_update" jdbcType="TIMESTAMP" property="params_update"/>
+        <result column="data_update" jdbcType="TIMESTAMP" property="data_update"/>
+        <result column="alarm_update" jdbcType="TIMESTAMP" property="alarm_update"/>
+        <result column="controller_update" jdbcType="TIMESTAMP" property="controller_update"/>
     </resultMap>
 
     <insert id="insertEquipment_info" parameterType="com.agioe.tool.data.entity.Equipment_info">
@@ -132,6 +135,15 @@
             </if>
             <if test="equipment_info.params_update != null">
                 params_update = #{equipment_info.params_update},
+            </if>
+            <if test="equipment_info.data_update != null">
+                data_update = #{equipment_info.data_update},
+            </if>
+            <if test="equipment_info.alarm_update != null">
+                alarm_update = #{equipment_info.alarm_update},
+            </if>
+            <if test="equipment_info.controller_update != null">
+                controller_update = #{equipment_info.controller_update},
             </if>
         </set>
         WHERE id=#{equipment_info.id}

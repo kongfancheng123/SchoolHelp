@@ -83,5 +83,24 @@ public class Equipment_infoController {
         return equipment_infoService.sendEquipment_realtime_data(sendEquipment_realtime_dataQo);
     }
 
+    /**
+     * 发送事件
+     *
+     * @return
+     */
+    @RequestMapping(value = "/sendEvent_history", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse sendEvent_history(@RequestBody SendEvent_historyQo sendEvent_historyQo) {
+        return equipment_infoService.sendEvent_history(sendEvent_historyQo);
+    }
+
+    /**
+     * 解除事件
+     */
+    @RequestMapping(value = "/dealEvent_history", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse dealEvent_history(@RequestBody DealEvent_historyQo dealEvent_historyQo) {
+        return equipment_infoService.dealEvent_history(dealEvent_historyQo);
+    }
 
 }
