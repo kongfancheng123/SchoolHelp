@@ -1,5 +1,6 @@
 package com.agioe.tool.data.tcp.protocol;
 
+import com.agioe.tool.data.tcp.ControlQueue;
 import com.agioe.tool.data.tcp.Header;
 import com.agioe.tool.data.tcp.Message;
 import com.agioe.tool.data.tcp.payload.ControlParameter;
@@ -87,7 +88,9 @@ public class ControlSend extends AbstractProtocol {
 
     @Override
     public void onAvailable(Message msg) {
-
+        List<Object> body = msg.getBody();
+        List<ControlParameter> parameterList = (List) body;
+        ControlQueue.getInstance().push(parameterList);
     }
 
     @Override
