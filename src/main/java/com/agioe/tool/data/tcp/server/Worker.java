@@ -1,5 +1,6 @@
-package com.agioe.tool.data.tcp;
+package com.agioe.tool.data.tcp.server;
 
+import com.agioe.tool.data.tcp.MessageDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;

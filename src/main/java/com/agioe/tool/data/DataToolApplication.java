@@ -3,7 +3,7 @@ package com.agioe.tool.data;
 import com.agioe.tool.data.common.SpringContextUtil;
 import com.agioe.tool.data.log.LoggerMessage;
 import com.agioe.tool.data.log.LoggerQueue;
-import com.agioe.tool.data.tcp.Server;
+import com.agioe.tool.data.tcp.server.Server;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
