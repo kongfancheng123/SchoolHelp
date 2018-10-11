@@ -1,0 +1,32 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://192.168.52.12:5432/data_tool
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    tomcat:
+      max-active: 5
+      initial-size: 1
+      max-wait: 60000
+      max-idle: 5
+      min-idle: 1
+
+
+mybatis:
+  mapper-locations: classpath*:/mapper/*.xml
+  type-aliases-package: com.agioe.tool.data.entity
+
+atm:
+  #通信端口
+  tcp-server-port: 9988
+  #心跳间隔 单位：秒s
+  protocol-heartbeat-interval: 5
+  #超时时间 单位：毫秒ms
+  protocol-timeout: 1500000
+  #重试次数 单位：次
+  protocol-retry-numbers-max: 3
+
+
+

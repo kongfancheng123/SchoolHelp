@@ -1,11 +1,5 @@
-#默认使用配置
-spring:
-  profiles:
-    active: dev
-
-
 server:
-  port: 8080
+  port: 8020
 spring:
   datasource:
     url: jdbc:postgresql://192.168.52.12:5432/data_tool
