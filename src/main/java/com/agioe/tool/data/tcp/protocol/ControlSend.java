@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.agioe.tool.data.tcp.payload.meta.ControlConstant.*;
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.CONTROL_SEND;
 
 
 /**
@@ -23,7 +24,7 @@ import static com.agioe.tool.data.tcp.payload.meta.ControlConstant.*;
 public class ControlSend extends AbstractProtocol {
 
     public ControlSend() {
-        super((byte) 9);
+        super(CONTROL_SEND);
     }
 
     @Override

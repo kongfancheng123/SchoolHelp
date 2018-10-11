@@ -5,6 +5,8 @@ import com.agioe.tool.data.tcp.Message;
 import com.agioe.tool.data.tcp.protocol.factory.AbstractProtocol;
 import io.netty.buffer.ByteBuf;
 
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.DATA_REPLY;
+
 /**
  * 2.2.2.上级平台响应实时数据
  *
@@ -14,7 +16,7 @@ import io.netty.buffer.ByteBuf;
 public class DataReply extends AbstractProtocol {
 
     public DataReply() {
-        super((byte) 4);
+        super(DATA_REPLY);
     }
 
     @Override

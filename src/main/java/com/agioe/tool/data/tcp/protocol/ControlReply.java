@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 
 import static com.agioe.tool.data.tcp.Header.LENGTH_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.CONTROL_REPLY;
 
 /**
  * 2.5.2.采集服务响应控制命令
@@ -21,7 +22,7 @@ import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
 public class ControlReply extends AbstractProtocol {
 
     public ControlReply() {
-        super((byte) 10);
+        super(CONTROL_REPLY);
     }
 
     @Override
