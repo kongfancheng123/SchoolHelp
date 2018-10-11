@@ -2,11 +2,12 @@ package com.agioe.tool.data.Vo;
 
 import lombok.Data;
 
-/**
- * 监控模板
- */
 @Data
-public class TemplateVo {
+public class ShowAllMonitorPropertyTemplateVo {
+    /**
+     * 设备类型名称
+     */
+    private String equipmentTypeName;
     /**
      * 监控信号模板编码
      */
@@ -15,4 +16,8 @@ public class TemplateVo {
      * 监控信号模板名称
      */
     private String equipmentPropertyTemplateName;
+    /**
+     * 监控信号模板描述
+     */
+    private String equipmentPropertyTemplateDescription;
 }
