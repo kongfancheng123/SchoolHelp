@@ -23,17 +23,17 @@ public class EquipmentInfoController {
         return equipmentInfoService.showAllEquipmentInfo();
     }
 
-//    /**
-//     * 添加设备
-//     *
-//     * @param addEquipmentInfo1Qo
-//     * @return
-//     */
-//    @RequestMapping(value = "/addEquipmentInfo1", method = RequestMethod.POST)
-//    @ResponseBody
-//    public WebResponse addEquipmentInfo1(@RequestBody AddEquipmentInfo1Qo addEquipmentInfo1Qo) {
-//        return equipmentInfoService.addEquipmentInfo1(addEquipmentInfo1Qo);
-//    }
+    /**
+     * 添加设备
+     *
+     * @param addEquipmentInfo1Qo
+     * @return
+     */
+    @RequestMapping(value = "/addEquipmentInfo1", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse addEquipmentInfo1(@RequestBody AddEquipmentInfo1Qo addEquipmentInfo1Qo) {
+        return equipmentInfoService.addEquipmentInfo1(addEquipmentInfo1Qo);
+    }
 
     /**
      * 更新设备
@@ -102,5 +102,26 @@ public class EquipmentInfoController {
     public WebResponse dealEventHistory(@RequestBody DealEventHistoryQo dealEventHistoryQo) {
         return equipmentInfoService.dealEventHistory(dealEventHistoryQo);
     }
+
+    /**
+     * 根据设备类型和模板查找属性
+     */
+    @RequestMapping(value = "/getPropertyByTypeAndTemplate", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse getPropertyByTypeAndTemplate(@RequestBody GetPropertyByTypeAndTemplateQo getPropertyByTypeAndTemplateQo) {
+
+        return equipmentInfoService.getPropertyByTypeAndTemplate(getPropertyByTypeAndTemplateQo);
+    }
+
+    /**
+     * 根据模板,设备类型和上层节点获取属性
+     */
+    @RequestMapping(value = "/getPropertyByTypeAndTemplateAndParentNode", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse getPropertyByTypeAndTemplateAndParentNode(@RequestBody GetPropertyByTypeAndTemplateAndParentNodeQo getPropertyByTypeAndTemplateAndParentNodeQo) {
+
+        return equipmentInfoService.getPropertyByTypeAndTemplateAndParentNode(getPropertyByTypeAndTemplateAndParentNodeQo);
+    }
+
 
 }

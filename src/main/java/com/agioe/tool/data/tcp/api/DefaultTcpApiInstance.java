@@ -9,6 +9,7 @@ import com.agioe.tool.data.tcp.payload.SensorData;
 import com.agioe.tool.data.tcp.payload.SensorEvent;
 import com.agioe.tool.data.tcp.protocol.factory.AbstractProtocol;
 import com.agioe.tool.data.tcp.protocol.factory.ProtocolFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,6 +21,7 @@ import java.util.concurrent.Executors;
  * @author yshen
  * @since 2018/10/10
  */
+@Service
 public class DefaultTcpApiInstance implements TcpApi {
 
     private ControlListener listener;

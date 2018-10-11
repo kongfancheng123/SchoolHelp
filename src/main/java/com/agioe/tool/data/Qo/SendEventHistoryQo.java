@@ -24,4 +24,8 @@ public class SendEventHistoryQo {
      * 上层节点编码
      */
     private String parentNodeCode;
+    /**
+     * 属性类型
+     */
+    private Integer equipmentPropertyType;
 }

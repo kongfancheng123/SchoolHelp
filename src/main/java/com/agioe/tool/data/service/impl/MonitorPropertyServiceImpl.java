@@ -2,7 +2,9 @@ package com.agioe.tool.data.service.impl;
 
 import com.agioe.tool.data.Qo.AddMonitorProperty1Qo;
 import com.agioe.tool.data.Qo.DeleteMonitorProperty1Qo;
+import com.agioe.tool.data.Qo.GetPropertyByTypeAndTemplateQo;
 import com.agioe.tool.data.Qo.UpdateMonitorProperty1Qo;
+import com.agioe.tool.data.Vo.GetPropertyByTypeAndTemplateVo;
 import com.agioe.tool.data.Vo.ShowAllMonitorPropertyVo;
 import com.agioe.tool.data.dao.MonitorPropertyDao;
 import com.agioe.tool.data.entity.EquipmentInfo;
@@ -52,6 +54,34 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
     @Override
     public List<MonitorProperty> selectAll() {
         return monitorPropertyDao.selectAll();
+    }
+
+    @Override
+    public List<GetPropertyByTypeAndTemplateVo> getPropertyByTypeAndTemplate(GetPropertyByTypeAndTemplateQo getPropertyByTypeAndTemplateQo) {
+        List<GetPropertyByTypeAndTemplateVo> getPropertyByTypeAndTemplateVos = new ArrayList<>();
+        String equipmentPropertyTemplateCode = getPropertyByTypeAndTemplateQo.getEquipmentPropertyTemplateCode();
+        String equipmentTypeCode = getPropertyByTypeAndTemplateQo.getEquipmentTypeCode();
+        MonitorPropertyTemplateBind monitorPropertyTemplateBind = new MonitorPropertyTemplateBind();
+        monitorPropertyTemplateBind.setEquipmentType(equipmentTypeCode);
+        monitorPropertyTemplateBind.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
+        List<MonitorPropertyTemplateBind> monitorPropertyTemplateBinds = monitorPropertyTemplateBindService.selectByMonitorPropertyTemplateBind(monitorPropertyTemplateBind);
+        if (monitorPropertyTemplateBinds.size() > 0) {
+            for (MonitorPropertyTemplateBind monitorPropertyTemplateBind1 : monitorPropertyTemplateBinds) {
+                GetPropertyByTypeAndTemplateVo getPropertyByTypeAndTemplateVo = new GetPropertyByTypeAndTemplateVo();
+                String equipmentPropertyCode = monitorPropertyTemplateBind1.getEquipmentPropertyCode();
+                getPropertyByTypeAndTemplateVo.setEquipmentPropertyCode(equipmentPropertyCode);
+                MonitorProperty monitorProperty = new MonitorProperty();
+                monitorProperty.setEquipmentPropertyCode(equipmentPropertyCode);
+                List<MonitorProperty> monitorProperties = monitorPropertyDao.selectByMonitorProperty(monitorProperty);
+                if (monitorProperties.size() > 0) {
+                    MonitorProperty monitorProperty1 = monitorProperties.get(0);
+                    String equipmentPropertyName = monitorProperty1.getEquipmentPropertyName();
+                    getPropertyByTypeAndTemplateVo.setEquipmentPropertyName(equipmentPropertyName);
+                }
+                getPropertyByTypeAndTemplateVos.add(getPropertyByTypeAndTemplateVo);
+            }
+        }
+        return getPropertyByTypeAndTemplateVos;
     }
 
     @Override
@@ -141,4 +171,6 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
         monitorPropertyDao.deleteMonitorProperty(equipmentPropertyCode);
         return WebResponse.success();
     }
+
+
 }

@@ -32,4 +32,8 @@ public class ShowAllEquipmentInfoVo {
      * 关键字
      */
     private String keyword;
+    /**
+     * 信号类型
+     */
+    private Integer equipmentPropertyType;
 }

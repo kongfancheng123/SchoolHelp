@@ -4,6 +4,7 @@ import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.CreateTableParam;
 import com.agioe.tool.data.entity.EquipmentInfo;
 import com.agioe.tool.data.entity.WebResponse;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -19,10 +20,10 @@ public interface EquipmentInfoService {
     /**
      * 删除设备信息
      *
-     * @param id
+     * @param equipmentInfo
      * @return
      */
-    Integer deleteEquipmentInfo(Integer id);
+    Integer deleteEquipmentInfo(EquipmentInfo equipmentInfo);
 
     /**
      * 多条件查询设备信息
@@ -43,7 +44,7 @@ public interface EquipmentInfoService {
     /**
      * 查找所有设备信息
      */
-    List<EquipmentInfo> selectAll();
+    List<EquipmentInfo> selectAll(String parentNodeCode);
 
     /**
      * 根据id进行查找设备信息
@@ -67,7 +68,7 @@ public interface EquipmentInfoService {
      * @param addEquipmentInfo1Qo
      * @return
      */
-//    WebResponse addEquipmentInfo1(AddEquipmentInfo1Qo addEquipmentInfo1Qo);
+    WebResponse addEquipmentInfo1(AddEquipmentInfo1Qo addEquipmentInfo1Qo);
 
     /**
      * 更新设备
@@ -113,5 +114,21 @@ public interface EquipmentInfoService {
      * @return
      */
     WebResponse dealEventHistory(DealEventHistoryQo dealEventHistoryQo);
+
+    /**
+     * 根据模板和设备类型获取属性
+     *
+     * @param getPropertyByTypeAndTemplateQo
+     * @return
+     */
+    WebResponse getPropertyByTypeAndTemplate(@RequestBody GetPropertyByTypeAndTemplateQo getPropertyByTypeAndTemplateQo);
+
+    /**
+     * 根据模板,设备类型和上层节点获取属性
+     *
+     * @param getPropertyByTypeAndTemplateAndParentNodeQo
+     * @return
+     */
+    WebResponse getPropertyByTypeAndTemplateAndParentNode(GetPropertyByTypeAndTemplateAndParentNodeQo getPropertyByTypeAndTemplateAndParentNodeQo);
 
 }

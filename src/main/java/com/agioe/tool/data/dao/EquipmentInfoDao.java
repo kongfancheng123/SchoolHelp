@@ -20,10 +20,10 @@ public interface EquipmentInfoDao {
     /**
      * 删除设备信息
      *
-     * @param id
+     * @param equipmentInfo
      * @return
      */
-    Integer deleteEquipmentInfo(Integer id);
+    Integer deleteEquipmentInfo(@Param("equipmentInfo") EquipmentInfo equipmentInfo);
 
     /**
      * 多条件查询设备信息
@@ -42,9 +42,9 @@ public interface EquipmentInfoDao {
     Integer updateEquipmentInfo(@Param("equipmentInfo") EquipmentInfo equipmentInfo);
 
     /**
-     * 查找所有设备信息
+     * 查找指定表所有设备信息
      */
-    List<EquipmentInfo> selectAll();
+    List<EquipmentInfo> selectAll(String parentNodeCode);
 
     /**
      * 根据id进行查找设备信息

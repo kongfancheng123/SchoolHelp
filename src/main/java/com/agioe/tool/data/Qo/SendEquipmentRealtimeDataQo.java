@@ -13,4 +13,8 @@ public class SendEquipmentRealtimeDataQo {
      * 关键字
      */
     private String keyword;
+    /**
+     * 上层节点编码
+     */
+    private String parentNodeCode;
 }

@@ -1,6 +1,7 @@
 package com.agioe.tool.data.tcp.api;
 
 import com.agioe.tool.data.tcp.payload.ControlParameter;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * @author yshen
  * @since 2018/10/10
  */
+@Service
 public interface ControlListener {
     /**
      * 控制命令到达
