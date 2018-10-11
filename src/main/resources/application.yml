@@ -21,7 +21,7 @@ spring:
 
 
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath*:/mapper/*.xml
   type-aliases-package: com.agioe.tool.data.entity
 
 atm:
