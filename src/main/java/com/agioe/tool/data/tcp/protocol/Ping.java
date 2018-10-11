@@ -5,6 +5,8 @@ import com.agioe.tool.data.tcp.Message;
 import com.agioe.tool.data.tcp.protocol.factory.AbstractProtocol;
 import io.netty.buffer.ByteBuf;
 
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.PING;
+
 /**
  * 2.1.1.上级平台发送ping命令
  *
@@ -17,7 +19,7 @@ public class Ping extends AbstractProtocol {
      * type 1
      */
     public Ping() {
-        super((byte) 1);
+        super(PING);
     }
 
     @Override

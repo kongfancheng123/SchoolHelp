@@ -5,6 +5,8 @@ import com.agioe.tool.data.tcp.Message;
 import com.agioe.tool.data.tcp.protocol.factory.AbstractProtocol;
 import io.netty.buffer.ByteBuf;
 
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.EVENT_REPLY;
+
 /**
  * 2.4.1.上级平台下发设置报警预警值命令
  *
@@ -14,7 +16,7 @@ import io.netty.buffer.ByteBuf;
 public class EventReply extends AbstractProtocol {
 
     public EventReply() {
-        super((byte) 6);
+        super(EVENT_REPLY);
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.agioe.tool.data.tcp.Header.LENGTH_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.PONG;
 
 /**
  * 2.1.2.采集服务响应ping命令
@@ -29,7 +30,7 @@ public class Pong extends AbstractProtocol {
      * type 2
      */
     public Pong() {
-        super((byte) 2);
+        super(PONG);
     }
 
     @Override

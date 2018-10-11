@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 
 import static com.agioe.tool.data.tcp.Header.LENGTH_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.DATA_SEND;
 
 /**
  * 2.2.1.采集服务上报实时数据
@@ -22,7 +23,7 @@ import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
 public class DataSend extends AbstractProtocol {
 
     public DataSend() {
-        super((byte) 3);
+        super(DATA_SEND);
     }
 
     @Override

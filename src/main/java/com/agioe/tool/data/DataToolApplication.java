@@ -41,7 +41,6 @@ public class DataToolApplication implements CommandLineRunner {
         SpringApplication application = new SpringApplication(DataToolApplication.class);
         application.setBannerMode(Banner.Mode.OFF);
         application.run(args);
-        System.out.println("=========================启动成功=======================");
     }
 
     @Bean

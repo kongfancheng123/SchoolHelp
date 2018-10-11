@@ -14,6 +14,7 @@ import java.nio.charset.Charset;
 
 import static com.agioe.tool.data.tcp.Header.LENGTH_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.EVENT_SEND;
 
 /**
  * 2.3.1.采集服务上报事件信息
@@ -24,7 +25,7 @@ import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
 public class EventSend extends AbstractProtocol {
 
     public EventSend() {
-        super((byte) 5);
+        super(EVENT_SEND);
     }
 
     @Override
