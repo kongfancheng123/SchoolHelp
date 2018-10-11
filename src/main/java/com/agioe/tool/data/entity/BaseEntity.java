@@ -17,17 +17,17 @@ public abstract class BaseEntity {
     /**
      * 创建日期
      */
-    private Date create_date;
+    private Date createDate;
     /**
      * 创建人
      */
-    private Integer create_uid;
+    private Integer createUid;
     /**
      * 修改日期
      */
-    private Date write_date;
+    private Date writeDate;
     /**
      * 修改人
      */
-    private Integer write_uid;
+    private Integer writeUid;
 }
