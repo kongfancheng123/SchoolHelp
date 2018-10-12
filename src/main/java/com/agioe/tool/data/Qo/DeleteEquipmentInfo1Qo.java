@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class DeleteEquipmentInfo1Qo {
-    private Integer id;
+    private String keyWord;
+    private String parentNodeCode;
 }

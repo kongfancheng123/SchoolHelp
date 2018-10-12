@@ -6,10 +6,7 @@ import com.agioe.tool.data.Qo.UpdateMonitorPropertyTemplate1Qo;
 import com.agioe.tool.data.Vo.ShowAllMonitorPropertyTemplateVo;
 import com.agioe.tool.data.dao.MonitorPropertyTemplateDao;
 import com.agioe.tool.data.entity.*;
-import com.agioe.tool.data.service.EquipmentInfoService;
-import com.agioe.tool.data.service.EquipmentTypeService;
-import com.agioe.tool.data.service.MonitorPropertyTemplateBindService;
-import com.agioe.tool.data.service.MonitorPropertyTemplateService;
+import com.agioe.tool.data.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +26,9 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
 
     @Autowired
     private EquipmentTypeService equipmentTypeService;
+
+    @Autowired
+    private ParentNodeService parentNodeService;
 
     @Override
     public Integer insertMonitorPropertyTemplate(MonitorPropertyTemplate monitorPropertyTemplate) {
@@ -73,6 +73,7 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
                 //根据编码进行查找名字
                 EquipmentType equipmentType1 = new EquipmentType();
                 equipmentType1.setEquipmentTypeCode(equipmentType);
+                showAllMonitorPropertyTemplateVo.setEquipmentType(equipmentType);
                 List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType1);
                 if (equipmentTypes.size() > 0) {
                     EquipmentType equipmentType2 = equipmentTypes.get(0);
@@ -120,17 +121,29 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
         String equipmentPropertyTemplateCode = updateMonitorPropertyTemplate1Qo.getEquipmentPropertyTemplateCode();
         String equipmentPropertyTemplateDescription = updateMonitorPropertyTemplate1Qo.getEquipmentPropertyTemplateDescription();
         String equipmentPropertyTemplateName = updateMonitorPropertyTemplate1Qo.getEquipmentPropertyTemplateName();
-        String equipmentType = updateMonitorPropertyTemplate1Qo.getEquipmentType();
+//        String equipmentType = updateMonitorPropertyTemplate1Qo.getEquipmentType();
 
         MonitorPropertyTemplate monitorPropertyTemplate = new MonitorPropertyTemplate();
         monitorPropertyTemplate.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
         List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateDao.selectByMonitorPropertyTemplate(monitorPropertyTemplate);
         if (monitorPropertyTemplates.size() > 0) {
             MonitorPropertyTemplate monitorPropertyTemplate1 = monitorPropertyTemplates.get(0);
-            monitorPropertyTemplate1.setEquipmentType(equipmentType);
-            monitorPropertyTemplate1.setEquipmentPropertyTemplateDescription(equipmentPropertyTemplateDescription);
-            monitorPropertyTemplate1.setEquipmentPropertyTemplateName(equipmentPropertyTemplateName);
-            monitorPropertyTemplateDao.updateMonitorPropertyTemplate(monitorPropertyTemplate1);
+            //名字判断
+            if (monitorPropertyTemplate1.getEquipmentPropertyTemplateName().equals(equipmentPropertyTemplateName)) {
+                return WebResponse.success();
+            } else {
+                MonitorPropertyTemplate monitorPropertyTemplate2 = new MonitorPropertyTemplate();
+                monitorPropertyTemplate2.setEquipmentPropertyTemplateName(equipmentPropertyTemplateName);
+                List<MonitorPropertyTemplate> monitorPropertyTemplates1 = monitorPropertyTemplateDao.selectByMonitorPropertyTemplate(monitorPropertyTemplate2);
+                if (monitorPropertyTemplates1.size() > 0) {
+                    return WebResponse.error(400, "模板名称已存在");
+                } else {//进行更新
+                    //            monitorPropertyTemplate1.setEquipmentType(equipmentType);
+                    monitorPropertyTemplate1.setEquipmentPropertyTemplateDescription(equipmentPropertyTemplateDescription);
+                    monitorPropertyTemplate1.setEquipmentPropertyTemplateName(equipmentPropertyTemplateName);
+                    monitorPropertyTemplateDao.updateMonitorPropertyTemplate(monitorPropertyTemplate1);
+                }
+            }
         }
         return WebResponse.success();
     }
@@ -141,9 +154,16 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
         //判断与设备有无绑定关系
         EquipmentInfo equipmentInfo = new EquipmentInfo();
         equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
-        List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
-        if (equipmentInfos.size() > 0) {
-            return WebResponse.error(400, "与设备存在绑定关系,删除失败");
+        //获取所有上层节点
+        List<ParentNode> parentNodes = parentNodeService.selectAll();
+        if (parentNodes.size() > 0) {
+            for (ParentNode parentNode : parentNodes) {
+                equipmentInfo.setParentNodeCode(parentNode.getParentNodeCode());
+                List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
+                if (equipmentInfos.size() > 0) {
+                    return WebResponse.error(400, "与设备存在绑定关系,删除失败");
+                }
+            }
         }
         //判断与监控信息有无绑定关系
         MonitorPropertyTemplateBind monitorPropertyTemplateBind = new MonitorPropertyTemplateBind();

@@ -6,11 +6,19 @@ import lombok.Data;
 public class SendEquipmentRealtimeDataQo {
 
     /**
-     * 数据值
+     * 上层节点编码
      */
-    private String dataValue;
+    private String parentNodeCode;
     /**
-     * 关键字
+     * 设备类型编码
      */
-    private String keyword;
+    private String equipmentType;
+    /**
+     * 模板编码
+     */
+    private String equipmentPropertyTemplateCode;
+    /**
+     * 属性和值
+     */
+    private String[][] propertyCodeAndValue;
 }

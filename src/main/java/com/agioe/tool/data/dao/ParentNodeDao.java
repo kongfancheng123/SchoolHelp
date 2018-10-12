@@ -49,4 +49,9 @@ public interface ParentNodeDao {
      * 根据id进行查找监控信息
      */
     ParentNode selectByid(Integer id);
+
+    /**
+     * 删除数据库
+     */
+    Integer deleteTable(@Param("parentNode") ParentNode parentNode);
 }

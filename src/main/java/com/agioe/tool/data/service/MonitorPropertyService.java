@@ -2,7 +2,9 @@ package com.agioe.tool.data.service;
 
 import com.agioe.tool.data.Qo.AddMonitorProperty1Qo;
 import com.agioe.tool.data.Qo.DeleteMonitorProperty1Qo;
+import com.agioe.tool.data.Qo.GetPropertyByTypeAndTemplateQo;
 import com.agioe.tool.data.Qo.UpdateMonitorProperty1Qo;
+import com.agioe.tool.data.Vo.GetPropertyByTypeAndTemplateVo;
 import com.agioe.tool.data.entity.MonitorProperty;
 import com.agioe.tool.data.entity.WebResponse;
 
@@ -47,6 +49,14 @@ public interface MonitorPropertyService {
     List<MonitorProperty> selectAll();
 
     /**
+     * 根据模板编码和设备类型查找属性
+     *
+     * @param getPropertyByTypeAndTemplateQo
+     * @return
+     */
+    List<GetPropertyByTypeAndTemplateVo> getPropertyByTypeAndTemplate(GetPropertyByTypeAndTemplateQo getPropertyByTypeAndTemplateQo);
+
+    /**
      * 根据id进行查找监控信息
      */
     MonitorProperty selectByid(Integer id);
@@ -78,4 +88,5 @@ public interface MonitorPropertyService {
      * 删除监控信息
      */
     WebResponse deleteMonitorProperty1(DeleteMonitorProperty1Qo deleteMonitorProperty1Qo);
+
 }

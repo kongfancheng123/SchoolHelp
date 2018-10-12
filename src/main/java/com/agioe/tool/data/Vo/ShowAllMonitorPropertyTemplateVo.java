@@ -9,6 +9,10 @@ public class ShowAllMonitorPropertyTemplateVo {
      */
     private String equipmentTypeName;
     /**
+     * 设备类型编码
+     */
+    private String equipmentType;
+    /**
      * 监控信号模板编码
      */
     private String equipmentPropertyTemplateCode;

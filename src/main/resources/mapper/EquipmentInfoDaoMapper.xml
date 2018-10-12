@@ -24,7 +24,7 @@
     </resultMap>
 
     <insert id="insertEquipmentInfo" parameterType="com.agioe.tool.data.entity.EquipmentInfo">
-         insert into dt_equipment_info
+         insert into dt_${equipmentInfo.parentNodeCode}_equipment_info
         (
         parent_node_code,
         equipment_code,
@@ -51,15 +51,15 @@
             )
     </insert>
 
-    <delete id="deleteEquipmentInfo" parameterType="integer">
-        delete from dt_equipment_info
-        where id=#{id}
+    <delete id="deleteEquipmentInfo" parameterType="com.agioe.tool.data.entity.EquipmentInfo">
+        delete from dt_${equipmentInfo.parentNodeCode}_equipment_info
+        where keyword=#{equipmentInfo.keyword}
     </delete>
 
     <select id="selectByEquipmentInfo" parameterType="com.agioe.tool.data.entity.EquipmentInfo"
             resultMap="BaseResultMap">
         select *
-        from dt_equipment_info
+        from dt_${equipmentInfo.parentNodeCode}_equipment_info
         where 1=1
         <if test="equipmentInfo.id != null">
             and id = #{equipmentInfo.id}
@@ -98,7 +98,7 @@
     </select>
 
     <update id="updateEquipmentInfo" parameterType="com.agioe.tool.data.entity.EquipmentInfo">
-        UPDATE dt_equipment_info
+        UPDATE dt_${equipmentInfo.parentNodeCode}_equipment_info
         <set>
             <if test="equipmentInfo.parentNodeCode != null">
                 parent_node_code = #{equipmentInfo.parentNodeCode},
@@ -150,8 +150,8 @@
 
     </update>
 
-    <select id="selectAll" resultMap="BaseResultMap">
-        select * from dt_equipment_info
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="com.agioe.tool.data.entity.ParentNode">
+        select * from dt_${parentNode.parentNodeCode}_equipment_info
         order by id
     </select>
 

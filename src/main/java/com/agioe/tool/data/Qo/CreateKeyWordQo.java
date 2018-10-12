@@ -3,15 +3,7 @@ package com.agioe.tool.data.Qo;
 import lombok.Data;
 
 @Data
-public class DealEventHistoryQo {
-    /**
-     * 关键字
-     */
-    private String keyword;
-    /**
-     * 报警信息
-     */
-    private String alarmVal;
+public class CreateKeyWordQo {
     /**
      * 上层节点编码
      */
@@ -20,5 +12,8 @@ public class DealEventHistoryQo {
      * 属性类型
      */
     private Integer equipmentPropertyType;
-
+    /**
+     * keyword起始值
+     */
+    private Integer keyWordStart;
 }

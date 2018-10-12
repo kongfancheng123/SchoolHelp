@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class UpdateMonitorPropertyTemplate1Qo {
-    /**
-     * 设备类型编码
-     */
-    private String equipmentType;
+//    /**
+//     * 设备类型编码
+//     */
+//    private String equipmentType;
     /**
      * 监控信号模板编码
      */
