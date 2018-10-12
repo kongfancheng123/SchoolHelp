@@ -1,12 +1,14 @@
 package com.agioe.tool.data.tcp.payload;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * @author yshen
  * @since 2018/10/10
  */
 @Data
+@ToString
 public class ControlParameter {
     /**
      * 控制点编码

@@ -1,5 +1,9 @@
 package com.agioe.tool.data.tcp.protocol.factory;
 
+import com.agioe.tool.data.tcp.protocol.*;
+
+import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.*;
+
 /**
  * 协议工厂
  *
@@ -18,6 +22,30 @@ public class ProtocolFactory {
     public static AbstractProtocol buildProtocol(byte type) {
         AbstractProtocol protocol = null;
         switch (type) {
+            case PING:
+                protocol = new Ping();
+                break;
+            case PONG:
+                protocol = new Pong();
+                break;
+            case DATA_SEND:
+                protocol = new DataSend();
+                break;
+            case DATA_REPLY:
+                protocol = new DataReply();
+                break;
+            case EVENT_SEND:
+                protocol = new EventSend();
+                break;
+            case EVENT_REPLY:
+                protocol = new EventReply();
+                break;
+            case CONTROL_SEND:
+                protocol = new ControlSend();
+                break;
+            case CONTROL_REPLY:
+                protocol = new ControlReply();
+                break;
             default:
                 break;
         }

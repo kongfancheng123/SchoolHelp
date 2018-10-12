@@ -34,7 +34,7 @@ public class Ping extends AbstractProtocol {
 
     @Override
     public void reply(Message msg) {
-
+        new Pong().send(msg);
     }
 
     @Override

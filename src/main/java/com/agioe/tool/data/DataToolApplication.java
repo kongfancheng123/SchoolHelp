@@ -1,8 +1,12 @@
 package com.agioe.tool.data;
 
+import com.agioe.tool.data.Test.TcpComponent;
 import com.agioe.tool.data.common.SpringContextUtil;
 import com.agioe.tool.data.log.LoggerMessage;
 import com.agioe.tool.data.log.LoggerQueue;
+import com.agioe.tool.data.tcp.api.ControlListener;
+import com.agioe.tool.data.tcp.api.DefaultTcpApiInstance;
+import com.agioe.tool.data.tcp.api.TcpApi;
 import com.agioe.tool.data.tcp.server.Server;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -36,6 +40,9 @@ public class DataToolApplication implements CommandLineRunner {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private ControlListener myControlListener;
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(DataToolApplication.class);
@@ -77,5 +84,12 @@ public class DataToolApplication implements CommandLineRunner {
             }
         };
         executorService.submit(runnable);
+    }
+
+
+    @Bean
+    public TcpComponent tcpComponent() {
+        TcpApi instance = new DefaultTcpApiInstance(myControlListener);
+        return new TcpComponent(instance);
     }
 }
