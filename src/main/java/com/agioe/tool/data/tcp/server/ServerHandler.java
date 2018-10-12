@@ -18,6 +18,31 @@ import org.slf4j.LoggerFactory;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    public static String getRemoteAddress(ChannelHandlerContext ctx) {
+        String socketString = "";
+        socketString = ctx.channel().remoteAddress().toString();
+        return socketString;
+    }
+
+    public static String getIPString(ChannelHandlerContext ctx) {
+        String ipString = "";
+        String socketString = ctx.channel().remoteAddress().toString();
+        int colonAt = socketString.indexOf(":");
+        ipString = socketString.substring(1, colonAt);
+        return ipString;
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        logger.info("客户端" + getRemoteAddress(ctx) + "接入连接");
+        Worker.getClientMap().put(getIPString(ctx), ctx.channel());
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        Worker.getClientMap().remove(getIPString(ctx));
+        ctx.close();
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object obj) throws Exception {

@@ -4,6 +4,7 @@ import com.agioe.tool.data.tcp.MessageDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -15,6 +16,8 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +32,8 @@ public class Worker implements Runnable {
     static Logger logger = LoggerFactory.getLogger(Server.class);
 
     private static ChannelFuture channelFuture = null;
+
+    private static Map<String, Channel> clientMap = new ConcurrentHashMap<String, Channel>();
 
     private int port;
     /**
@@ -47,7 +52,7 @@ public class Worker implements Runnable {
      */
     public static void send(ByteBuf buf) {
         logger.info("准备发送数据:{}", ByteBufUtil.hexDump(buf));
-        channelFuture.channel().writeAndFlush(buf);
+        clientMap.forEach((k, v) -> v.writeAndFlush(buf));
     }
 
     @Override
@@ -91,6 +96,14 @@ public class Worker implements Runnable {
                 }
             });
         }
+    }
+
+    public static Map<String, Channel> getClientMap() {
+        return clientMap;
+    }
+
+    public static void setClientMap(Map<String, Channel> clientMap) {
+        Worker.clientMap = clientMap;
     }
 }
 
