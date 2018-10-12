@@ -71,5 +71,9 @@
         where id=#{id}
     </select>
 
+    <update id="deleteTable" parameterType="com.agioe.tool.data.entity.ParentNode">
+        drop table dt_${parentNode.parentNodeCode}_equipment_info
+    </update>
+
 
 </mapper>

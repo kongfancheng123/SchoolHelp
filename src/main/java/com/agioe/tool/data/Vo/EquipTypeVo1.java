@@ -9,13 +9,13 @@ public class EquipTypeVo1 {
     /**
      * 设备类型编码
      */
-    private String equipmentTypeCode;
+    private String code;
     /**
      * 设备类型名称
      */
-    private String equipmentTypeName;
+    private String name;
     /**
      * 监控模板集合
      */
-    private List<TemplateVo> templateLists;
+    private List<TemplateVo> children;
 }

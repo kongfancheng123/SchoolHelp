@@ -113,9 +113,22 @@ public class ParentNodeServiceImpl implements ParentNodeService {
         List<ParentNode> parentNodes = parentNodeDao.selectByParentNode(parentNode);
         if (parentNodes.size() > 0) {
             ParentNode parentNode1 = parentNodes.get(0);
-            parentNode1.setParentNodeName(parentNodeName);
-            parentNodeDao.updateParentNode(parentNode1);
-
+            //名字判断
+            if (parentNode1.getParentNodeName().equals(parentNodeName)) {
+                return WebResponse.success();
+            } else {
+                //名字判重
+                ParentNode parentNode2 = new ParentNode();
+                parentNode2.setParentNodeName(parentNodeName);
+                List<ParentNode> parentNodes1 = parentNodeDao.selectByParentNode(parentNode2);
+                if (parentNodes1.size() > 0) {
+                    return WebResponse.error(400, "上层节点名称已存在");
+                } else {
+                    //更新
+                    parentNode1.setParentNodeName(parentNodeName);
+                    parentNodeDao.updateParentNode(parentNode1);
+                }
+            }
         }
         return WebResponse.success();
     }
@@ -133,6 +146,10 @@ public class ParentNodeServiceImpl implements ParentNodeService {
         }
         //删除
         parentNodeDao.deleteParentNode(parentNodeCode);
+        //todo:删除数据库
+        ParentNode parentNode = new ParentNode();
+        parentNode.setParentNodeCode(parentNodeCode);
+        parentNodeDao.deleteTable(parentNode);
         return WebResponse.success();
     }
 }

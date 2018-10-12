@@ -7,9 +7,10 @@ import com.agioe.tool.data.Vo.ShowAllEquipmentInfoVo;
 import com.agioe.tool.data.dao.EquipmentInfoDao;
 import com.agioe.tool.data.entity.*;
 import com.agioe.tool.data.service.*;
-import com.agioe.tool.data.tcp.api.TcpApi;
+import com.agioe.tool.data.tcp.api.DefaultTcpApiInstance;
 import com.agioe.tool.data.tcp.payload.SensorData;
 import com.agioe.tool.data.tcp.payload.SensorEvent;
+import com.agioe.tool.data.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,9 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     @Autowired
     private ParentNodeService parentNodeService;
     @Autowired
-    private TcpApi tcpApi;
+    private MonitorPropertyTemplateService monitorPropertyTemplateService;
+    @Autowired
+    private EquipmentTypeService equipmentTypeService;
 
 
     @Override
@@ -52,8 +55,8 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     }
 
     @Override
-    public List<EquipmentInfo> selectAll(String parentNodeCode) {
-        return equipmentInfoDao.selectAll(parentNodeCode);
+    public List<EquipmentInfo> selectAll(ParentNode parentNode) {
+        return equipmentInfoDao.selectAll(parentNode);
     }
 
     @Override
@@ -73,17 +76,73 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         if (parentNodes.size() > 0) {
             for (ParentNode parentNode : parentNodes) {
                 //获取所有的parentNodeCode
-                List<EquipmentInfo> EquipmentInfos = equipmentInfoDao.selectAll(parentNode.getParentNodeCode());
+                List<EquipmentInfo> EquipmentInfos = equipmentInfoDao.selectAll(parentNode);
                 if (EquipmentInfos.size() > 0) {
-                    for (EquipmentInfo EquipmentInfo : EquipmentInfos) {
+                    for (EquipmentInfo equipmentInfo : EquipmentInfos) {
                         ShowAllEquipmentInfoVo showAllEquipmentInfoVo = new ShowAllEquipmentInfoVo();
-                        showAllEquipmentInfoVo.setEquipmentCode(EquipmentInfo.getEquipmentCode());
-                        showAllEquipmentInfoVo.setEquipmentName(EquipmentInfo.getEquipmentName());
-                        showAllEquipmentInfoVo.setEquipmentPropertyCode(EquipmentInfo.getEquipmentPropertyCode());
-                        showAllEquipmentInfoVo.setEquipmentPropertyTemplateCode(EquipmentInfo.getEquipmentPropertyTemplateCode());
-                        showAllEquipmentInfoVo.setEquipmentType(EquipmentInfo.getEquipmentType());
-                        showAllEquipmentInfoVo.setKeyword(EquipmentInfo.getKeyword());
-                        showAllEquipmentInfoVo.setParentNodeCode(EquipmentInfo.getParentNodeCode());
+
+                        showAllEquipmentInfoVo.setEquipmentCode(equipmentInfo.getEquipmentCode());
+                        showAllEquipmentInfoVo.setEquipmentName(equipmentInfo.getEquipmentName());
+
+                        showAllEquipmentInfoVo.setEquipmentPropertyTemplateCode(equipmentInfo.getEquipmentPropertyTemplateCode());
+                        MonitorPropertyTemplate monitorPropertyTemplate = new MonitorPropertyTemplate();
+                        monitorPropertyTemplate.setEquipmentPropertyTemplateCode(equipmentInfo.getEquipmentPropertyTemplateCode());
+                        List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateService.selectByMonitorPropertyTemplate(monitorPropertyTemplate);
+                        if (monitorPropertyTemplates.size() > 0) {
+                            MonitorPropertyTemplate monitorPropertyTemplate1 = monitorPropertyTemplates.get(0);
+                            showAllEquipmentInfoVo.setEquipmentPropertyTemplateName(monitorPropertyTemplate1.getEquipmentPropertyTemplateName());
+                        }
+
+                        showAllEquipmentInfoVo.setEquipmentType(equipmentInfo.getEquipmentType());
+                        EquipmentType equipmentType = new EquipmentType();
+                        equipmentType.setEquipmentTypeCode(equipmentInfo.getEquipmentType());
+                        List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType);
+                        if (equipmentTypes.size() > 0) {
+                            EquipmentType equipmentType1 = equipmentTypes.get(0);
+                            showAllEquipmentInfoVo.setEquipmentTypeName(equipmentType1.getEquipmentTypeName());
+                        }
+
+                        showAllEquipmentInfoVo.setKeyword(equipmentInfo.getKeyword());
+
+                        showAllEquipmentInfoVo.setParentNodeCode(equipmentInfo.getParentNodeCode());
+                        ParentNode parentNode1 = new ParentNode();
+                        parentNode1.setParentNodeCode(equipmentInfo.getParentNodeCode());
+                        List<ParentNode> parentNodes1 = parentNodeService.selectByParentNode(parentNode1);
+                        if (parentNodes1.size() > 0) {
+                            ParentNode parentNode2 = parentNodes1.get(0);
+                            showAllEquipmentInfoVo.setParentNodeName(parentNode2.getParentNodeName());
+                        }
+
+                        showAllEquipmentInfoVo.setEquipmentPropertyCode(equipmentInfo.getEquipmentPropertyCode());
+                        MonitorProperty monitorProperty = new MonitorProperty();
+                        monitorProperty.setEquipmentPropertyCode(equipmentInfo.getEquipmentPropertyCode());
+                        List<MonitorProperty> monitorProperties = monitorPropertyService.selectByMonitorProperty(monitorProperty);
+                        if (monitorProperties.size() > 0) {
+                            MonitorProperty monitorProperty1 = monitorProperties.get(0);
+                            showAllEquipmentInfoVo.setEquipmentPropertyType(monitorProperty1.getEquipmentPropertyType());
+                            showAllEquipmentInfoVo.setEquipmentPropertyName(monitorProperty1.getEquipmentPropertyName());
+                        }
+
+                        Date alarmUpdate = equipmentInfo.getAlarmUpdate();
+                        if (alarmUpdate != null) {
+                            showAllEquipmentInfoVo.setAlarmUpdate(TimeUtil.format(alarmUpdate, "YYYY-MM-dd HH:mm:ss"));
+                        }
+
+                        showAllEquipmentInfoVo.setAlarmVal(equipmentInfo.getAlarmVal());
+
+                        Date controllerUpdate = equipmentInfo.getControllerUpdate();
+                        if (controllerUpdate != null) {
+                            showAllEquipmentInfoVo.setControllerUpdate(TimeUtil.format(controllerUpdate, "YYYY-MM-dd HH:mm:ss"));
+                        }
+                        showAllEquipmentInfoVo.setControlVal(equipmentInfo.getControlVal());
+
+                        Date dataUpdate = equipmentInfo.getDataUpdate();
+                        if (dataUpdate != null) {
+                            showAllEquipmentInfoVo.setDataUpdate(TimeUtil.format(dataUpdate, "YYYY-MM-dd HH:mm:ss"));
+                        }
+                        showAllEquipmentInfoVo.setDataVal(equipmentInfo.getDataVal());
+
+
                         showAllEquipmentInfoVos.add(showAllEquipmentInfoVo);
                     }
                 }
@@ -119,17 +178,19 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             String equipmentNameStart1 = String.valueOf(equipmentNameStart + i);
             String equipmentName = equipmentNameBefore + equipmentNameStart1 + equipmentNameAfter;
             //编码判重
-            EquipmentInfo EquipmentInfo = new EquipmentInfo();
-            EquipmentInfo.setEquipmentCode(equipmentCode);
-            List<EquipmentInfo> EquipmentInfos = equipmentInfoDao.selectByEquipmentInfo(EquipmentInfo);
-            if (EquipmentInfos.size() > 0) {
+            EquipmentInfo equipmentInfo = new EquipmentInfo();
+            equipmentInfo.setEquipmentCode(equipmentCode);
+            equipmentInfo.setParentNodeCode(parentNodeCode);
+            List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
+            if (equipmentInfos.size() > 0) {
                 return WebResponse.error(400, "设备编码已存在");
             }
             //名字判重
-            EquipmentInfo EquipmentInfo1 = new EquipmentInfo();
-            EquipmentInfo1.setEquipmentName(equipmentName);
-            List<EquipmentInfo> EquipmentInfos1 = equipmentInfoDao.selectByEquipmentInfo(EquipmentInfo1);
-            if (EquipmentInfos1.size() > 0) {
+            EquipmentInfo equipmentInfo1 = new EquipmentInfo();
+            equipmentInfo1.setEquipmentName(equipmentName);
+            equipmentInfo1.setParentNodeCode(parentNodeCode);
+            List<EquipmentInfo> equipmentInfos1 = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo1);
+            if (equipmentInfos1.size() > 0) {
                 return WebResponse.error(400, "设备名已存在");
             }
             //添加
@@ -178,24 +239,33 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     }
 
     @Override
-    public WebResponse updateEquipmentInfo1(UpdateEquipmentInfo1Qo updateEquipmentInfo1Qo) {//待修改
-        Integer id = updateEquipmentInfo1Qo.getId();
+    public WebResponse updateEquipmentInfo1(UpdateEquipmentInfo1Qo updateEquipmentInfo1Qo) {
         String equipmentCode = updateEquipmentInfo1Qo.getEquipmentCode();
-        String equipmentName = updateEquipmentInfo1Qo.getEquipmentName();
-        String equipmentPropertyCode = updateEquipmentInfo1Qo.getEquipmentPropertyCode();
-        String equipmentPropertyTemplateCode = updateEquipmentInfo1Qo.getEquipmentPropertyTemplateCode();
-        String equipmentType = updateEquipmentInfo1Qo.getEquipmentType();
         String keyword = updateEquipmentInfo1Qo.getKeyword();
         String parentNodeCode = updateEquipmentInfo1Qo.getParentNodeCode();
-        EquipmentInfo EquipmentInfo = equipmentInfoDao.selectByid(id);
-        EquipmentInfo.setParentNodeCode(parentNodeCode);
-        EquipmentInfo.setKeyword(keyword);
-        EquipmentInfo.setEquipmentType(equipmentType);
-        EquipmentInfo.setEquipmentPropertyCode(equipmentPropertyCode);
-        EquipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
-        EquipmentInfo.setEquipmentCode(equipmentCode);
-        EquipmentInfo.setEquipmentName(equipmentName);
-        equipmentInfoDao.updateEquipmentInfo(EquipmentInfo);
+        EquipmentInfo equipmentInfo = new EquipmentInfo();
+        equipmentInfo.setEquipmentCode(equipmentCode);
+        equipmentInfo.setParentNodeCode(parentNodeCode);
+        List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
+        if (equipmentInfos.size() > 0) {
+            EquipmentInfo equipmentInfo1 = equipmentInfos.get(0);
+            if (equipmentInfo1.getKeyword().equals(keyword)) {
+                return WebResponse.success();
+            } else {
+                //keyword重复判断
+                EquipmentInfo equipmentInfo2 = new EquipmentInfo();
+                equipmentInfo2.setParentNodeCode(parentNodeCode);
+                equipmentInfo2.setKeyword(keyword);
+                List<EquipmentInfo> equipmentInfos1 = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo2);
+                if (equipmentInfos1.size() > 0) {
+                    return WebResponse.error(400, "keyword已存在");
+                } else {
+                    //进行更新
+                    equipmentInfo1.setKeyword(keyword);
+                    equipmentInfoDao.updateEquipmentInfo(equipmentInfo1);
+                }
+            }
+        }
         return WebResponse.success();
     }
 
@@ -232,15 +302,71 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                     EquipmentInfo.setParentNodeCode(parentNodeCode1 == "" ? null : parentNodeCode);
                     List<EquipmentInfo> EquipmentInfos = equipmentInfoDao.selectByEquipmentInfo(EquipmentInfo);
                     if (EquipmentInfos.size() > 0) {
-                        for (EquipmentInfo EquipmentInfo2 : EquipmentInfos) {
+                        for (EquipmentInfo equipmentInfo : EquipmentInfos) {
                             ShowAllEquipmentInfoVo showAllEquipmentInfoVo = new ShowAllEquipmentInfoVo();
-                            showAllEquipmentInfoVo.setEquipmentCode(EquipmentInfo2.getEquipmentCode());
-                            showAllEquipmentInfoVo.setEquipmentName(EquipmentInfo2.getEquipmentName());
-                            showAllEquipmentInfoVo.setEquipmentPropertyCode(EquipmentInfo2.getEquipmentPropertyCode());
-                            showAllEquipmentInfoVo.setEquipmentPropertyTemplateCode(EquipmentInfo2.getEquipmentPropertyTemplateCode());
-                            showAllEquipmentInfoVo.setEquipmentType(EquipmentInfo2.getEquipmentType());
-                            showAllEquipmentInfoVo.setKeyword(EquipmentInfo2.getKeyword());
-                            showAllEquipmentInfoVo.setParentNodeCode(EquipmentInfo2.getParentNodeCode());
+
+                            showAllEquipmentInfoVo.setEquipmentCode(equipmentInfo.getEquipmentCode());
+                            showAllEquipmentInfoVo.setEquipmentName(equipmentInfo.getEquipmentName());
+
+                            showAllEquipmentInfoVo.setEquipmentPropertyTemplateCode(equipmentInfo.getEquipmentPropertyTemplateCode());
+                            MonitorPropertyTemplate monitorPropertyTemplate = new MonitorPropertyTemplate();
+                            monitorPropertyTemplate.setEquipmentPropertyTemplateCode(equipmentInfo.getEquipmentPropertyTemplateCode());
+                            List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateService.selectByMonitorPropertyTemplate(monitorPropertyTemplate);
+                            if (monitorPropertyTemplates.size() > 0) {
+                                MonitorPropertyTemplate monitorPropertyTemplate1 = monitorPropertyTemplates.get(0);
+                                showAllEquipmentInfoVo.setEquipmentPropertyTemplateName(monitorPropertyTemplate1.getEquipmentPropertyTemplateName());
+                            }
+
+                            showAllEquipmentInfoVo.setEquipmentType(equipmentInfo.getEquipmentType());
+                            EquipmentType equipmentType33 = new EquipmentType();
+                            equipmentType33.setEquipmentTypeCode(equipmentInfo.getEquipmentType());
+                            List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType33);
+                            if (equipmentTypes.size() > 0) {
+                                EquipmentType equipmentType1 = equipmentTypes.get(0);
+                                showAllEquipmentInfoVo.setEquipmentTypeName(equipmentType1.getEquipmentTypeName());
+                            }
+
+                            showAllEquipmentInfoVo.setKeyword(equipmentInfo.getKeyword());
+
+                            showAllEquipmentInfoVo.setParentNodeCode(equipmentInfo.getParentNodeCode());
+                            ParentNode parentNode1 = new ParentNode();
+                            parentNode1.setParentNodeCode(equipmentInfo.getParentNodeCode());
+                            List<ParentNode> parentNodes1 = parentNodeService.selectByParentNode(parentNode1);
+                            if (parentNodes1.size() > 0) {
+                                ParentNode parentNode2 = parentNodes1.get(0);
+                                showAllEquipmentInfoVo.setParentNodeName(parentNode2.getParentNodeName());
+                            }
+
+                            showAllEquipmentInfoVo.setEquipmentPropertyCode(equipmentInfo.getEquipmentPropertyCode());
+                            MonitorProperty monitorProperty = new MonitorProperty();
+                            monitorProperty.setEquipmentPropertyCode(equipmentInfo.getEquipmentPropertyCode());
+                            List<MonitorProperty> monitorProperties = monitorPropertyService.selectByMonitorProperty(monitorProperty);
+                            if (monitorProperties.size() > 0) {
+                                MonitorProperty monitorProperty1 = monitorProperties.get(0);
+                                showAllEquipmentInfoVo.setEquipmentPropertyType(monitorProperty1.getEquipmentPropertyType());
+                                showAllEquipmentInfoVo.setEquipmentPropertyName(monitorProperty1.getEquipmentPropertyName());
+                            }
+
+                            Date alarmUpdate = equipmentInfo.getAlarmUpdate();
+                            if (alarmUpdate != null) {
+                                showAllEquipmentInfoVo.setAlarmUpdate(TimeUtil.format(alarmUpdate, "YYYY-MM-dd HH:mm:ss"));
+                            }
+
+                            showAllEquipmentInfoVo.setAlarmVal(equipmentInfo.getAlarmVal());
+
+                            Date controllerUpdate = equipmentInfo.getControllerUpdate();
+                            if (controllerUpdate != null) {
+                                showAllEquipmentInfoVo.setControllerUpdate(TimeUtil.format(controllerUpdate, "YYYY-MM-dd HH:mm:ss"));
+                            }
+                            showAllEquipmentInfoVo.setControlVal(equipmentInfo.getControlVal());
+
+                            Date dataUpdate = equipmentInfo.getDataUpdate();
+                            if (dataUpdate != null) {
+                                showAllEquipmentInfoVo.setDataUpdate(TimeUtil.format(dataUpdate, "YYYY-MM-dd HH:mm:ss"));
+                            }
+                            showAllEquipmentInfoVo.setDataVal(equipmentInfo.getDataVal());
+
+
                             showAllEquipmentInfoVos.add(showAllEquipmentInfoVo);
                         }
                     }
@@ -254,15 +380,71 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             EquipmentInfo.setParentNodeCode(parentNodeCode == "" ? null : parentNodeCode);
             List<EquipmentInfo> EquipmentInfos = equipmentInfoDao.selectByEquipmentInfo(EquipmentInfo);
             if (EquipmentInfos.size() > 0) {
-                for (EquipmentInfo EquipmentInfo2 : EquipmentInfos) {
+                for (EquipmentInfo equipmentInfo : EquipmentInfos) {
                     ShowAllEquipmentInfoVo showAllEquipmentInfoVo = new ShowAllEquipmentInfoVo();
-                    showAllEquipmentInfoVo.setEquipmentCode(EquipmentInfo2.getEquipmentCode());
-                    showAllEquipmentInfoVo.setEquipmentName(EquipmentInfo2.getEquipmentName());
-                    showAllEquipmentInfoVo.setEquipmentPropertyCode(EquipmentInfo2.getEquipmentPropertyCode());
-                    showAllEquipmentInfoVo.setEquipmentPropertyTemplateCode(EquipmentInfo2.getEquipmentPropertyTemplateCode());
-                    showAllEquipmentInfoVo.setEquipmentType(EquipmentInfo2.getEquipmentType());
-                    showAllEquipmentInfoVo.setKeyword(EquipmentInfo2.getKeyword());
-                    showAllEquipmentInfoVo.setParentNodeCode(EquipmentInfo2.getParentNodeCode());
+
+                    showAllEquipmentInfoVo.setEquipmentCode(equipmentInfo.getEquipmentCode());
+                    showAllEquipmentInfoVo.setEquipmentName(equipmentInfo.getEquipmentName());
+
+                    showAllEquipmentInfoVo.setEquipmentPropertyTemplateCode(equipmentInfo.getEquipmentPropertyTemplateCode());
+                    MonitorPropertyTemplate monitorPropertyTemplate = new MonitorPropertyTemplate();
+                    monitorPropertyTemplate.setEquipmentPropertyTemplateCode(equipmentInfo.getEquipmentPropertyTemplateCode());
+                    List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateService.selectByMonitorPropertyTemplate(monitorPropertyTemplate);
+                    if (monitorPropertyTemplates.size() > 0) {
+                        MonitorPropertyTemplate monitorPropertyTemplate1 = monitorPropertyTemplates.get(0);
+                        showAllEquipmentInfoVo.setEquipmentPropertyTemplateName(monitorPropertyTemplate1.getEquipmentPropertyTemplateName());
+                    }
+
+                    showAllEquipmentInfoVo.setEquipmentType(equipmentInfo.getEquipmentType());
+                    EquipmentType equipmentType44 = new EquipmentType();
+                    equipmentType44.setEquipmentTypeCode(equipmentInfo.getEquipmentType());
+                    List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType44);
+                    if (equipmentTypes.size() > 0) {
+                        EquipmentType equipmentType1 = equipmentTypes.get(0);
+                        showAllEquipmentInfoVo.setEquipmentTypeName(equipmentType1.getEquipmentTypeName());
+                    }
+
+                    showAllEquipmentInfoVo.setKeyword(equipmentInfo.getKeyword());
+
+                    showAllEquipmentInfoVo.setParentNodeCode(equipmentInfo.getParentNodeCode());
+                    ParentNode parentNode1 = new ParentNode();
+                    parentNode1.setParentNodeCode(equipmentInfo.getParentNodeCode());
+                    List<ParentNode> parentNodes1 = parentNodeService.selectByParentNode(parentNode1);
+                    if (parentNodes1.size() > 0) {
+                        ParentNode parentNode2 = parentNodes1.get(0);
+                        showAllEquipmentInfoVo.setParentNodeName(parentNode2.getParentNodeName());
+                    }
+
+                    showAllEquipmentInfoVo.setEquipmentPropertyCode(equipmentInfo.getEquipmentPropertyCode());
+                    MonitorProperty monitorProperty = new MonitorProperty();
+                    monitorProperty.setEquipmentPropertyCode(equipmentInfo.getEquipmentPropertyCode());
+                    List<MonitorProperty> monitorProperties = monitorPropertyService.selectByMonitorProperty(monitorProperty);
+                    if (monitorProperties.size() > 0) {
+                        MonitorProperty monitorProperty1 = monitorProperties.get(0);
+                        showAllEquipmentInfoVo.setEquipmentPropertyType(monitorProperty1.getEquipmentPropertyType());
+                        showAllEquipmentInfoVo.setEquipmentPropertyName(monitorProperty1.getEquipmentPropertyName());
+                    }
+
+                    Date alarmUpdate = equipmentInfo.getAlarmUpdate();
+                    if (alarmUpdate != null) {
+                        showAllEquipmentInfoVo.setAlarmUpdate(TimeUtil.format(alarmUpdate, "YYYY-MM-dd HH:mm:ss"));
+                    }
+
+                    showAllEquipmentInfoVo.setAlarmVal(equipmentInfo.getAlarmVal());
+
+                    Date controllerUpdate = equipmentInfo.getControllerUpdate();
+                    if (controllerUpdate != null) {
+                        showAllEquipmentInfoVo.setControllerUpdate(TimeUtil.format(controllerUpdate, "YYYY-MM-dd HH:mm:ss"));
+                    }
+                    showAllEquipmentInfoVo.setControlVal(equipmentInfo.getControlVal());
+
+                    Date dataUpdate = equipmentInfo.getDataUpdate();
+                    if (dataUpdate != null) {
+                        showAllEquipmentInfoVo.setDataUpdate(TimeUtil.format(dataUpdate, "YYYY-MM-dd HH:mm:ss"));
+                    }
+                    showAllEquipmentInfoVo.setDataVal(equipmentInfo.getDataVal());
+
+
                     showAllEquipmentInfoVos.add(showAllEquipmentInfoVo);
                 }
             }
@@ -272,29 +454,50 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     }
 
     @Override
-    public WebResponse sendEquipmentRealtimeData(SendEquipmentRealtimeDataQo sendEquipmentRealtimeDataQo) {
-        String dataValue = sendEquipmentRealtimeDataQo.getDataValue();
-        String keyword = sendEquipmentRealtimeDataQo.getKeyword();
+    public WebResponse sendEquipmentRealtimeData(SendEquipmentRealtimeDataQo sendEquipmentRealtimeDataQo) {   //批量发送
         String parentNodeCode = sendEquipmentRealtimeDataQo.getParentNodeCode();
-        //对key值对应的设备表进行更新
-        EquipmentInfo equipmentInfo = new EquipmentInfo();
-        equipmentInfo.setKeyword(keyword);
-        equipmentInfo.setParentNodeCode(parentNodeCode);
-        List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
-        if (equipmentInfos.size() > 0) {
-            EquipmentInfo equipmentInfo1 = equipmentInfos.get(0);
-            equipmentInfo1.setDataVal(dataValue);
-            equipmentInfo1.setDataUpdate(new Date());
-            equipmentInfoDao.updateEquipmentInfo(equipmentInfo1);
-        }
-        //todo:发送实时数据
+        String equipmentPropertyTemplateCode = sendEquipmentRealtimeDataQo.getEquipmentPropertyTemplateCode();
+        String equipmentType = sendEquipmentRealtimeDataQo.getEquipmentType();
+        String[][] propertyCodeAndValue = sendEquipmentRealtimeDataQo.getPropertyCodeAndValue();
         List<SensorData> dataList = new ArrayList<>();
-        tcpApi.sendSensorData(dataList);
+        if (propertyCodeAndValue.length > 0) {
+            for (String[] propertyCodeAndValue1 : propertyCodeAndValue) {
+                String equipmentPropertyCode = propertyCodeAndValue1[0];
+                String baseValue = propertyCodeAndValue1[1];
+                String upAndDown = propertyCodeAndValue1[2];
+                //todo:对数据类型作判断
+                EquipmentInfo equipmentInfo = new EquipmentInfo();
+                equipmentInfo.setParentNodeCode(parentNodeCode);
+                equipmentInfo.setEquipmentType(equipmentType);
+                equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
+                equipmentInfo.setEquipmentPropertyCode(equipmentPropertyCode);
+                List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
+                if (equipmentInfos.size() > 0) {
+                    for (EquipmentInfo equipmentInfo1 : equipmentInfos) {
+                        //todo:获取随机的数据
+                        String dataVal = baseValue + upAndDown;
+                        Date dataUpdate = new Date();
+                        equipmentInfo1.setDataVal(dataVal);
+                        equipmentInfo1.setDataUpdate(dataUpdate);
+                        equipmentInfoDao.updateEquipmentInfo(equipmentInfo1);
+                        SensorData sensorData = new SensorData();
+//                      sensorData.setKey();
+//                      sensorData.setOrg();
+//                      sensorData.setTime();
+//                      sensorData.setType();
+//                      sensorData.setVal();
+                    }
+                }
+            }
+        }
+//        //todo:发送实时数据
+//        DefaultTcpApiInstance defaultTcpApiInstance=DefaultTcpApiInstance.getInstance();
+//        defaultTcpApiInstance.sendSensorData(dataList);
         return WebResponse.success();
     }
 
     @Override
-    public WebResponse sendEventHistory(SendEventHistoryQo sendEventHistoryQo) {
+    public WebResponse sendEventHistory(SendEventHistoryQo sendEventHistoryQo) {  //发送消息失败,保存数据成功
         String eventCode = sendEventHistoryQo.getEventCode();
         String eventType = sendEventHistoryQo.getEventType();
         String eventValue = sendEventHistoryQo.getEventValue();
@@ -341,14 +544,15 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             sensorEvent.setType(Byte.decode(eventType));
             sensorEvent.setOrgCode("");
             eventList.add(sensorEvent);
-            tcpApi.sendSensorEvent(eventList);
+            DefaultTcpApiInstance defaultTcpApiInstance = DefaultTcpApiInstance.getInstance();
+            defaultTcpApiInstance.sendSensorEvent(eventList);
         }
 
         return WebResponse.success();
     }
 
     @Override
-    public WebResponse dealEventHistory(DealEventHistoryQo dealEventHistoryQo) {
+    public WebResponse dealEventHistory(DealEventHistoryQo dealEventHistoryQo) { //发送消息失败,保存数据成功
         String keyword = dealEventHistoryQo.getKeyword();
         String alarmVal = dealEventHistoryQo.getAlarmVal();
         //获取事件值和事件编码
@@ -384,7 +588,8 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             sensorEvent.setType(Byte.decode("2"));
             sensorEvent.setOrgCode("");
             eventList.add(sensorEvent);
-            tcpApi.sendSensorEvent(eventList);
+            DefaultTcpApiInstance defaultTcpApiInstance = DefaultTcpApiInstance.getInstance();
+            defaultTcpApiInstance.sendSensorEvent(eventList);
         }
         return WebResponse.success();
     }
@@ -427,6 +632,33 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             }
         }
         return WebResponse.success(getPropertyByTypeAndTemplateAndParentNodeVos);
+    }
+
+    @Override
+    public WebResponse createKeyWord(CreateKeyWordQo createKeyWordQo) {
+        Integer equipmentPropertyType = createKeyWordQo.getEquipmentPropertyType();
+        Integer keyWordStart = createKeyWordQo.getKeyWordStart();
+        String parentNodeCode = createKeyWordQo.getParentNodeCode();
+        MonitorProperty monitorProperty = new MonitorProperty();
+        monitorProperty.setEquipmentPropertyType(equipmentPropertyType);
+        List<MonitorProperty> monitorProperties = monitorPropertyService.selectByMonitorProperty(monitorProperty);
+        if (monitorProperties.size() > 0) {
+            for (MonitorProperty monitorProperty1 : monitorProperties) {
+                EquipmentInfo equipmentInfo = new EquipmentInfo();
+                equipmentInfo.setParentNodeCode(parentNodeCode);
+                equipmentInfo.setEquipmentPropertyCode(monitorProperty1.getEquipmentPropertyCode());
+                List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
+                if (equipmentInfos.size() > 0) {
+                    for (EquipmentInfo equipmentInfo1 : equipmentInfos) {
+                        String keyword = parentNodeCode + "_" + String.valueOf(keyWordStart) + "_" + monitorProperty1.getEquipmentPropertyCode();
+                        equipmentInfo1.setKeyword(keyword);
+                        equipmentInfoDao.updateEquipmentInfo(equipmentInfo1);
+                        keyWordStart++;
+                    }
+                }
+            }
+        }
+        return WebResponse.success();
     }
 
 }

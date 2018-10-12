@@ -4,7 +4,6 @@ import com.agioe.tool.data.Qo.AddMonitorPropertyTemplateBind1Qo;
 import com.agioe.tool.data.Qo.DeleteMonitorPropertyTemplateBind1Qo;
 import com.agioe.tool.data.Qo.UpdateMonitorPropertyTemplateBind1Qo;
 import com.agioe.tool.data.Vo.EquipTypeVo1;
-import com.agioe.tool.data.Vo.GetEquipmentTypeTemplateLinkVo;
 import com.agioe.tool.data.Vo.ShowAllMonitorPropertyTemplateBindVo;
 import com.agioe.tool.data.Vo.TemplateVo;
 import com.agioe.tool.data.dao.MonitorPropertyTemplateBindDao;
@@ -149,14 +148,15 @@ public class MonitorPropertyTemplateBindServiceImpl implements MonitorPropertyTe
 
     @Override
     public WebResponse getEquipmentTypeTemplateLink() {
-        GetEquipmentTypeTemplateLinkVo getEquipmentTypeTemplateLinkVo = new GetEquipmentTypeTemplateLinkVo();
+//        GetEquipmentTypeTemplateLinkVo getEquipmentTypeTemplateLinkVo = new GetEquipmentTypeTemplateLinkVo();
+//        EquipTypeVo1ListVo equipTypeVo1ListVo=new EquipTypeVo1ListVo();
         List<EquipTypeVo1> equipTypeVo1s = new ArrayList<>();
         List<EquipmentType> equipmentTypes = equipmentTypeService.selectAll();
         if (equipmentTypes.size() > 0) {
             for (EquipmentType equipmentType : equipmentTypes) {
                 EquipTypeVo1 equipTypeVo1 = new EquipTypeVo1();
-                equipTypeVo1.setEquipmentTypeCode(equipmentType.getEquipmentTypeCode());
-                equipTypeVo1.setEquipmentTypeName(equipmentType.getEquipmentTypeName());
+                equipTypeVo1.setCode(equipmentType.getEquipmentTypeCode());
+                equipTypeVo1.setName(equipmentType.getEquipmentTypeName());
                 //根据设备类型编码查询模板
                 MonitorPropertyTemplate monitorPropertyTemplate = new MonitorPropertyTemplate();
                 monitorPropertyTemplate.setEquipmentType(equipmentType.getEquipmentTypeCode());
@@ -165,16 +165,17 @@ public class MonitorPropertyTemplateBindServiceImpl implements MonitorPropertyTe
                 if (monitorPropertyTemplates.size() > 0) {
                     for (MonitorPropertyTemplate monitorPropertyTemplate1 : monitorPropertyTemplates) {
                         TemplateVo templateVo = new TemplateVo();
-                        templateVo.setEquipmentPropertyTemplateCode(monitorPropertyTemplate1.getEquipmentPropertyTemplateCode());
-                        templateVo.setEquipmentPropertyTemplateName(monitorPropertyTemplate1.getEquipmentPropertyTemplateName());
+                        templateVo.setCode(monitorPropertyTemplate1.getEquipmentPropertyTemplateCode());
+                        templateVo.setName(monitorPropertyTemplate1.getEquipmentPropertyTemplateName());
                         templateLists.add(templateVo);
                     }
                 }
-                equipTypeVo1.setTemplateLists(templateLists);
+                equipTypeVo1.setChildren(templateLists);
                 equipTypeVo1s.add(equipTypeVo1);
             }
         }
-        getEquipmentTypeTemplateLinkVo.setEquipTypeVo1s(equipTypeVo1s);
-        return WebResponse.success(getEquipmentTypeTemplateLinkVo);
+//        equipTypeVo1ListVo.setEquipTypeVo1List(equipTypeVo1s);
+//        getEquipmentTypeTemplateLinkVo.setChildren(equipTypeVo1s);
+        return WebResponse.success(equipTypeVo1s);
     }
 }

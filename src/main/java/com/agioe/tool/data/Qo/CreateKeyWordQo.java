@@ -3,17 +3,17 @@ package com.agioe.tool.data.Qo;
 import lombok.Data;
 
 @Data
-public class UpdateEquipmentInfo1Qo {
+public class CreateKeyWordQo {
     /**
      * 上层节点编码
      */
     private String parentNodeCode;
     /**
-     * 设备编码
+     * 属性类型
      */
-    private String equipmentCode;
+    private Integer equipmentPropertyType;
     /**
-     * 关键字
+     * keyword起始值
      */
-    private String keyword;
+    private Integer keyWordStart;
 }

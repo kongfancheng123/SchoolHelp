@@ -10,9 +10,9 @@ public class TemplateVo {
     /**
      * 监控信号模板编码
      */
-    private String equipmentPropertyTemplateCode;
+    private String code;
     /**
      * 监控信号模板名称
      */
-    private String equipmentPropertyTemplateName;
+    private String name;
 }

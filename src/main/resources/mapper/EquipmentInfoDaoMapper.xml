@@ -150,8 +150,8 @@
 
     </update>
 
-    <select id="selectAll" resultMap="BaseResultMap">
-        select * from dt_${parentNodeCode}_equipment_info
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="com.agioe.tool.data.entity.ParentNode">
+        select * from dt_${parentNode.parentNodeCode}_equipment_info
         order by id
     </select>
 

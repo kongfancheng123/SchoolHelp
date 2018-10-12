@@ -5,13 +5,11 @@ import com.agioe.tool.data.Qo.DeleteEquipmentType1Qo;
 import com.agioe.tool.data.Qo.UpdateEquipmentType1Qo;
 import com.agioe.tool.data.Vo.ShowAllEquipmentTypeVo;
 import com.agioe.tool.data.dao.EquipmentTypeDao;
-import com.agioe.tool.data.entity.EquipmentInfo;
-import com.agioe.tool.data.entity.EquipmentType;
-import com.agioe.tool.data.entity.MonitorPropertyTemplate;
-import com.agioe.tool.data.entity.WebResponse;
+import com.agioe.tool.data.entity.*;
 import com.agioe.tool.data.service.EquipmentInfoService;
 import com.agioe.tool.data.service.EquipmentTypeService;
 import com.agioe.tool.data.service.MonitorPropertyTemplateService;
+import com.agioe.tool.data.service.ParentNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +26,9 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
 
     @Autowired
     private EquipmentInfoService equipmentInfoService;
+
+    @Autowired
+    private ParentNodeService parentNodeService;
 
     @Override
     public Integer insertEquipmentType(EquipmentType equipmentType) {
@@ -111,9 +112,23 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
         List<EquipmentType> equipmentTypes = equipmentTypeDao.selectByEquipmentType(equipmentType);
         if (equipmentTypes.size() > 0) {
             EquipmentType equipmentType1 = equipmentTypes.get(0);
-            equipmentType1.setEquipmentTypeName(equipmentTypeName);
-            //更新
-            equipmentTypeDao.updateEquipmentType(equipmentType1);
+            //名字判断
+            if (equipmentType1.equals(equipmentTypeName)) {
+                return WebResponse.success();
+            } else {
+                //名字判重复
+                EquipmentType equipmentType2 = new EquipmentType();
+                equipmentType2.setEquipmentTypeName(equipmentTypeName);
+                List<EquipmentType> equipmentTypes1 = equipmentTypeDao.selectByEquipmentType(equipmentType2);
+                if (equipmentTypes1.size() > 0) {
+                    return WebResponse.error(400, "设备类型名已存在");
+                } else {
+                    //进行更新
+                    equipmentType1.setEquipmentTypeName(equipmentTypeName);
+                    //更新
+                    equipmentTypeDao.updateEquipmentType(equipmentType1);
+                }
+            }
         }
         return WebResponse.success();
     }
@@ -131,9 +146,16 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
         //确认是否是设备有关联
         EquipmentInfo equipmentInfo = new EquipmentInfo();
         equipmentInfo.setEquipmentType(equipmentTypeCode);
-        List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
-        if (equipmentInfos.size() > 0) {
-            return WebResponse.error(400, "有绑定关系,删除失败");
+        //获取所有上层节点
+        List<ParentNode> parentNodes = parentNodeService.selectAll();
+        if (parentNodes.size() > 0) {
+            for (ParentNode parentNode : parentNodes) {
+                equipmentInfo.setParentNodeCode(parentNode.getParentNodeCode());
+                List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
+                if (equipmentInfos.size() > 0) {
+                    return WebResponse.error(400, "与设备存在绑定关系,删除失败");
+                }
+            }
         }
         //删除
         equipmentTypeDao.deleteEquipmentType(equipmentTypeCode);

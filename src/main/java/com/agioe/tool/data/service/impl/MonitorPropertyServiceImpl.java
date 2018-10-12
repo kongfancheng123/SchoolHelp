@@ -7,13 +7,11 @@ import com.agioe.tool.data.Qo.UpdateMonitorProperty1Qo;
 import com.agioe.tool.data.Vo.GetPropertyByTypeAndTemplateVo;
 import com.agioe.tool.data.Vo.ShowAllMonitorPropertyVo;
 import com.agioe.tool.data.dao.MonitorPropertyDao;
-import com.agioe.tool.data.entity.EquipmentInfo;
-import com.agioe.tool.data.entity.MonitorProperty;
-import com.agioe.tool.data.entity.MonitorPropertyTemplateBind;
-import com.agioe.tool.data.entity.WebResponse;
+import com.agioe.tool.data.entity.*;
 import com.agioe.tool.data.service.EquipmentInfoService;
 import com.agioe.tool.data.service.MonitorPropertyService;
 import com.agioe.tool.data.service.MonitorPropertyTemplateBindService;
+import com.agioe.tool.data.service.ParentNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +28,9 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
 
     @Autowired
     private EquipmentInfoService equipmentInfoService;
+
+    @Autowired
+    private ParentNodeService parentNodeService;
 
     @Override
     public Integer insertMonitorProperty(MonitorProperty monitorProperty) {
@@ -137,15 +138,27 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
     public WebResponse updateMonitorProperty1(UpdateMonitorProperty1Qo updateMonitorProperty1Qo) {
         String equipmentPropertyCode = updateMonitorProperty1Qo.getEquipmentPropertyCode();
         String equipmentPropertyName = updateMonitorProperty1Qo.getEquipmentPropertyName();
-        Integer equipmentPropertyType = updateMonitorProperty1Qo.getEquipmentPropertyType();
+//        Integer equipmentPropertyType = updateMonitorProperty1Qo.getEquipmentPropertyType();
         MonitorProperty monitorProperty = new MonitorProperty();
         monitorProperty.setEquipmentPropertyCode(equipmentPropertyCode);
         List<MonitorProperty> monitorProperties = monitorPropertyDao.selectByMonitorProperty(monitorProperty);
         if (monitorProperties.size() > 0) {
             MonitorProperty monitorProperty1 = monitorProperties.get(0);
-            monitorProperty1.setEquipmentPropertyType(equipmentPropertyType);
-            monitorProperty1.setEquipmentPropertyName(equipmentPropertyName);
-            monitorPropertyDao.updateMonitorProperty(monitorProperty1);
+            //对名字做判断
+            if (monitorProperty1.getEquipmentPropertyName().equals(equipmentPropertyName)) {
+                return WebResponse.success();
+            } else {
+                //名字判重
+                MonitorProperty monitorProperty2 = new MonitorProperty();
+                monitorProperty2.setEquipmentPropertyName(equipmentPropertyName);
+                List<MonitorProperty> monitorProperties1 = monitorPropertyDao.selectByMonitorProperty(monitorProperty2);
+                if (monitorProperties1.size() > 0) {
+                    return WebResponse.error(400, "属性名称已存在");
+                } else {
+                    monitorProperty1.setEquipmentPropertyName(equipmentPropertyName);
+                    monitorPropertyDao.updateMonitorProperty(monitorProperty1);
+                }
+            }
         }
         return WebResponse.success();
     }
@@ -156,9 +169,16 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
         //判断与设备有无绑定关系
         EquipmentInfo equipmentInfo = new EquipmentInfo();
         equipmentInfo.setEquipmentPropertyCode(equipmentPropertyCode);
-        List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
-        if (equipmentInfos.size() > 0) {
-            return WebResponse.error(400, "与设备信息有绑定关系,删除失败");
+        //获取所有上层节点
+        List<ParentNode> parentNodes = parentNodeService.selectAll();
+        if (parentNodes.size() > 0) {
+            for (ParentNode parentNode : parentNodes) {
+                equipmentInfo.setParentNodeCode(parentNode.getParentNodeCode());
+                List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
+                if (equipmentInfos.size() > 0) {
+                    return WebResponse.error(400, "与设备存在绑定关系,删除失败");
+                }
+            }
         }
         //判断与属性模板是否有绑定关系
         MonitorPropertyTemplateBind monitorPropertyTemplateBind = new MonitorPropertyTemplateBind();

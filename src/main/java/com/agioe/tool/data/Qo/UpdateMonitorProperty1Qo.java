@@ -12,9 +12,9 @@ public class UpdateMonitorProperty1Qo {
      * 信号名称
      */
     private String equipmentPropertyName;
-    /**
-     * 信号类型
-     * 1-YC、2-YX、3-YK、4-YT、5-EXPLAN
-     */
-    private Integer equipmentPropertyType;
+//    /**
+//     * 信号类型
+//     * 1-YC、2-YX、3-YK、4-YT、5-EXPLAN
+//     */
+//    private Integer equipmentPropertyType;
 }

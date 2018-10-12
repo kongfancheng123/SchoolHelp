@@ -3,6 +3,7 @@ package com.agioe.tool.data.service;
 import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.CreateTableParam;
 import com.agioe.tool.data.entity.EquipmentInfo;
+import com.agioe.tool.data.entity.ParentNode;
 import com.agioe.tool.data.entity.WebResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -44,7 +45,7 @@ public interface EquipmentInfoService {
     /**
      * 查找所有设备信息
      */
-    List<EquipmentInfo> selectAll(String parentNodeCode);
+    List<EquipmentInfo> selectAll(ParentNode parentNode);
 
     /**
      * 根据id进行查找设备信息
@@ -130,5 +131,13 @@ public interface EquipmentInfoService {
      * @return
      */
     WebResponse getPropertyByTypeAndTemplateAndParentNode(GetPropertyByTypeAndTemplateAndParentNodeQo getPropertyByTypeAndTemplateAndParentNodeQo);
+
+    /**
+     * 创建keyword
+     *
+     * @param createKeyWordQo
+     * @return
+     */
+    WebResponse createKeyWord(@RequestBody CreateKeyWordQo createKeyWordQo);
 
 }

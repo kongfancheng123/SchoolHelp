@@ -123,5 +123,14 @@ public class EquipmentInfoController {
         return equipmentInfoService.getPropertyByTypeAndTemplateAndParentNode(getPropertyByTypeAndTemplateAndParentNodeQo);
     }
 
+    /**
+     * 生成keyword
+     */
+    @RequestMapping(value = "/createKeyWord", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse createKeyWord(@RequestBody CreateKeyWordQo createKeyWordQo) {
+        return equipmentInfoService.createKeyWord(createKeyWordQo);
+    }
+
 
 }

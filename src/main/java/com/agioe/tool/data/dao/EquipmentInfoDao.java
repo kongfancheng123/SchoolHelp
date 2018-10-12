@@ -2,6 +2,7 @@ package com.agioe.tool.data.dao;
 
 import com.agioe.tool.data.entity.CreateTableParam;
 import com.agioe.tool.data.entity.EquipmentInfo;
+import com.agioe.tool.data.entity.ParentNode;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -44,7 +45,7 @@ public interface EquipmentInfoDao {
     /**
      * 查找指定表所有设备信息
      */
-    List<EquipmentInfo> selectAll(String parentNodeCode);
+    List<EquipmentInfo> selectAll(@Param("parentNode") ParentNode parentNode);
 
     /**
      * 根据id进行查找设备信息
