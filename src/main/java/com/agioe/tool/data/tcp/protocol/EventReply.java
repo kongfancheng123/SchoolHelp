@@ -5,6 +5,8 @@ import com.agioe.tool.data.tcp.Message;
 import com.agioe.tool.data.tcp.protocol.factory.AbstractProtocol;
 import io.netty.buffer.ByteBuf;
 
+import java.util.List;
+
 import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.EVENT_REPLY;
 
 /**
@@ -29,14 +31,21 @@ public class EventReply extends AbstractProtocol {
         return new Message(header);
     }
 
-    @Override
-    public void reply(String ipAndPortString, Message msg) {
 
-    }
 
     @Override
     public void onAvailable(Message msg) {
 
+    }
+
+    @Override
+    public AbstractProtocol getReplyProtocol() {
+        return null;
+    }
+
+    @Override
+    public Message buildReplyMessage(int sessionId, List<Object> objectList) {
+        return null;
     }
 
     @Override

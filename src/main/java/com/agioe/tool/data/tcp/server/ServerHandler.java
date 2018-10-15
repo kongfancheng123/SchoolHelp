@@ -32,6 +32,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 获取远端机器IP
+     *
      * @param ctx
      * @return
      */
@@ -65,17 +66,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         byte type = buf.readByte();
         //协议匹配
         AbstractProtocol protocol = ProtocolFactory.buildProtocol(type);
-        //回应
-        Message replyMsg = new Message();
-        Header replyHeader = new Header();
-        //响应消息头的sessionId为请求报文的sessionId
-        replyHeader.setSessionId(sessionId);
-        replyMsg.setHeader(replyHeader);
-        String ipAndPortString = getIpAndPortString(ctx);
-        protocol.reply(ipAndPortString, replyMsg);
         //解码
         Header header = new Header(sessionId, length, type);
         Message msg = protocol.decode(buf, header);
+        //响应协议匹配
+        AbstractProtocol replyProtocol = protocol.getReplyProtocol();
+        Message replyMsg = protocol.buildReplyMessage(sessionId, msg.getBody());
+        //发送响应协议
+        replyProtocol.send(getIpAndPortString(ctx), replyMsg);
         //业务处理
         protocol.onAvailable(msg);
         buf.release();

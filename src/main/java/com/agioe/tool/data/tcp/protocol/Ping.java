@@ -5,6 +5,8 @@ import com.agioe.tool.data.tcp.Message;
 import com.agioe.tool.data.tcp.protocol.factory.AbstractProtocol;
 import io.netty.buffer.ByteBuf;
 
+import java.util.List;
+
 import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.PING;
 
 /**
@@ -32,14 +34,25 @@ public class Ping extends AbstractProtocol {
         return new Message(header);
     }
 
-    @Override
-    public void reply(String ipAndPortString, Message msg) {
-        new Pong().send(ipAndPortString, msg);
-    }
+
 
     @Override
     public void onAvailable(Message msg) {
 
+    }
+
+    @Override
+    public AbstractProtocol getReplyProtocol() {
+        return new Pong();
+    }
+
+    @Override
+    public Message buildReplyMessage(int sessionId, List<Object> objectList) {
+        Message replyMsg = new Message();
+        Header header = new Header();
+        header.setSessionId(sessionId);
+        replyMsg.setHeader(header);
+        return replyMsg;
     }
 
     @Override

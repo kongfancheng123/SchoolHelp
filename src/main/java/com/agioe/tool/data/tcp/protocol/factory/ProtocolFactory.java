@@ -51,4 +51,39 @@ public class ProtocolFactory {
         }
         return protocol;
     }
+
+
+    /**
+     * 获取协议匹配的响应协议
+     *
+     * @param type
+     * @return
+     */
+    public static AbstractProtocol getReplyProtocol(byte type) {
+        AbstractProtocol protocol = null;
+        switch (type) {
+            case PING:
+                protocol = new Pong();
+                break;
+            case PONG:
+                break;
+            case DATA_SEND:
+                break;
+            case DATA_REPLY:
+                break;
+            case EVENT_SEND:
+                break;
+            case EVENT_REPLY:
+                break;
+            case CONTROL_SEND:
+                protocol = new ControlReply();
+                break;
+            case CONTROL_REPLY:
+                break;
+            default:
+                break;
+        }
+        return protocol;
+    }
+
 }

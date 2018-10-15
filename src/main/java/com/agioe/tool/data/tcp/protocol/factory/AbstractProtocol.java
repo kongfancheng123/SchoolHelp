@@ -4,6 +4,8 @@ import com.agioe.tool.data.tcp.Header;
 import com.agioe.tool.data.tcp.Message;
 import io.netty.buffer.ByteBuf;
 
+import java.util.List;
+
 /**
  * 协议抽象类
  *
@@ -46,11 +48,20 @@ public abstract class AbstractProtocol {
     public abstract Message decode(ByteBuf bodyBuf, Header header);
 
     /**
-     * 通信应答
+     * 获取响应协议
      *
-     * @param msg
+     * @return
      */
-    public abstract void reply(String ipAndPortString, Message msg);
+    public abstract AbstractProtocol getReplyProtocol();
+
+    /**
+     * 构建响应消息
+     *
+     * @param sessionId
+     * @param objectList
+     * @return
+     */
+    public abstract Message buildReplyMessage(int sessionId, List<Object> objectList);
 
     /**
      * 消息经过解码后执行的操作

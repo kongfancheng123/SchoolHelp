@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
 import static com.agioe.tool.data.tcp.Header.LENGTH_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
@@ -79,14 +80,21 @@ public class DataSend extends AbstractProtocol {
         return null;
     }
 
-    @Override
-    public void reply(String ipAndPortString, Message msg) {
 
-    }
 
     @Override
     public void onAvailable(Message msg) {
 
+    }
+
+    @Override
+    public AbstractProtocol getReplyProtocol() {
+        return null;
+    }
+
+    @Override
+    public Message buildReplyMessage(int sessionId, List<Object> objectList) {
+        return null;
     }
 
     @Override
