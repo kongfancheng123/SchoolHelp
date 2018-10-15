@@ -83,8 +83,10 @@ public class ControlSend extends AbstractProtocol {
     }
 
     @Override
-    public void reply(Message msg) {
+    public void reply(String ipAndPortString, Message msg) {
 
+
+        new ControlReply().send(ipAndPortString, msg);
     }
 
     @Override
@@ -95,7 +97,7 @@ public class ControlSend extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
+    public void send(String ipAndPortString, Message msg) {
 
     }
 }

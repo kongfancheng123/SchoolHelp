@@ -30,7 +30,7 @@ public class EventReply extends AbstractProtocol {
     }
 
     @Override
-    public void reply(Message msg) {
+    public void reply(String ipAndPortString, Message msg) {
 
     }
 
@@ -40,7 +40,7 @@ public class EventReply extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
+    public void send(String ipAndPortString, Message msg) {
 
     }
 }

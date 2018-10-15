@@ -52,7 +52,34 @@ public class Worker implements Runnable {
      */
     public static void send(ByteBuf buf) {
         logger.info("准备发送数据:{}", ByteBufUtil.hexDump(buf));
-        clientMap.forEach((k, v) -> v.writeAndFlush(buf));
+        clientMap.forEach((k, v) -> {
+            ByteBuf copyBuf = buf.copy();
+            v.writeAndFlush(copyBuf);
+        });
+    }
+
+    /**
+     * 单播
+     *
+     * @param ipAndPortString
+     * @param buf
+     */
+    public static void unicast(String ipAndPortString, ByteBuf buf) {
+        logger.info("准备单播数据:{}", ByteBufUtil.hexDump(buf));
+        clientMap.get(ipAndPortString).writeAndFlush(buf);
+    }
+
+    /**
+     * 广播
+     *
+     * @param buf
+     */
+    public static void broadcast(ByteBuf buf) {
+        logger.info("准备广播数据:{}", ByteBufUtil.hexDump(buf));
+        clientMap.forEach((k, v) -> {
+            ByteBuf copyBuf = buf.copy();
+            v.writeAndFlush(copyBuf);
+        });
     }
 
     @Override

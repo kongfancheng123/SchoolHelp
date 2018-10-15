@@ -18,14 +18,25 @@ import org.slf4j.LoggerFactory;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static String getRemoteAddress(ChannelHandlerContext ctx) {
-        String socketString = "";
-        socketString = ctx.channel().remoteAddress().toString();
-        return socketString;
+    /**
+     * 获取远端机器IP和端口
+     *
+     * @param ctx
+     * @return
+     */
+    public static String getIpAndPortString(ChannelHandlerContext ctx) {
+        String socketString = ctx.channel().remoteAddress().toString();
+        String ipAndPortString = socketString.substring(1, socketString.length());
+        return ipAndPortString;
     }
 
+    /**
+     * 获取远端机器IP
+     * @param ctx
+     * @return
+     */
     public static String getIPString(ChannelHandlerContext ctx) {
-        String ipString = "";
+        String ipString;
         String socketString = ctx.channel().remoteAddress().toString();
         int colonAt = socketString.indexOf(":");
         ipString = socketString.substring(1, colonAt);
@@ -34,13 +45,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("客户端" + getRemoteAddress(ctx) + "接入连接");
-        Worker.getClientMap().put(getIPString(ctx), ctx.channel());
+        logger.info("客户端" + getIpAndPortString(ctx) + "接入连接");
+        Worker.getClientMap().put(getIpAndPortString(ctx), ctx.channel());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        Worker.getClientMap().remove(getIPString(ctx));
+        Worker.getClientMap().remove(getIpAndPortString(ctx));
         ctx.close();
     }
 
@@ -60,7 +71,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         //响应消息头的sessionId为请求报文的sessionId
         replyHeader.setSessionId(sessionId);
         replyMsg.setHeader(replyHeader);
-        protocol.reply(replyMsg);
+        String ipAndPortString = getIpAndPortString(ctx);
+        protocol.reply(ipAndPortString, replyMsg);
         //解码
         Header header = new Header(sessionId, length, type);
         Message msg = protocol.decode(buf, header);

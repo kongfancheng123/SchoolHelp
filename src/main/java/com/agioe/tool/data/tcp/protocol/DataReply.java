@@ -2,7 +2,9 @@ package com.agioe.tool.data.tcp.protocol;
 
 import com.agioe.tool.data.tcp.Header;
 import com.agioe.tool.data.tcp.Message;
+import com.agioe.tool.data.tcp.MessageDelayQueue;
 import com.agioe.tool.data.tcp.protocol.factory.AbstractProtocol;
+import com.agioe.tool.data.tcp.server.Server;
 import io.netty.buffer.ByteBuf;
 
 import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.DATA_REPLY;
@@ -30,7 +32,7 @@ public class DataReply extends AbstractProtocol {
     }
 
     @Override
-    public void reply(Message msg) {
+    public void reply(String ipAndPortString, Message msg) {
 
     }
 
@@ -40,7 +42,13 @@ public class DataReply extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
-
+    public void send(String ipAndPortString, Message msg) {
+        msg.getHeader().setType(getType());
+        Server.unicast(ipAndPortString, encode(msg));
+        //当前发送时间
+        msg.setTime(System.currentTimeMillis());
+        //当前发送次数+1
+        msg.setNumber(msg.getNumber() + 1);
+        MessageDelayQueue.add(msg);
     }
 }

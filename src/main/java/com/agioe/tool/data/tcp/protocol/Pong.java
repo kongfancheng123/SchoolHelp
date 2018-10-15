@@ -48,7 +48,7 @@ public class Pong extends AbstractProtocol {
     }
 
     @Override
-    public void reply(Message msg) {
+    public void reply(String ipAndPortString, Message msg) {
 
     }
 
@@ -58,8 +58,8 @@ public class Pong extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
-        Server.send(encode(msg));
+    public void send(String ipAndPortString, Message msg) {
+        Server.unicast(ipAndPortString, encode(msg));
         //当前发送时间
         msg.setTime(System.currentTimeMillis());
         //当前发送次数+1

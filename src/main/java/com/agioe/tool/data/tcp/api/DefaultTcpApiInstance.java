@@ -79,7 +79,7 @@ public class DefaultTcpApiInstance implements TcpApi {
         //匹配协议
         AbstractProtocol protocol = ProtocolFactory.buildProtocol(message.getHeader().getType());
         //发送
-        protocol.send(message);
+        protocol.send(null, message);
     }
 
 }

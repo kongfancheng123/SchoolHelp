@@ -88,7 +88,7 @@ public class EventSend extends AbstractProtocol {
     }
 
     @Override
-    public void reply(Message msg) {
+    public void reply(String ipAndPortString, Message msg) {
 
     }
 
@@ -98,9 +98,9 @@ public class EventSend extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
+    public void send(String ipAndPortString, Message msg) {
         msg.getHeader().setType(getType());
-        Server.send(encode(msg));
+        Server.broadcast(encode(msg));
         //当前发送时间
         msg.setTime(System.currentTimeMillis());
         //当前发送次数+1

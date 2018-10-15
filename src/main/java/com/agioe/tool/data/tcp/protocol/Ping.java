@@ -33,8 +33,8 @@ public class Ping extends AbstractProtocol {
     }
 
     @Override
-    public void reply(Message msg) {
-        new Pong().send(msg);
+    public void reply(String ipAndPortString, Message msg) {
+        new Pong().send(ipAndPortString, msg);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class Ping extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
+    public void send(String ipAndPortString, Message msg) {
 
     }
 }
