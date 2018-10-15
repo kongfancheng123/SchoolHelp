@@ -44,9 +44,14 @@ module.exports = {
   devServer: {
     port: 9000, // 端口
     host: '0.0.0.0', // IP
-    open: true // 自动打开浏览器
+    open: true, // 自动打开浏览器
+    proxy: 'http://192.168.52.50:8080'
     // proxy: {
-    //   '/api': 'http://api.zhuishushenqi.com'
+    //   '/api': {
+    //     target: 'http://192.168.52.50:8080',
+    //     // ws: true,
+    //     changeOrigin: true
+    //   }
     // }
   }
 }

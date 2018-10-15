@@ -3,7 +3,8 @@ import axios from 'axios'
 
 // 创建实例，并配置
 const instance = axios.create({
-  baseURL: 'http://192.168.52.50:8080',
+  // baseURL: 'http://192.168.52.50:8080',
+  baseURL: '',
   timeout: 5000,
   responseType: 'json',
   headers: {

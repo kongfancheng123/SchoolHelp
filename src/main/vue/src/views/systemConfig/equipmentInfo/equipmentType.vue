@@ -116,7 +116,7 @@
                    size="small">取 消</el-button>
         <el-button type="primary"
                    size="small"
-                   @click="removeSumit">确 定</el-button>
+                   @click="removeSumit('formDelete')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -177,6 +177,59 @@ export default {
     },
 
     /* 
+      数据校验是否重复 
+
+      01: 400 说明数据库存在, 相同数据
+      02：vm.$refs[formName].resetFields() 重置表单
+      03:
+        response: 后端返回数据
+        formName: 表单名
+        dialogFlag : 被关闭的弹层flag
+        sucessMsg: 成功提示文字
+    */
+    check(response, formName, dialogFlag, sucessMsg) {
+      let vm = this
+
+      response.data.code === 400
+        ? vm.$message.error(response.data.message)
+        : vm.$message.success(sucessMsg)
+
+      setTimeout(() => {
+        // 删除表单不需要重置
+        if (formName !== 'formDelete') {
+          vm.$refs[formName].resetFields()
+        }
+      }, 200)
+
+      vm.dialog[dialogFlag] = false
+      vm.getAllData()
+    },
+
+    /*
+      后端请求
+      01: 参数解释：
+          urlName：调用的那个接口
+          formName：表单名字
+          dialogFlag：关闭的弹层falg
+          sucessMsg：成功提示文字
+          failMsg：失败提示文字
+      02：
+      vm.check()校验数据库重复，返回提示
+    */
+    httpRequst(urlName, formName, dialogFlag, sucessMsg, failMsg) {
+      let vm = this
+      AJAX[urlName]
+        .r(vm[formName])
+        .then(response => {
+          vm.check(response, formName, dialogFlag, sucessMsg)
+        })
+        .catch(error => {
+          vm.$message.error(failMsg)
+          console.log(error)
+        })
+    },
+
+    /* 
       增加
       01: addEvent 增加弹窗
       02：addSumit 增加弹窗表格提交
@@ -189,17 +242,7 @@ export default {
       let vm = this
       vm.$refs[formName].validate(valid => {
         if (valid) {
-          vm.dialog.addFlag = false
-          AJAX.addData
-            .r(vm.formAdd)
-            .then(response => {
-              vm.$message.success('增加成功')
-              vm.getAllData()
-            })
-            .catch(error => {
-              vm.$message.error('增加失败')
-              console.log(error)
-            })
+          vm.httpRequst('addData', formName, 'addFlag', '增加成功', '增加失败')
         } else {
           return false
         }
@@ -221,17 +264,13 @@ export default {
       let vm = this
       vm.$refs[formName].validate(valid => {
         if (valid) {
-          vm.dialog.editFlag = false
-          AJAX.editData
-            .r(vm.formEdit)
-            .then(response => {
-              vm.$message.success('修改成功')
-              vm.getAllData()
-            })
-            .catch(error => {
-              vm.$message.error('修改失败')
-              console.log(error)
-            })
+          vm.httpRequst(
+            'editData',
+            formName,
+            'editFlag',
+            '修改成功',
+            '修改失败'
+          )
         } else {
           return false
         }
@@ -248,19 +287,9 @@ export default {
       vm.dialog.delFlag = true
       vm.formDelete.equipmentTypeCode = row.equipmentTypeCode
     },
-    removeSumit() {
+    removeSumit(formName) {
       let vm = this
-      vm.dialog.delFlag = false
-      AJAX.deleteData
-        .r(vm.formDelete)
-        .then(response => {
-          vm.$message.success('删除成功')
-          vm.getAllData()
-        })
-        .catch(error => {
-          vm.$message.error('删除失败')
-          console.log(error)
-        })
+      vm.httpRequst('deleteData', formName, 'delFlag', '删除成功', '删除失败')
     }
   },
 
