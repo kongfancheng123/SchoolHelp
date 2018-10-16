@@ -1,8 +1,6 @@
 package com.agioe.tool.data.controller;
 
-import com.agioe.tool.data.Qo.AddEquipmentTypeQo;
-import com.agioe.tool.data.Qo.DeleteEquipmentType1Qo;
-import com.agioe.tool.data.Qo.UpdateEquipmentType1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.WebResponse;
 import com.agioe.tool.data.service.EquipmentTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,17 @@ public class EquipmentTypeController {
     @ResponseBody
     public WebResponse showAllEquipmentType() {
         return equipmentTypeService.showAllEquipmentType();
+    }
+
+    /**
+     * 分页展示设备类型
+     *
+     * @return
+     */
+    @RequestMapping(value = "/showPageEquipmentType", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse showPageEquipmentType(@RequestBody PageQo pageQo) {
+        return equipmentTypeService.showPageEquipmentType(pageQo);
     }
 
     /**
@@ -61,6 +70,33 @@ public class EquipmentTypeController {
     public WebResponse deleteEquipmentType1(@RequestBody DeleteEquipmentType1Qo deleteEquipmentType1Qo) {
         return equipmentTypeService.deleteEquipmentType1(deleteEquipmentType1Qo);
     }
+
+    /**
+     * 导出设备类型
+     *
+     * @param exportExcelEquipmentTypeQo
+     * @return
+     */
+    @RequestMapping(value = "/exportExcelEquipmentType", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse exportExcelEquipmentType(@RequestBody ExportExcelEquipmentTypeQo exportExcelEquipmentTypeQo) throws Exception {
+        return equipmentTypeService.exportExcelEquipmentType(exportExcelEquipmentTypeQo);
+    }
+
+    /**
+     * 导入设备类型
+     *
+     * @param importExcelEquipmentTypeQo
+     * @return
+     */
+    @RequestMapping(value = "/importExcelEquipmentType", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse importExcelEquipmentType(@RequestBody ImportExcelEquipmentTypeQo importExcelEquipmentTypeQo) throws Exception {
+        return equipmentTypeService.importExcelEquipmentType(importExcelEquipmentTypeQo);
+    }
+
+
+
 
 
 }

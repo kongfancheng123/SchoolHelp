@@ -24,6 +24,17 @@ public class EquipmentInfoController {
     }
 
     /**
+     * 分页展示设备
+     *
+     * @return
+     */
+    @RequestMapping(value = "/showPageEquipmentInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse showPageEquipmentInfo(@RequestBody PageQo pageQo) {
+        return equipmentInfoService.showPageEquipmentInfo(pageQo);
+    }
+
+    /**
      * 添加设备
      *
      * @param addEquipmentInfo1Qo
@@ -130,6 +141,30 @@ public class EquipmentInfoController {
     @ResponseBody
     public WebResponse createKeyWord(@RequestBody CreateKeyWordQo createKeyWordQo) {
         return equipmentInfoService.createKeyWord(createKeyWordQo);
+    }
+
+    /**
+     * 导出设备信息表
+     *
+     * @param exportExcelEquipmentInfoQo
+     * @return
+     */
+    @RequestMapping(value = "/exportExcelEquipmentInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse exportExcelEquipmentInfo(@RequestBody ExportExcelEquipmentInfoQo exportExcelEquipmentInfoQo) throws Exception {
+        return equipmentInfoService.exportExcelEquipmentInfo(exportExcelEquipmentInfoQo);
+    }
+
+    /**
+     * 导入设备信息表
+     *
+     * @param importExcelEquipmentInfoQo
+     * @return
+     */
+    @RequestMapping(value = "/importExcelEquipmentInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse importExcelEquipmentInfo(@RequestBody ImportExcelEquipmentInfoQo importExcelEquipmentInfoQo) throws Exception {
+        return equipmentInfoService.importExcelEquipmentInfo(importExcelEquipmentInfoQo);
     }
 
 

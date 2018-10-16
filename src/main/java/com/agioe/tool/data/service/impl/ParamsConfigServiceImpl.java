@@ -1,6 +1,7 @@
 package com.agioe.tool.data.service.impl;
 
 import com.agioe.tool.data.Qo.UpdateOrAddParamsConfigQo;
+import com.agioe.tool.data.Vo.GetParamsConfigVo;
 import com.agioe.tool.data.dao.ParamsConfigDao;
 import com.agioe.tool.data.entity.ParamsConfig;
 import com.agioe.tool.data.entity.WebResponse;
@@ -69,5 +70,17 @@ public class ParamsConfigServiceImpl implements ParamsConfigService {
             paramsConfigDao.insertParamsConfig(paramsConfig);
         }
         return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse getParamsConfig() {
+        GetParamsConfigVo getParamsConfigVo = new GetParamsConfigVo();
+        List<ParamsConfig> paramsConfigs = paramsConfigDao.selectAll();
+        if (paramsConfigs.size() > 0) {
+            ParamsConfig paramsConfig = paramsConfigs.get(0);
+            getParamsConfigVo.setAlarmEnable(paramsConfig.getAlarmEnable() == null ? 1 : paramsConfig.getAlarmEnable());
+            getParamsConfigVo.setDataEnable(paramsConfig.getDataEnable() == null ? 1 : paramsConfig.getDataEnable());
+        }
+        return WebResponse.success(getParamsConfigVo);
     }
 }

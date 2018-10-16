@@ -1,8 +1,10 @@
 package com.agioe.tool.data.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class CreateTableParam {
     private String tableName;
     private String seqName;

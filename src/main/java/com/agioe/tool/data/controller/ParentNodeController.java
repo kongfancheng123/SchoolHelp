@@ -1,8 +1,6 @@
 package com.agioe.tool.data.controller;
 
-import com.agioe.tool.data.Qo.AddParentNode1Qo;
-import com.agioe.tool.data.Qo.DeleteParentNode1Qo;
-import com.agioe.tool.data.Qo.UpdateParentNode1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.WebResponse;
 import com.agioe.tool.data.service.ParentNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,17 @@ public class ParentNodeController {
     @ResponseBody
     public WebResponse showAllParentNode() {
         return parentNodeService.showAllParentNode();
+    }
+
+    /**
+     * 分页展示上层节点
+     *
+     * @return
+     */
+    @RequestMapping(value = "/showPageParentNode", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse showPageParentNode(@RequestBody PageQo pageQo) {
+        return parentNodeService.showPageParentNode(pageQo);
     }
 
     /**
@@ -59,6 +68,30 @@ public class ParentNodeController {
     @ResponseBody
     public WebResponse deleteParentNode1(@RequestBody DeleteParentNode1Qo deleteParentNode1Qo) {
         return parentNodeService.deleteParentNode1(deleteParentNode1Qo);
+    }
+
+    /**
+     * 导出上层节点表
+     *
+     * @param exportExcelParentNodeQo
+     * @return
+     */
+    @RequestMapping(value = "/exportExcelParentNode", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse exportExcelParentNode(@RequestBody ExportExcelParentNodeQo exportExcelParentNodeQo) throws Exception {
+        return parentNodeService.exportExcelParentNode(exportExcelParentNodeQo);
+    }
+
+    /**
+     * 导入上层节点表
+     *
+     * @param importExcelParentNodeQo
+     * @return
+     */
+    @RequestMapping(value = "/importExcelParentNode", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse importExcelParentNode(@RequestBody ImportExcelParentNodeQo importExcelParentNodeQo) throws Exception {
+        return parentNodeService.importExcelParentNode(importExcelParentNodeQo);
     }
 
 

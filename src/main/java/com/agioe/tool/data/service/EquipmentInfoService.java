@@ -64,6 +64,14 @@ public interface EquipmentInfoService {
     WebResponse showAllEquipmentInfo();
 
     /**
+     * 分页展示设备
+     *
+     * @param pageQo
+     * @return
+     */
+    WebResponse showPageEquipmentInfo(PageQo pageQo);
+
+    /**
      * 新增设备
      *
      * @param addEquipmentInfo1Qo
@@ -139,5 +147,23 @@ public interface EquipmentInfoService {
      * @return
      */
     WebResponse createKeyWord(@RequestBody CreateKeyWordQo createKeyWordQo);
+
+    /**
+     * 导出设备信息表
+     *
+     * @param exportExcelEquipmentInfoQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse exportExcelEquipmentInfo(ExportExcelEquipmentInfoQo exportExcelEquipmentInfoQo) throws Exception;
+
+    /**
+     * 导入设备信息表
+     *
+     * @param importExcelEquipmentInfoQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse importExcelEquipmentInfo(ImportExcelEquipmentInfoQo importExcelEquipmentInfoQo) throws Exception;
 
 }

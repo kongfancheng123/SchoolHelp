@@ -1,11 +1,13 @@
 package com.agioe.tool.data.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 设备类型
  */
-@Data
+@Getter
+@Setter
 public class EquipmentType extends BaseEntity {
     /**
      * 设备类型编码

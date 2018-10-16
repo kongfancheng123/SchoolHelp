@@ -1,6 +1,7 @@
 package com.agioe.tool.data.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
@@ -8,7 +9,8 @@ import java.util.Date;
  * @author yshen
  * @since 2018/9/30
  */
-@Data
+@Getter
+@Setter
 public abstract class BaseEntity {
     /**
      * id

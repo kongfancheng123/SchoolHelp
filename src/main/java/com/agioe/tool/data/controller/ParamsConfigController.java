@@ -24,4 +24,16 @@ public class ParamsConfigController {
         return paramsConfigService.updateOrAddParamsConfig(updateOrAddParamsConfigQo);
     }
 
+    /**
+     * 获取配置信息
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/getParamsConfig", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse getParamsConfig() {
+        return paramsConfigService.getParamsConfig();
+    }
+
 }

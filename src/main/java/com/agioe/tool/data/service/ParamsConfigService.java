@@ -35,4 +35,11 @@ public interface ParamsConfigService {
      * @return
      */
     WebResponse updateOrAddParamsConfig(UpdateOrAddParamsConfigQo updateOrAddParamsConfigQo);
+
+    /**
+     * 获取最新配置信息
+     *
+     * @return
+     */
+    WebResponse getParamsConfig();
 }

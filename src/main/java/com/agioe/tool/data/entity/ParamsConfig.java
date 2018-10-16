@@ -1,13 +1,15 @@
 package com.agioe.tool.data.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
 /**
  * 参数配置
  */
-@Data
+@Getter
+@Setter
 public class ParamsConfig {
     /**
      * id

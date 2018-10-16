@@ -1,17 +1,13 @@
 package com.agioe.tool.data.service.impl;
 
-import com.agioe.tool.data.Qo.AddMonitorProperty1Qo;
-import com.agioe.tool.data.Qo.DeleteMonitorProperty1Qo;
-import com.agioe.tool.data.Qo.GetPropertyByTypeAndTemplateQo;
-import com.agioe.tool.data.Qo.UpdateMonitorProperty1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.Vo.GetPropertyByTypeAndTemplateVo;
 import com.agioe.tool.data.Vo.ShowAllMonitorPropertyVo;
 import com.agioe.tool.data.dao.MonitorPropertyDao;
 import com.agioe.tool.data.entity.*;
-import com.agioe.tool.data.service.EquipmentInfoService;
-import com.agioe.tool.data.service.MonitorPropertyService;
-import com.agioe.tool.data.service.MonitorPropertyTemplateBindService;
-import com.agioe.tool.data.service.ParentNodeService;
+import com.agioe.tool.data.page.PageBean;
+import com.agioe.tool.data.service.*;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +27,9 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
 
     @Autowired
     private ParentNodeService parentNodeService;
+
+    @Autowired
+    private ExcelService excelService;
 
     @Override
     public Integer insertMonitorProperty(MonitorProperty monitorProperty) {
@@ -104,6 +103,28 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
             }
         }
         return WebResponse.success(showAllMonitorPropertyVos);
+    }
+
+    @Override
+    public WebResponse showPageMonitorProperty(PageQo pageQo) {
+        Integer pageNow = pageQo.getPageNow();
+        Integer pageSize = pageQo.getPageSize();
+        Integer countNums = monitorPropertyDao.selectAll().size();
+        List<ShowAllMonitorPropertyVo> showAllMonitorPropertyVos = new ArrayList<>();
+        PageHelper.startPage(pageNow, pageSize);
+        List<MonitorProperty> monitorProperties = monitorPropertyDao.selectAll();
+        if (monitorProperties.size() > 0) {
+            for (MonitorProperty monitorProperty : monitorProperties) {
+                ShowAllMonitorPropertyVo showAllMonitorPropertyVo = new ShowAllMonitorPropertyVo();
+                showAllMonitorPropertyVo.setEquipmentPropertyCode(monitorProperty.getEquipmentPropertyCode());
+                showAllMonitorPropertyVo.setEquipmentPropertyName(monitorProperty.getEquipmentPropertyName());
+                showAllMonitorPropertyVo.setEquipmentPropertyType(monitorProperty.getEquipmentPropertyType());
+                showAllMonitorPropertyVos.add(showAllMonitorPropertyVo);
+            }
+        }
+        PageBean<ShowAllMonitorPropertyVo> pageData = new PageBean<>(pageNow, pageSize, countNums);
+        pageData.setItems(showAllMonitorPropertyVos);
+        return WebResponse.success(pageData);
     }
 
     @Override
@@ -189,6 +210,72 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
         }
         //删除
         monitorPropertyDao.deleteMonitorProperty(equipmentPropertyCode);
+        return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse exportExcelMonitorProperty(ExportExcelMonitorPropertyQo exportExcelMonitorPropertyQo) throws Exception {
+        String filePath = exportExcelMonitorPropertyQo.getFilePath();
+        String title = "设备监控信号表";
+        Integer colunmNumber = 4;
+        List<MonitorProperty> monitorProperties = monitorPropertyDao.selectAll();
+        String[][] strings = new String[monitorProperties.size() + 1][4];
+        strings[0][0] = "序号";
+        strings[0][1] = "属性编码";
+        strings[0][2] = "属性名称";
+        strings[0][3] = "属性类型";
+        for (int c = 1; c < strings.length; c++) {
+            strings[c][0] = String.valueOf(c);
+            strings[c][1] = monitorProperties.get(c - 1).getEquipmentPropertyCode();
+            strings[c][2] = monitorProperties.get(c - 1).getEquipmentPropertyName();
+            Integer equipmentPropertyType = monitorProperties.get(c - 1).getEquipmentPropertyType();
+            if (equipmentPropertyType == 0) {
+                strings[c][3] = "遥测";
+            } else if (equipmentPropertyType == 1) {
+                strings[c][3] = "遥信";
+            } else if (equipmentPropertyType == 2) {
+                strings[c][3] = "遥控";
+            } else if (equipmentPropertyType == 3) {
+                strings[c][3] = "遥调";
+            } else {
+                strings[c][3] = "说明";
+            }
+        }
+        excelService.exportExcel(filePath, strings, title, colunmNumber);
+        return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse importExcelMonitorProperty(ImportExcelMonitorPropertyQo importExcelMonitorPropertyQo) throws Exception {
+        String filePath = importExcelMonitorPropertyQo.getFilePath();
+        String[][] strings = excelService.importExcel(filePath);
+        if (strings.length > 0) {
+            for (String[] strings1 : strings) {
+                String equipmentPropertyCode = strings1[0];
+                String equipmentPropertyName = strings1[1];
+                String equipmentPropertyTypeName = strings1[2];
+                Integer equipmentPropertyType = 0;
+                if (equipmentPropertyTypeName.equals("遥测")) {
+                    equipmentPropertyType = 0;
+                } else if (equipmentPropertyTypeName.equals("遥信")) {
+                    equipmentPropertyType = 1;
+                } else if (equipmentPropertyTypeName.equals("遥控")) {
+                    equipmentPropertyType = 2;
+                } else if (equipmentPropertyTypeName.equals("遥调")) {
+                    equipmentPropertyType = 3;
+                } else if (equipmentPropertyTypeName.equals("说明")) {
+                    equipmentPropertyType = 4;
+                } else {
+                    equipmentPropertyType = 0;
+                }
+                MonitorProperty monitorProperty = new MonitorProperty();
+                monitorProperty.setEquipmentPropertyCode(equipmentPropertyCode);
+                monitorProperty.setEquipmentPropertyName(equipmentPropertyName);
+                monitorProperty.setEquipmentPropertyType(equipmentPropertyType);
+                //todo:进行原数据的判断
+                monitorPropertyDao.insertMonitorProperty(monitorProperty);
+            }
+        }
         return WebResponse.success();
     }
 

@@ -1,8 +1,6 @@
 package com.agioe.tool.data.service;
 
-import com.agioe.tool.data.Qo.AddParentNode1Qo;
-import com.agioe.tool.data.Qo.DeleteParentNode1Qo;
-import com.agioe.tool.data.Qo.UpdateParentNode1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.ParentNode;
 import com.agioe.tool.data.entity.WebResponse;
 
@@ -59,6 +57,14 @@ public interface ParentNodeService {
     WebResponse showAllParentNode();
 
     /**
+     * 分页展示上层节点
+     *
+     * @param pageQo
+     * @return
+     */
+    WebResponse showPageParentNode(PageQo pageQo);
+
+    /**
      * 新增加上层节点
      *
      * @param addParentNode1Qo
@@ -78,4 +84,22 @@ public interface ParentNodeService {
      * 删除上层节点
      */
     WebResponse deleteParentNode1(DeleteParentNode1Qo deleteParentNode1Qo);
+
+    /**
+     * 导出上层节点表
+     *
+     * @param exportExcelParentNodeQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse exportExcelParentNode(ExportExcelParentNodeQo exportExcelParentNodeQo) throws Exception;
+
+    /**
+     * 导入上层节点表
+     *
+     * @param importExcelParentNodeQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse importExcelParentNode(ImportExcelParentNodeQo importExcelParentNodeQo) throws Exception;
 }

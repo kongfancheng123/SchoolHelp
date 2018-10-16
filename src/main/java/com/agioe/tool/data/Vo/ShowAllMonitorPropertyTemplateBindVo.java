@@ -9,13 +9,21 @@ public class ShowAllMonitorPropertyTemplateBindVo {
      */
     private Integer id;
     /**
-     * 设备类型
+     * 设备类型名称
      */
     private String equipmentTypeName;
+    /**
+     * 设备类型编码
+     */
+    private String equipmentType;
     /**
      * 信号模板名称
      */
     private String equipmentPropertyTemplateName;
+    /**
+     * 信号模板编码
+     */
+    private String equipmentPropertyTemplateCode;
     /**
      * 信号编码
      */
@@ -25,7 +33,7 @@ public class ShowAllMonitorPropertyTemplateBindVo {
      */
     private String equipmentPropertyName;
     /**
-     * 信号模板编码
+     * 信号类型
      */
     private Integer equipmentPropertyType;
 

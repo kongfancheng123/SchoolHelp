@@ -1,8 +1,6 @@
 package com.agioe.tool.data.controller;
 
-import com.agioe.tool.data.Qo.AddMonitorPropertyTemplateBind1Qo;
-import com.agioe.tool.data.Qo.DeleteMonitorPropertyTemplateBind1Qo;
-import com.agioe.tool.data.Qo.UpdateMonitorPropertyTemplateBind1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.WebResponse;
 import com.agioe.tool.data.service.MonitorPropertyTemplateBindService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,17 @@ public class MonitorPropertyTemplateBindController {
     @ResponseBody
     public WebResponse showAllMonitorPropertyTemplateBind() {
         return monitorPropertyTemplateBindService.showAllMonitorPropertyTemplateBind();
+    }
+
+    /**
+     * 分页展示监控模板关联
+     *
+     * @return
+     */
+    @RequestMapping(value = "/showPageMonitorPropertyTemplateBind", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse showPageMonitorPropertyTemplateBind(@RequestBody PageQo pageQo) {
+        return monitorPropertyTemplateBindService.showPageMonitorPropertyTemplateBind(pageQo);
     }
 
     /**
@@ -75,5 +84,29 @@ public class MonitorPropertyTemplateBindController {
         return monitorPropertyTemplateBindService.getEquipmentTypeTemplateLink();
     }
 
+
+    /**
+     * 导出信号模板关联表
+     *
+     * @param exportExcelMonitorPropertyTemplateBindQo
+     * @return
+     */
+    @RequestMapping(value = "/exportExcelMonitorPropertyTemplateBind", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse exportExcelMonitorPropertyTemplateBind(@RequestBody ExportExcelMonitorPropertyTemplateBindQo exportExcelMonitorPropertyTemplateBindQo) throws Exception {
+        return monitorPropertyTemplateBindService.exportExcelMonitorPropertyTemplateBind(exportExcelMonitorPropertyTemplateBindQo);
+    }
+
+    /**
+     * 导入信号模板关联表
+     *
+     * @param importExcelMonitorPropertyTemplateBindQo
+     * @return
+     */
+    @RequestMapping(value = "/importExcelMonitorPropertyTemplateBind", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse importExcelMonitorPropertyTemplateBind(@RequestBody ImportExcelMonitorPropertyTemplateBindQo importExcelMonitorPropertyTemplateBindQo) throws Exception {
+        return monitorPropertyTemplateBindService.importExcelMonitorPropertyTemplateBind(importExcelMonitorPropertyTemplateBindQo);
+    }
 
 }

@@ -1,8 +1,6 @@
 package com.agioe.tool.data.service;
 
-import com.agioe.tool.data.Qo.AddMonitorPropertyTemplate1Qo;
-import com.agioe.tool.data.Qo.DeleteMonitorPropertyTemplate1Qo;
-import com.agioe.tool.data.Qo.UpdateMonitorPropertyTemplate1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.MonitorPropertyTemplate;
 import com.agioe.tool.data.entity.WebResponse;
 
@@ -59,6 +57,14 @@ public interface MonitorPropertyTemplateService {
     WebResponse showAllMonitorPropertyTemplate();
 
     /**
+     * 分页展示监控模板
+     *
+     * @param pageQo
+     * @return
+     */
+    WebResponse showPageMonitorPropertyTemplate(PageQo pageQo);
+
+    /**
      * 新增加监控模板
      *
      * @param addMonitorPropertyTemplate1Qo
@@ -81,4 +87,22 @@ public interface MonitorPropertyTemplateService {
      * @return
      */
     WebResponse deleteMonitorPropertyTemplate1(DeleteMonitorPropertyTemplate1Qo deleteMonitorPropertyTemplate1Qo);
+
+    /**
+     * 导出监控信号模板表
+     *
+     * @param exportExcelMonitorPropertyTemplateQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse exportExcelMonitorPropertyTemplate(ExportExcelMonitorPropertyTemplateQo exportExcelMonitorPropertyTemplateQo) throws Exception;
+
+    /**
+     * 导入监控信号模板表
+     *
+     * @param importExcelMonitorPropertyTemplateQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse importExcelMonitorPropertyTemplate(ImportExcelMonitorPropertyTemplateQo importExcelMonitorPropertyTemplateQo) throws Exception;
 }

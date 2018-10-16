@@ -20,4 +20,12 @@ public class ShowEquipmentInfoByConditionQo {
      * 设备信号编码
      */
     private String equipmentPropertyCode;
+    /**
+     * 当前页
+     */
+    private Integer pageNow;
+    /**
+     * 每页显示数量
+     */
+    private Integer pageSize;
 }

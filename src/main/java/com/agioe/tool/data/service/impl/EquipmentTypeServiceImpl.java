@@ -1,15 +1,12 @@
 package com.agioe.tool.data.service.impl;
 
-import com.agioe.tool.data.Qo.AddEquipmentTypeQo;
-import com.agioe.tool.data.Qo.DeleteEquipmentType1Qo;
-import com.agioe.tool.data.Qo.UpdateEquipmentType1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.Vo.ShowAllEquipmentTypeVo;
 import com.agioe.tool.data.dao.EquipmentTypeDao;
 import com.agioe.tool.data.entity.*;
-import com.agioe.tool.data.service.EquipmentInfoService;
-import com.agioe.tool.data.service.EquipmentTypeService;
-import com.agioe.tool.data.service.MonitorPropertyTemplateService;
-import com.agioe.tool.data.service.ParentNodeService;
+import com.agioe.tool.data.page.PageBean;
+import com.agioe.tool.data.service.*;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +26,9 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
 
     @Autowired
     private ParentNodeService parentNodeService;
+
+    @Autowired
+    private ExcelService excelService;
 
     @Override
     public Integer insertEquipmentType(EquipmentType equipmentType) {
@@ -73,6 +73,27 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
             }
         }
         return WebResponse.success(showAllEquipmentTypeVos);
+    }
+
+    @Override
+    public WebResponse showPageEquipmentType(PageQo pageQo) {
+        Integer pageNow = pageQo.getPageNow();
+        Integer pageSize = pageQo.getPageSize();
+        Integer countNums = equipmentTypeDao.selectAll().size();
+        List<ShowAllEquipmentTypeVo> showAllEquipmentTypeVos = new ArrayList<>();
+        PageHelper.startPage(pageNow, pageSize);
+        List<EquipmentType> equipmentTypes = equipmentTypeDao.selectAll();
+        if (equipmentTypes.size() > 0) {
+            for (EquipmentType equipmentType : equipmentTypes) {
+                ShowAllEquipmentTypeVo showAllEquipmentTypeVo = new ShowAllEquipmentTypeVo();
+                showAllEquipmentTypeVo.setEquipmentTypeCode(equipmentType.getEquipmentTypeCode());
+                showAllEquipmentTypeVo.setEquipmentTypeName(equipmentType.getEquipmentTypeName());
+                showAllEquipmentTypeVos.add(showAllEquipmentTypeVo);
+            }
+        }
+        PageBean<ShowAllEquipmentTypeVo> pageData = new PageBean<>(pageNow, pageSize, countNums);
+        pageData.setItems(showAllEquipmentTypeVos);
+        return WebResponse.success(pageData);
     }
 
     @Override
@@ -159,6 +180,43 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
         }
         //删除
         equipmentTypeDao.deleteEquipmentType(equipmentTypeCode);
+        return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse exportExcelEquipmentType(ExportExcelEquipmentTypeQo exportExcelEquipmentTypeQo) throws Exception {
+        String filePath = exportExcelEquipmentTypeQo.getFilePath();
+        String title = "设备类型表";
+        Integer colunmNumber = 3;
+        List<EquipmentType> equipmentTypes = equipmentTypeDao.selectAll();
+        String[][] strings = new String[equipmentTypes.size() + 1][3];
+        strings[0][0] = "序号";
+        strings[0][1] = "类型编码";
+        strings[0][2] = "类型名称";
+        for (int c = 1; c < strings.length; c++) {
+            strings[c][0] = String.valueOf(c);
+            strings[c][1] = equipmentTypes.get(c - 1).getEquipmentTypeCode();
+            strings[c][2] = equipmentTypes.get(c - 1).getEquipmentTypeName();
+        }
+        excelService.exportExcel(filePath, strings, title, colunmNumber);
+        return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse importExcelEquipmentType(ImportExcelEquipmentTypeQo importExcelEquipmentTypeQo) throws Exception {
+        String filePath = importExcelEquipmentTypeQo.getFilePath();
+        String[][] strings = excelService.importExcel(filePath);
+        if (strings.length > 0) {
+            for (String[] strings1 : strings) {
+                String equipmentTypeCode = strings1[0];
+                String equipmentTypeName = strings1[1];
+                //todo:对原表进行处理
+                EquipmentType equipmentType = new EquipmentType();
+                equipmentType.setEquipmentTypeCode(equipmentTypeCode);
+                equipmentType.setEquipmentTypeName(equipmentTypeName);
+                equipmentTypeDao.insertEquipmentType(equipmentType);
+            }
+        }
         return WebResponse.success();
     }
 }

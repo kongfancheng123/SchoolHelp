@@ -1,11 +1,13 @@
 package com.agioe.tool.data.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 设备实时数据
  */
-@Data
+@Getter
+@Setter
 public class EquipmentRealtimeData extends BaseEntity {
     /**
      * 数据编码

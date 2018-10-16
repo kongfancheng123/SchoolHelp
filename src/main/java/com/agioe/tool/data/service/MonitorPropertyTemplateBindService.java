@@ -1,8 +1,6 @@
 package com.agioe.tool.data.service;
 
-import com.agioe.tool.data.Qo.AddMonitorPropertyTemplateBind1Qo;
-import com.agioe.tool.data.Qo.DeleteMonitorPropertyTemplateBind1Qo;
-import com.agioe.tool.data.Qo.UpdateMonitorPropertyTemplateBind1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.MonitorPropertyTemplateBind;
 import com.agioe.tool.data.entity.WebResponse;
 
@@ -59,6 +57,14 @@ public interface MonitorPropertyTemplateBindService {
     WebResponse showAllMonitorPropertyTemplateBind();
 
     /**
+     * 分页展示所有信息模板关联
+     *
+     * @param pageQo
+     * @return
+     */
+    WebResponse showPageMonitorPropertyTemplateBind(PageQo pageQo);
+
+    /**
      * 新增加信息模板关联
      *
      * @param addMonitorPropertyTemplateBind1Qo
@@ -86,4 +92,22 @@ public interface MonitorPropertyTemplateBindService {
      * 获取设备类型属性模板树
      */
     WebResponse getEquipmentTypeTemplateLink();
+
+    /**
+     * 导出监控信号模板关联表
+     *
+     * @param exportExcelMonitorPropertyTemplateBindQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse exportExcelMonitorPropertyTemplateBind(ExportExcelMonitorPropertyTemplateBindQo exportExcelMonitorPropertyTemplateBindQo) throws Exception;
+
+    /**
+     * 导入监控信号模板关联表
+     *
+     * @param importExcelMonitorPropertyTemplateBindQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse importExcelMonitorPropertyTemplateBind(ImportExcelMonitorPropertyTemplateBindQo importExcelMonitorPropertyTemplateBindQo) throws Exception;
 }

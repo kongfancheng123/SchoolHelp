@@ -1,11 +1,13 @@
 package com.agioe.tool.data.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 信号模板与信号关联关系
  */
-@Data
+@Getter
+@Setter
 public class MonitorPropertyTemplateBind extends BaseEntity {
     /**
      * 设备类型

@@ -1,8 +1,6 @@
 package com.agioe.tool.data.controller;
 
-import com.agioe.tool.data.Qo.AddMonitorPropertyTemplate1Qo;
-import com.agioe.tool.data.Qo.DeleteMonitorPropertyTemplate1Qo;
-import com.agioe.tool.data.Qo.UpdateMonitorPropertyTemplate1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.WebResponse;
 import com.agioe.tool.data.service.MonitorPropertyTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,17 @@ public class MonitorPropertyTemplateController {
     @ResponseBody
     public WebResponse showAllMonitorPropertyTemplate() {
         return monitorPropertyTemplateService.showAllMonitorPropertyTemplate();
+    }
+
+    /**
+     * 分页展示监控模板
+     *
+     * @return
+     */
+    @RequestMapping(value = "/showPageMonitorPropertyTemplate", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse showPageMonitorPropertyTemplate(@RequestBody PageQo pageQo) {
+        return monitorPropertyTemplateService.showPageMonitorPropertyTemplate(pageQo);
     }
 
     /**
@@ -61,6 +70,31 @@ public class MonitorPropertyTemplateController {
     public WebResponse deleteMonitorPropertyTemplate1(@RequestBody DeleteMonitorPropertyTemplate1Qo deleteMonitorPropertyTemplate1Qo) {
         return monitorPropertyTemplateService.deleteMonitorPropertyTemplate1(deleteMonitorPropertyTemplate1Qo);
     }
+
+    /**
+     * 导出监控信号模板表
+     *
+     * @param exportExcelMonitorPropertyTemplateQo
+     * @return
+     */
+    @RequestMapping(value = "/exportExcelMonitorPropertyTemplate", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse exportExcelMonitorPropertyTemplate(@RequestBody ExportExcelMonitorPropertyTemplateQo exportExcelMonitorPropertyTemplateQo) throws Exception {
+        return monitorPropertyTemplateService.exportExcelMonitorPropertyTemplate(exportExcelMonitorPropertyTemplateQo);
+    }
+
+    /**
+     * 导入监控信号模板表
+     *
+     * @param importExcelMonitorPropertyTemplateQo
+     * @return
+     */
+    @RequestMapping(value = "/importExcelMonitorPropertyTemplate", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse importExcelMonitorPropertyTemplate(@RequestBody ImportExcelMonitorPropertyTemplateQo importExcelMonitorPropertyTemplateQo) throws Exception {
+        return monitorPropertyTemplateService.importExcelMonitorPropertyTemplate(importExcelMonitorPropertyTemplateQo);
+    }
+
 
 
 }

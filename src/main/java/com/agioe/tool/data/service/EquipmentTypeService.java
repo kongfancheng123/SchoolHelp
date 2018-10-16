@@ -1,8 +1,6 @@
 package com.agioe.tool.data.service;
 
-import com.agioe.tool.data.Qo.AddEquipmentTypeQo;
-import com.agioe.tool.data.Qo.DeleteEquipmentType1Qo;
-import com.agioe.tool.data.Qo.UpdateEquipmentType1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.entity.EquipmentType;
 import com.agioe.tool.data.entity.WebResponse;
 
@@ -59,6 +57,14 @@ public interface EquipmentTypeService {
     WebResponse showAllEquipmentType();
 
     /**
+     * 分页展示设备类型
+     *
+     * @param pageQo
+     * @return
+     */
+    WebResponse showPageEquipmentType(PageQo pageQo);
+
+    /**
      * 新增加设备类型
      *
      * @param addEquipmentTypeQo
@@ -78,4 +84,22 @@ public interface EquipmentTypeService {
      * 删除设备类型
      */
     WebResponse deleteEquipmentType1(DeleteEquipmentType1Qo deleteEquipmentType1Qo);
+
+    /**
+     * 导出设备类型表
+     *
+     * @param exportExcelEquipmentTypeQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse exportExcelEquipmentType(ExportExcelEquipmentTypeQo exportExcelEquipmentTypeQo) throws Exception;
+
+    /**
+     * 导入设备类型表
+     *
+     * @param importExcelEquipmentTypeQo
+     * @return
+     * @throws Exception
+     */
+    WebResponse importExcelEquipmentType(ImportExcelEquipmentTypeQo importExcelEquipmentTypeQo) throws Exception;
 }

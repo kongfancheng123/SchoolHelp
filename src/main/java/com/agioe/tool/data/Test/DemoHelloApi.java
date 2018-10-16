@@ -3,6 +3,7 @@ package com.agioe.tool.data.Test;
 import com.agioe.tool.data.entity.TestInfo;
 import com.agioe.tool.data.entity.WebResponse;
 import com.agioe.tool.data.service.BaseService;
+import com.agioe.tool.data.service.ExcelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class DemoHelloApi {
     @Autowired
     private BaseService baseService;
 
+    @Autowired
+    private ExcelService excelService;
+
     //    @RequestMapping("/showAll", method = RequestMethod.POST)
     @RequestMapping(value = "/showAll", method = RequestMethod.POST)
     @ResponseBody
@@ -34,5 +38,19 @@ public class DemoHelloApi {
     @GetMapping("/kkk")
     public WebResponse kkk() {
         return WebResponse.success("kkkk");
+    }
+
+    @RequestMapping(value = "/exportExcel", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse exportExcel() throws Exception {
+//        excelService.exportExcel();
+        return WebResponse.success();
+    }
+
+    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse importExcel() throws Exception {
+        String[][] strings = excelService.importExcel("D://excel//EquipmentType//temp.xls");
+        return WebResponse.success(strings);
     }
 }

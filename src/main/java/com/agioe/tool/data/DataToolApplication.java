@@ -8,6 +8,7 @@ import com.agioe.tool.data.tcp.api.ControlListener;
 import com.agioe.tool.data.tcp.api.DefaultTcpApiInstance;
 import com.agioe.tool.data.tcp.api.TcpApi;
 import com.agioe.tool.data.tcp.server.Server;
+import com.github.pagehelper.PageHelper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 
 import javax.annotation.PostConstruct;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -91,5 +93,18 @@ public class DataToolApplication implements CommandLineRunner {
     public TcpComponent tcpComponent() {
         TcpApi instance = new DefaultTcpApiInstance(myControlListener);
         return new TcpComponent(instance);
+    }
+
+    //配置mybatis的分页插件pageHelper
+    @Bean
+    public PageHelper pageHelper() {
+        PageHelper pageHelper = new PageHelper();
+        Properties properties = new Properties();
+        properties.setProperty("offsetAsPageNum", "true");
+        properties.setProperty("rowBoundsWithCount", "true");
+        properties.setProperty("reasonable", "true");
+        properties.setProperty("dialect", "postgresql");    //配置mysql数据库的方言
+        pageHelper.setProperties(properties);
+        return pageHelper;
     }
 }

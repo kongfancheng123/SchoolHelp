@@ -1,13 +1,15 @@
 package com.agioe.tool.data.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
 /**
  * 设备信息表
  */
-@Data
+@Getter
+@Setter
 public class EquipmentInfo {
     /**
      * ID

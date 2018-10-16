@@ -1,11 +1,13 @@
 package com.agioe.tool.data.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 历史事件
  */
-@Data
+@Getter
+@Setter
 public class EventHistory extends BaseEntity {
     /**
      * 事件编码

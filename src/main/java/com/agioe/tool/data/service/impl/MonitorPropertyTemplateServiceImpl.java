@@ -1,12 +1,12 @@
 package com.agioe.tool.data.service.impl;
 
-import com.agioe.tool.data.Qo.AddMonitorPropertyTemplate1Qo;
-import com.agioe.tool.data.Qo.DeleteMonitorPropertyTemplate1Qo;
-import com.agioe.tool.data.Qo.UpdateMonitorPropertyTemplate1Qo;
+import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.Vo.ShowAllMonitorPropertyTemplateVo;
 import com.agioe.tool.data.dao.MonitorPropertyTemplateDao;
 import com.agioe.tool.data.entity.*;
+import com.agioe.tool.data.page.PageBean;
 import com.agioe.tool.data.service.*;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +29,9 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
 
     @Autowired
     private ParentNodeService parentNodeService;
+
+    @Autowired
+    private ExcelService excelService;
 
     @Override
     public Integer insertMonitorPropertyTemplate(MonitorPropertyTemplate monitorPropertyTemplate) {
@@ -84,6 +87,38 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
             }
         }
         return WebResponse.success(showAllMonitorPropertyTemplateVos);
+    }
+
+    @Override
+    public WebResponse showPageMonitorPropertyTemplate(PageQo pageQo) {
+        Integer pageNow = pageQo.getPageNow();
+        Integer pageSize = pageQo.getPageSize();
+        Integer countNums = monitorPropertyTemplateDao.selectAll().size();
+        List<ShowAllMonitorPropertyTemplateVo> showAllMonitorPropertyTemplateVos = new ArrayList<>();
+        PageHelper.startPage(pageNow, pageSize);
+        List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateDao.selectAll();
+        if (monitorPropertyTemplates.size() > 0) {
+            for (MonitorPropertyTemplate monitorPropertyTemplate : monitorPropertyTemplates) {
+                ShowAllMonitorPropertyTemplateVo showAllMonitorPropertyTemplateVo = new ShowAllMonitorPropertyTemplateVo();
+                showAllMonitorPropertyTemplateVo.setEquipmentPropertyTemplateCode(monitorPropertyTemplate.getEquipmentPropertyTemplateCode());
+                showAllMonitorPropertyTemplateVo.setEquipmentPropertyTemplateName(monitorPropertyTemplate.getEquipmentPropertyTemplateName());
+                String equipmentType = monitorPropertyTemplate.getEquipmentType();
+                //根据编码进行查找名字
+                EquipmentType equipmentType1 = new EquipmentType();
+                equipmentType1.setEquipmentTypeCode(equipmentType);
+                showAllMonitorPropertyTemplateVo.setEquipmentType(equipmentType);
+                List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType1);
+                if (equipmentTypes.size() > 0) {
+                    EquipmentType equipmentType2 = equipmentTypes.get(0);
+                    showAllMonitorPropertyTemplateVo.setEquipmentTypeName(equipmentType2.getEquipmentTypeName());
+                }
+                showAllMonitorPropertyTemplateVo.setEquipmentPropertyTemplateDescription(monitorPropertyTemplate.getEquipmentPropertyTemplateDescription());
+                showAllMonitorPropertyTemplateVos.add(showAllMonitorPropertyTemplateVo);
+            }
+        }
+        PageBean<ShowAllMonitorPropertyTemplateVo> pageData = new PageBean<>(pageNow, pageSize, countNums);
+        pageData.setItems(showAllMonitorPropertyTemplateVos);
+        return WebResponse.success(pageData);
     }
 
     @Override
@@ -174,6 +209,64 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
         }
         //删除
         monitorPropertyTemplateDao.deleteMonitorPropertyTemplate(equipmentPropertyTemplateCode);
+        return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse exportExcelMonitorPropertyTemplate(ExportExcelMonitorPropertyTemplateQo exportExcelMonitorPropertyTemplateQo) throws Exception {
+        String filePath = exportExcelMonitorPropertyTemplateQo.getFilePath();
+        String title = "监控信号模板表";
+        Integer colunmNumber = 5;
+        List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateDao.selectAll();
+        String[][] strings = new String[monitorPropertyTemplates.size() + 1][5];
+        strings[0][0] = "序号";
+        strings[0][1] = "设备类型";
+        strings[0][2] = "设备属性模板编码";
+        strings[0][3] = "设备属性模板名称";
+        strings[0][4] = "设备属性模板描述";
+        for (int c = 1; c < strings.length; c++) {
+            strings[c][0] = String.valueOf(c);
+            String equipmentType = monitorPropertyTemplates.get(c - 1).getEquipmentType();
+            EquipmentType equipmentType1 = new EquipmentType();
+            equipmentType1.setEquipmentTypeCode(equipmentType);
+            List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType1);
+            if (equipmentTypes.size() > 0) {
+                strings[c][1] = equipmentTypes.get(0).getEquipmentTypeName();
+            }
+            strings[c][2] = monitorPropertyTemplates.get(c - 1).getEquipmentPropertyTemplateCode();
+            strings[c][3] = monitorPropertyTemplates.get(c - 1).getEquipmentPropertyTemplateName();
+            strings[c][4] = monitorPropertyTemplates.get(c - 1).getEquipmentPropertyTemplateDescription();
+        }
+        excelService.exportExcel(filePath, strings, title, colunmNumber);
+        return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse importExcelMonitorPropertyTemplate(ImportExcelMonitorPropertyTemplateQo importExcelMonitorPropertyTemplateQo) throws Exception {
+        String filePath = importExcelMonitorPropertyTemplateQo.getFilePath();
+        String[][] strings = excelService.importExcel(filePath);
+        if (strings.length > 0) {
+            for (String[] strings1 : strings) {
+                String equipmentTypeName = strings1[0];
+                //根据名称去获取设备类型编码
+                String equipmentType = "";
+                EquipmentType equipmentType1 = new EquipmentType();
+                equipmentType1.setEquipmentTypeName(equipmentTypeName);
+                List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType1);
+                if (equipmentTypes.size() > 0) {
+                    equipmentType = equipmentTypes.get(0).getEquipmentTypeCode();
+                }
+                String equipmentPropertyTemplateCode = strings1[1];
+                String equipmentPropertyTemplateName = strings1[2];
+                String equipmentPropertyTemplateDescription = strings1[3];
+                MonitorPropertyTemplate monitorPropertyTemplate = new MonitorPropertyTemplate();
+                monitorPropertyTemplate.setEquipmentType(equipmentType);
+                monitorPropertyTemplate.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
+                monitorPropertyTemplate.setEquipmentPropertyTemplateName(equipmentPropertyTemplateName);
+                monitorPropertyTemplate.setEquipmentPropertyTemplateDescription(equipmentPropertyTemplateDescription);
+                monitorPropertyTemplateDao.insertMonitorPropertyTemplate(monitorPropertyTemplate);
+            }
+        }
         return WebResponse.success();
     }
 }
