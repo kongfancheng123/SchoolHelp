@@ -45,18 +45,6 @@ public class Worker implements Runnable {
         this.port = port;
     }
 
-    /**
-     * 发送数据
-     *
-     * @param buf
-     */
-    public static void send(ByteBuf buf) {
-        logger.info("准备发送数据:{}", ByteBufUtil.hexDump(buf));
-        clientMap.forEach((k, v) -> {
-            ByteBuf copyBuf = buf.copy();
-            v.writeAndFlush(copyBuf);
-        });
-    }
 
     /**
      * 单播
@@ -65,7 +53,7 @@ public class Worker implements Runnable {
      * @param buf
      */
     public static void unicast(String ipAndPortString, ByteBuf buf) {
-        logger.info("准备单播数据:{}", ByteBufUtil.hexDump(buf));
+        logger.info("向客户端:{}单播数据:{}", ipAndPortString, ByteBufUtil.hexDump(buf));
         clientMap.get(ipAndPortString).writeAndFlush(buf);
     }
 
