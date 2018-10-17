@@ -26,11 +26,21 @@ public class Server {
 
 
     /**
-     * 数据发送
+     * 广播
      *
-     * @param buf 数据二进制缓冲
+     * @param buf
      */
-    public static void send(ByteBuf buf) {
-        worker.send(buf);
+    public static void broadcast(ByteBuf buf) {
+        worker.broadcast(buf);
+    }
+
+    /**
+     * 单播
+     *
+     * @param ipAndPortString
+     * @param buf
+     */
+    public static void unicast(String ipAndPortString, ByteBuf buf) {
+        worker.unicast(ipAndPortString, buf);
     }
 }

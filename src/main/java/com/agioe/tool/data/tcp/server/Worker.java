@@ -4,6 +4,7 @@ import com.agioe.tool.data.tcp.MessageDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -15,6 +16,8 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +33,8 @@ public class Worker implements Runnable {
 
     private static ChannelFuture channelFuture = null;
 
+    private static Map<String, Channel> clientMap = new ConcurrentHashMap<String, Channel>();
+
     private int port;
     /**
      * 定时线程
@@ -40,14 +45,29 @@ public class Worker implements Runnable {
         this.port = port;
     }
 
+
     /**
-     * 发送数据
+     * 单播
+     *
+     * @param ipAndPortString
+     * @param buf
+     */
+    public static void unicast(String ipAndPortString, ByteBuf buf) {
+        logger.info("向客户端:{}单播数据:{}", ipAndPortString, ByteBufUtil.hexDump(buf));
+        clientMap.get(ipAndPortString).writeAndFlush(buf);
+    }
+
+    /**
+     * 广播
      *
      * @param buf
      */
-    public static void send(ByteBuf buf) {
-        logger.info("准备发送数据:{}", ByteBufUtil.hexDump(buf));
-        channelFuture.channel().writeAndFlush(buf);
+    public static void broadcast(ByteBuf buf) {
+        logger.info("准备广播数据:{}", ByteBufUtil.hexDump(buf));
+        clientMap.forEach((k, v) -> {
+            ByteBuf copyBuf = buf.copy();
+            v.writeAndFlush(copyBuf);
+        });
     }
 
     @Override
@@ -91,6 +111,14 @@ public class Worker implements Runnable {
                 }
             });
         }
+    }
+
+    public static Map<String, Channel> getClientMap() {
+        return clientMap;
+    }
+
+    public static void setClientMap(Map<String, Channel> clientMap) {
+        Worker.clientMap = clientMap;
     }
 }
 

@@ -1,5 +1,6 @@
 package com.agioe.tool.data.tcp.protocol;
 
+import com.agioe.tool.data.common.ObjectUtil;
 import com.agioe.tool.data.tcp.ControlQueue;
 import com.agioe.tool.data.tcp.Header;
 import com.agioe.tool.data.tcp.Message;
@@ -82,9 +83,24 @@ public class ControlSend extends AbstractProtocol {
         return message;
     }
 
-    @Override
-    public void reply(Message msg) {
 
+    @Override
+    public AbstractProtocol getReplyProtocol() {
+        return new ControlReply();
+    }
+
+    @Override
+    public Message buildReplyMessage(int sessionId, List<Object> objectList) {
+        Message replyMsg = new Message();
+        Header header = new Header();
+        header.setSessionId(sessionId);
+        List<ControlParameter> body = ObjectUtil.toEntity(objectList);
+        for (ControlParameter parameter : body) {
+            parameter.setFeedback((byte) 1);
+        }
+        replyMsg.setHeader(header);
+        replyMsg.setBody(ObjectUtil.toObject(body));
+        return replyMsg;
     }
 
     @Override
@@ -95,7 +111,7 @@ public class ControlSend extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
+    public void send(String ipAndPortString, Message msg) {
 
     }
 }

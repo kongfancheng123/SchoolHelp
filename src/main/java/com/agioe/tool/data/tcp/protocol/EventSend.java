@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
 import static com.agioe.tool.data.tcp.Header.LENGTH_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
@@ -87,10 +88,6 @@ public class EventSend extends AbstractProtocol {
         return null;
     }
 
-    @Override
-    public void reply(Message msg) {
-
-    }
 
     @Override
     public void onAvailable(Message msg) {
@@ -98,9 +95,19 @@ public class EventSend extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
+    public AbstractProtocol getReplyProtocol() {
+        return null;
+    }
+
+    @Override
+    public Message buildReplyMessage(int sessionId, List<Object> objectList) {
+        return null;
+    }
+
+    @Override
+    public void send(String ipAndPortString, Message msg) {
         msg.getHeader().setType(getType());
-        Server.send(encode(msg));
+        Server.broadcast(encode(msg));
         //当前发送时间
         msg.setTime(System.currentTimeMillis());
         //当前发送次数+1
