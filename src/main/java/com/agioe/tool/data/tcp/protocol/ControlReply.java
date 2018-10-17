@@ -2,12 +2,15 @@ package com.agioe.tool.data.tcp.protocol;
 
 import com.agioe.tool.data.tcp.Header;
 import com.agioe.tool.data.tcp.Message;
+import com.agioe.tool.data.tcp.MessageDelayQueue;
 import com.agioe.tool.data.tcp.payload.ControlParameter;
 import com.agioe.tool.data.tcp.protocol.factory.AbstractProtocol;
+import com.agioe.tool.data.tcp.server.Server;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
 import static com.agioe.tool.data.tcp.Header.LENGTH_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
@@ -55,10 +58,6 @@ public class ControlReply extends AbstractProtocol {
         return null;
     }
 
-    @Override
-    public void reply(Message msg) {
-
-    }
 
     @Override
     public void onAvailable(Message msg) {
@@ -66,7 +65,23 @@ public class ControlReply extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
+    public AbstractProtocol getReplyProtocol() {
+        return null;
+    }
 
+    @Override
+    public Message buildReplyMessage(int sessionId, List<Object> objectList) {
+        return null;
+    }
+
+    @Override
+    public void send(String ipAndPortString, Message msg) {
+        msg.getHeader().setType(getType());
+        Server.unicast(ipAndPortString, encode(msg));
+        //当前发送时间
+        msg.setTime(System.currentTimeMillis());
+        //当前发送次数+1
+        msg.setNumber(msg.getNumber() + 1);
+        MessageDelayQueue.add(msg);
     }
 }

@@ -37,7 +37,7 @@ public class DefaultTcpApiInstance implements TcpApi {
 
     public DefaultTcpApiInstance(ControlListener listener) {
         this.listener = listener;
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
         Runnable runnable = () -> {
             while (true) {
                 List<ControlParameter> controlParameterList = ControlQueue.getInstance().poll();
@@ -88,7 +88,7 @@ public class DefaultTcpApiInstance implements TcpApi {
         //匹配协议
         AbstractProtocol protocol = ProtocolFactory.buildProtocol(message.getHeader().getType());
         //发送
-        protocol.send(message);
+        protocol.send(null, message);
     }
 
 }

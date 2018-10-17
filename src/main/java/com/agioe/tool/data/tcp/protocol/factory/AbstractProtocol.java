@@ -4,6 +4,8 @@ import com.agioe.tool.data.tcp.Header;
 import com.agioe.tool.data.tcp.Message;
 import io.netty.buffer.ByteBuf;
 
+import java.util.List;
+
 /**
  * 协议抽象类
  *
@@ -46,11 +48,20 @@ public abstract class AbstractProtocol {
     public abstract Message decode(ByteBuf bodyBuf, Header header);
 
     /**
-     * 通信应答
+     * 获取响应协议
      *
-     * @param msg
+     * @return
      */
-    public abstract void reply(Message msg);
+    public abstract AbstractProtocol getReplyProtocol();
+
+    /**
+     * 构建响应消息
+     *
+     * @param sessionId
+     * @param objectList
+     * @return
+     */
+    public abstract Message buildReplyMessage(int sessionId, List<Object> objectList);
 
     /**
      * 消息经过解码后执行的操作
@@ -64,7 +75,8 @@ public abstract class AbstractProtocol {
      * 用到的地方 1 新消息发送 2 超时未返回的消息重发
      * 注意sessionId的问题,超时重发的时候,msg是已经有session的
      *
-     * @param msg 消息
+     * @param ipAndPortString 远端机器IP和端口 当为广播时，传null 单播时 传具体ip和端口
+     * @param msg             消息
      */
-    public abstract void send(Message msg);
+    public abstract void send(String ipAndPortString, Message msg);
 }

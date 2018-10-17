@@ -12,6 +12,8 @@ import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static com.agioe.tool.data.tcp.Header.LENGTH_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.Header.TYPE_FIELD_BYTE_COUNT;
 import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.PONG;
@@ -47,10 +49,6 @@ public class Pong extends AbstractProtocol {
         return null;
     }
 
-    @Override
-    public void reply(Message msg) {
-
-    }
 
     @Override
     public void onAvailable(Message msg) {
@@ -58,8 +56,18 @@ public class Pong extends AbstractProtocol {
     }
 
     @Override
-    public void send(Message msg) {
-        Server.send(encode(msg));
+    public AbstractProtocol getReplyProtocol() {
+        return null;
+    }
+
+    @Override
+    public Message buildReplyMessage(int sessionId, List<Object> objectList) {
+        return null;
+    }
+
+    @Override
+    public void send(String ipAndPortString, Message msg) {
+        Server.unicast(ipAndPortString, encode(msg));
         //当前发送时间
         msg.setTime(System.currentTimeMillis());
         //当前发送次数+1
