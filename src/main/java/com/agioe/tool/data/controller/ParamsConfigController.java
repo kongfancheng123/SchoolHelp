@@ -44,5 +44,4 @@ public class ParamsConfigController {
     public WebResponse showParamsConfig() {
         return paramsConfigService.showParamsConfig();
     }
-
 }

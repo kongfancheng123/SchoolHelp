@@ -6,4 +6,6 @@ import lombok.Data;
 public class GetPropertyByTypeAndTemplateAndParentNodeVo {
     private String equipmentPropertyCode;
     private String equipmentPropertyName;
+    private String baseValue;
+    private String upAndDown;
 }
