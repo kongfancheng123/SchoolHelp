@@ -9,11 +9,11 @@ public class UpdateEquipmentInfo1Qo {
      */
     private String parentNodeCode;
     /**
-     * 设备编码
-     */
-    private String equipmentCode;
-    /**
-     * 关键字
+     * 新关键字
      */
     private String keyword;
+    /**
+     * 原关键字
+     */
+    private String keywordOld;
 }

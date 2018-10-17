@@ -349,29 +349,30 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 
     @Override
     public WebResponse updateEquipmentInfo1(UpdateEquipmentInfo1Qo updateEquipmentInfo1Qo) {
-        String equipmentCode = updateEquipmentInfo1Qo.getEquipmentCode();
-        String keyword = updateEquipmentInfo1Qo.getKeyword();
+        String keywordOld = updateEquipmentInfo1Qo.getKeywordOld();
+        String keywordNew = updateEquipmentInfo1Qo.getKeyword();
         String parentNodeCode = updateEquipmentInfo1Qo.getParentNodeCode();
-        EquipmentInfo equipmentInfo = new EquipmentInfo();
-        equipmentInfo.setEquipmentCode(equipmentCode);
-        equipmentInfo.setParentNodeCode(parentNodeCode);
-        List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
-        if (equipmentInfos.size() > 0) {
-            EquipmentInfo equipmentInfo1 = equipmentInfos.get(0);
-            if (equipmentInfo1.getKeyword().equals(keyword)) {
-                return WebResponse.success();
+        if (keywordOld.equals(keywordNew)) {
+            return WebResponse.success();
+        } else {
+            //keyword重复判断
+            EquipmentInfo equipmentInfo = new EquipmentInfo();
+            equipmentInfo.setKeyword(keywordNew);
+            equipmentInfo.setParentNodeCode(parentNodeCode);
+            List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
+            if (equipmentInfos.size() > 0) {
+                return WebResponse.error(400, "keyword已存在");
             } else {
-                //keyword重复判断
-                EquipmentInfo equipmentInfo2 = new EquipmentInfo();
-                equipmentInfo2.setParentNodeCode(parentNodeCode);
-                equipmentInfo2.setKeyword(keyword);
-                List<EquipmentInfo> equipmentInfos1 = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo2);
+                //进行更新
+                EquipmentInfo equipmentInfo1 = new EquipmentInfo();
+                equipmentInfo1.setKeyword(keywordOld);
+                equipmentInfo1.setParentNodeCode(parentNodeCode);
+                List<EquipmentInfo> equipmentInfos1 = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo1);
                 if (equipmentInfos1.size() > 0) {
-                    return WebResponse.error(400, "keyword已存在");
-                } else {
-                    //进行更新
-                    equipmentInfo1.setKeyword(keyword);
-                    equipmentInfoDao.updateEquipmentInfo(equipmentInfo1);
+                    EquipmentInfo equipmentInfo2 = equipmentInfos1.get(0);
+                    equipmentInfo2.setKeyword(keywordNew);
+                    equipmentInfo2.setParentNodeCode(parentNodeCode);
+                    equipmentInfoDao.updateEquipmentInfo(equipmentInfo2);
                 }
             }
         }
@@ -826,6 +827,18 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     @Override
     public WebResponse createKeyWord(CreateKeyWordQo createKeyWordQo) {
         Integer equipmentPropertyType = createKeyWordQo.getEquipmentPropertyType();
+        String keywordAfter = "";
+        if (equipmentPropertyType == 0) {
+            keywordAfter = "YC";
+        } else if (equipmentPropertyType == 1) {
+            keywordAfter = "YX";
+        } else if (equipmentPropertyType == 2) {
+            keywordAfter = "YK";
+        } else if (equipmentPropertyType == 3) {
+            keywordAfter = "YT";
+        } else {
+            keywordAfter = "EXPLAN";
+        }
         Integer keyWordStart = createKeyWordQo.getKeyWordStart();
         String parentNodeCode = createKeyWordQo.getParentNodeCode();
         MonitorProperty monitorProperty = new MonitorProperty();
@@ -839,7 +852,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
                 if (equipmentInfos.size() > 0) {
                     for (EquipmentInfo equipmentInfo1 : equipmentInfos) {
-                        String keyword = parentNodeCode + "_" + String.valueOf(keyWordStart) + "_" + monitorProperty1.getEquipmentPropertyCode();
+                        String keyword = parentNodeCode + "_" + String.valueOf(keyWordStart) + "_" + keywordAfter;
                         equipmentInfo1.setKeyword(keyword);
                         equipmentInfoDao.updateEquipmentInfo(equipmentInfo1);
                         keyWordStart++;
@@ -854,7 +867,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     public WebResponse exportExcelEquipmentInfo(ExportExcelEquipmentInfoQo exportExcelEquipmentInfoQo) throws Exception {
         String filePath = exportExcelEquipmentInfoQo.getFilePath();
         String title = "设备信息表";
-        Integer colunmNumber = 7;
+        Integer colunmNumber = 9;
         List<EquipmentInfo> equipmentInfoList = new ArrayList<>();
         //获取所有的上层节点编码
         List<ParentNode> parentNodes = parentNodeService.selectAll();
@@ -868,25 +881,35 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 }
             }
         }
-        String[][] strings = new String[equipmentInfoList.size() + 1][7];
+        String[][] strings = new String[equipmentInfoList.size() + 1][9];
         strings[0][0] = "序号";
-        strings[0][1] = "设备编码";
-        strings[0][2] = "设备名称";
-        strings[0][3] = "设备类型";
-        strings[0][4] = "设备信号模板";
-        strings[0][5] = "设备信号";
-        strings[0][6] = "设备点号";
+        strings[0][1] = "上层节点";
+        strings[0][2] = "设备编码";
+        strings[0][3] = "设备名称";
+        strings[0][4] = "设备类型";
+        strings[0][5] = "设备信号模板";
+        strings[0][6] = "监控信号类型";
+        strings[0][7] = "设备信号";
+        strings[0][8] = "设备点号";
         for (int c = 1; c < strings.length; c++) {
             strings[c][0] = String.valueOf(c);
-            strings[c][1] = equipmentInfoList.get(c - 1).getEquipmentCode();
-            strings[c][2] = equipmentInfoList.get(c - 1).getEquipmentName();
+            String parentNodeCode = equipmentInfoList.get(c - 1).getParentNodeCode();
+            //获取上层节点名称
+            ParentNode parentNode = new ParentNode();
+            parentNode.setParentNodeCode(parentNodeCode);
+            List<ParentNode> parentNodes1 = parentNodeService.selectByParentNode(parentNode);
+            if (parentNodes1.size() > 0) {
+                strings[c][1] = parentNodes1.get(0).getParentNodeName();
+            }
+            strings[c][2] = equipmentInfoList.get(c - 1).getEquipmentCode();
+            strings[c][3] = equipmentInfoList.get(c - 1).getEquipmentName();
             //获取设备类型
             String equipmentType = equipmentInfoList.get(c - 1).getEquipmentType();
             EquipmentType equipmentType1 = new EquipmentType();
             equipmentType1.setEquipmentTypeCode(equipmentType);
             List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType1);
             if (equipmentTypes.size() > 0) {
-                strings[c][3] = equipmentTypes.get(0).getEquipmentTypeName();
+                strings[c][4] = equipmentTypes.get(0).getEquipmentTypeName();
             }
             //获取模板
             String equipmentPropertyTemplateCode = equipmentInfoList.get(c - 1).getEquipmentPropertyTemplateCode();
@@ -894,7 +917,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             monitorPropertyTemplate.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
             List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateService.selectByMonitorPropertyTemplate(monitorPropertyTemplate);
             if (monitorPropertyTemplates.size() > 0) {
-                strings[c][4] = monitorPropertyTemplates.get(0).getEquipmentPropertyTemplateName();
+                strings[c][5] = monitorPropertyTemplates.get(0).getEquipmentPropertyTemplateName();
             }
             //获取信号
             String equipmentPropertyCode = equipmentInfoList.get(c - 1).getEquipmentPropertyCode();
@@ -902,10 +925,22 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             monitorProperty.setEquipmentPropertyCode(equipmentPropertyCode);
             List<MonitorProperty> monitorProperties = monitorPropertyService.selectByMonitorProperty(monitorProperty);
             if (monitorProperties.size() > 0) {
-                strings[c][5] = monitorProperties.get(0).getEquipmentPropertyName();
+                Integer equipmentPropertyType = monitorProperties.get(0).getEquipmentPropertyType();
+                if (equipmentPropertyType == 0) {
+                    strings[c][6] = "遥测";
+                } else if (equipmentPropertyType == 1) {
+                    strings[c][6] = "遥信";
+                } else if (equipmentPropertyType == 2) {
+                    strings[c][6] = "遥控";
+                } else if (equipmentPropertyType == 3) {
+                    strings[c][6] = "遥调";
+                } else {
+                    strings[c][6] = "说明";
+                }
+                strings[c][7] = monitorProperties.get(0).getEquipmentPropertyName();
             }
             //获取keyword
-            strings[c][6] = equipmentInfoList.get(c - 1).getKeyword();
+            strings[c][8] = equipmentInfoList.get(c - 1).getKeyword();
         }
         excelService.exportExcel(filePath, strings, title, colunmNumber);
         return WebResponse.success();
@@ -917,9 +952,9 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         String[][] strings = excelService.importExcel(filePath);
         if (strings.length > 0) {
             for (String[] strings1 : strings) {
-                String equipmentCode = strings1[0];
-                String equipmentName = strings1[1];
-                String equipmentTypeName = strings1[2];
+                String equipmentCode = strings1[1];
+                String equipmentName = strings1[2];
+                String equipmentTypeName = strings1[3];
                 String equipmentTypeCode = "";
                 //获取设备类型编码
                 EquipmentType equipmentType = new EquipmentType();
@@ -928,7 +963,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 if (equipmentTypes.size() > 0) {
                     equipmentTypeCode = equipmentTypes.get(0).getEquipmentTypeCode();
                 }
-                String equipmentPropertyTemplateName = strings1[3];
+                String equipmentPropertyTemplateName = strings1[4];
                 String equipmentPropertyTemplateCode = "";
                 //获取模板编码
                 MonitorPropertyTemplate monitorPropertyTemplate = new MonitorPropertyTemplate();
@@ -937,7 +972,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 if (monitorPropertyTemplates.size() > 0) {
                     equipmentPropertyTemplateCode = monitorPropertyTemplates.get(0).getEquipmentPropertyTemplateCode();
                 }
-                String equipmentPropertyName = strings1[4];
+                String equipmentPropertyName = strings1[6];
                 String equipmentPropertyCode = "";
                 //获取属性编码
                 MonitorProperty monitorProperty = new MonitorProperty();
@@ -946,7 +981,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 if (monitorProperties.size() > 0) {
                     equipmentPropertyCode = monitorProperties.get(0).getEquipmentPropertyCode();
                 }
-                String keyword = strings1[5];
+                String keyword = strings1[7];
                 //获取上层节点编码
                 String[] split = keyword.split("_");
                 String parentNodeCode = split[0];
