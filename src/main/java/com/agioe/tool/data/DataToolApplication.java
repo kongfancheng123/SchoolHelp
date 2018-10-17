@@ -44,7 +44,7 @@ public class DataToolApplication implements CommandLineRunner {
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    private ControlListener myControlListener;
+    private ControlListener controlListener;
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(DataToolApplication.class);
@@ -91,7 +91,7 @@ public class DataToolApplication implements CommandLineRunner {
 
     @Bean
     public TcpComponent tcpComponent() {
-        TcpApi instance = new DefaultTcpApiInstance(myControlListener);
+        TcpApi instance = new DefaultTcpApiInstance(controlListener);
         return new TcpComponent(instance);
     }
 

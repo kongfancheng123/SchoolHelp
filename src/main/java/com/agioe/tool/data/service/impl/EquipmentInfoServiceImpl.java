@@ -9,6 +9,7 @@ import com.agioe.tool.data.dao.EquipmentInfoDao;
 import com.agioe.tool.data.entity.*;
 import com.agioe.tool.data.page.PageBean;
 import com.agioe.tool.data.service.*;
+import com.agioe.tool.data.singleton.TcpApiSingleton;
 import com.agioe.tool.data.tcp.api.DefaultTcpApiInstance;
 import com.agioe.tool.data.tcp.payload.SensorData;
 import com.agioe.tool.data.tcp.payload.SensorEvent;
@@ -583,6 +584,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         }
         if (propertyCodeAndValue.length > 0) {
             for (String[] propertyCodeAndValue1 : propertyCodeAndValue) {
+                System.out.println(propertyCodeAndValue1.length);
                 String equipmentPropertyCode = propertyCodeAndValue1[0];
                 //获取信号类型
                 Integer equipmentPropertyType = 0;
@@ -659,7 +661,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                         sensorData.setVal(dataVal);
                         dataList.add(sensorData);
                         //todo:发送实时数据
-                        DefaultTcpApiInstance defaultTcpApiInstance = DefaultTcpApiInstance.getInstance();
+                        DefaultTcpApiInstance defaultTcpApiInstance = TcpApiSingleton.getDefaultTcpApiInstance();
                         defaultTcpApiInstance.sendSensorData(dataList);
                         try {
                             Thread.sleep(feedCycle);
@@ -734,7 +736,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             sensorEvent.setType(Byte.decode(eventType));
             sensorEvent.setOrgCode("");
             eventList.add(sensorEvent);
-            DefaultTcpApiInstance defaultTcpApiInstance = DefaultTcpApiInstance.getInstance();
+            DefaultTcpApiInstance defaultTcpApiInstance = TcpApiSingleton.getDefaultTcpApiInstance();
             defaultTcpApiInstance.sendSensorEvent(eventList);
         }
 
@@ -778,7 +780,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             sensorEvent.setType(Byte.decode("2"));
             sensorEvent.setOrgCode("");
             eventList.add(sensorEvent);
-            DefaultTcpApiInstance defaultTcpApiInstance = DefaultTcpApiInstance.getInstance();
+            DefaultTcpApiInstance defaultTcpApiInstance = TcpApiSingleton.getDefaultTcpApiInstance();
             defaultTcpApiInstance.sendSensorEvent(eventList);
         }
         return WebResponse.success();

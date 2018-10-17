@@ -24,15 +24,6 @@ import static com.agioe.tool.data.tcp.payload.meta.ProtocolConstant.*;
  */
 public class DefaultTcpApiInstance implements TcpApi {
 
-    private static DefaultTcpApiInstance instance = new DefaultTcpApiInstance();
-
-    private DefaultTcpApiInstance() {
-    }
-
-    public static DefaultTcpApiInstance getInstance() {
-        return instance;
-    }
-
     private ControlListener listener;
 
     public DefaultTcpApiInstance(ControlListener listener) {
