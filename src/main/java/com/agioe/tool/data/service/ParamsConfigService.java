@@ -42,4 +42,11 @@ public interface ParamsConfigService {
      * @return
      */
     WebResponse getParamsConfig();
+
+    /**
+     * 展示基础配置
+     *
+     * @return
+     */
+    WebResponse showParamsConfig();
 }

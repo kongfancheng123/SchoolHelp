@@ -36,4 +36,13 @@ public class ParamsConfigController {
         return paramsConfigService.getParamsConfig();
     }
 
+    /**
+     * 展示配置信息
+     */
+    @RequestMapping(value = "/showParamsConfig", method = RequestMethod.POST)
+    @ResponseBody
+    public WebResponse showParamsConfig() {
+        return paramsConfigService.showParamsConfig();
+    }
+
 }

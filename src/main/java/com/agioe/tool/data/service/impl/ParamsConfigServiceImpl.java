@@ -2,6 +2,7 @@ package com.agioe.tool.data.service.impl;
 
 import com.agioe.tool.data.Qo.UpdateOrAddParamsConfigQo;
 import com.agioe.tool.data.Vo.GetParamsConfigVo;
+import com.agioe.tool.data.Vo.ShowParamsConfigVo;
 import com.agioe.tool.data.dao.ParamsConfigDao;
 import com.agioe.tool.data.entity.ParamsConfig;
 import com.agioe.tool.data.entity.WebResponse;
@@ -82,5 +83,23 @@ public class ParamsConfigServiceImpl implements ParamsConfigService {
             getParamsConfigVo.setDataEnable(paramsConfig.getDataEnable() == null ? 1 : paramsConfig.getDataEnable());
         }
         return WebResponse.success(getParamsConfigVo);
+    }
+
+    @Override
+    public WebResponse showParamsConfig() {
+        ShowParamsConfigVo showParamsConfigVo = new ShowParamsConfigVo();
+        List<ParamsConfig> paramsConfigs = paramsConfigDao.selectAll();
+        if (paramsConfigs.size() > 0) {
+            ParamsConfig paramsConfig = paramsConfigs.get(0);
+            showParamsConfigVo.setAlarmEnable(paramsConfig.getAlarmEnable());
+            showParamsConfigVo.setDataEnable(paramsConfig.getDataEnable());
+            showParamsConfigVo.setFeedCycle(paramsConfig.getFeedCycle());
+            showParamsConfigVo.setIp(paramsConfig.getIp());
+            showParamsConfigVo.setLogLevel(paramsConfig.getLogLevel());
+            showParamsConfigVo.setPassword(paramsConfig.getPassword());
+            showParamsConfigVo.setPort(paramsConfig.getPort());
+            showParamsConfigVo.setVersion(paramsConfig.getVersion());
+        }
+        return WebResponse.success(showParamsConfigVo);
     }
 }
