@@ -74,13 +74,13 @@ public class MonitorPropertyTemplateController {
     /**
      * 导出监控信号模板表
      *
-     * @param exportExcelMonitorPropertyTemplateQo
+     * @param
      * @return
      */
     @RequestMapping(value = "/exportExcelMonitorPropertyTemplate", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse exportExcelMonitorPropertyTemplate(@RequestBody ExportExcelMonitorPropertyTemplateQo exportExcelMonitorPropertyTemplateQo) throws Exception {
-        return monitorPropertyTemplateService.exportExcelMonitorPropertyTemplate(exportExcelMonitorPropertyTemplateQo);
+    public WebResponse exportExcelMonitorPropertyTemplate() throws Exception {
+        return monitorPropertyTemplateService.exportExcelMonitorPropertyTemplate();
     }
 
     /**

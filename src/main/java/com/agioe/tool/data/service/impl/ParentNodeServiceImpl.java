@@ -179,8 +179,8 @@ public class ParentNodeServiceImpl implements ParentNodeService {
     }
 
     @Override
-    public WebResponse exportExcelParentNode(ExportExcelParentNodeQo exportExcelParentNodeQo) throws Exception {
-        String filePath = exportExcelParentNodeQo.getFilePath();
+    public WebResponse exportExcelParentNode() throws Exception {
+        String filePath = "D://excel//temp.xls";
         String title = "上层节点表";
         Integer colunmNumber = 3;
         List<ParentNode> parentNodes = parentNodeDao.selectAll();
@@ -194,7 +194,7 @@ public class ParentNodeServiceImpl implements ParentNodeService {
             strings[c][2] = parentNodes.get(c - 1).getParentNodeName();
         }
         excelService.exportExcel(filePath, strings, title, colunmNumber);
-        return WebResponse.success();
+        return WebResponse.success("http://192.168.52.50:8099/excel/temp.xls");
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.agioe.tool.data.Qo;
 
 import lombok.Data;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Data
 public class SendEquipmentRealtimeDataQo {
 
@@ -21,4 +23,8 @@ public class SendEquipmentRealtimeDataQo {
      * 属性和值
      */
     private String[][] propertyCodeAndValue;
+    /**
+     * HttpServletRequest
+     */
+    private HttpServletRequest httpServletRequest;
 }

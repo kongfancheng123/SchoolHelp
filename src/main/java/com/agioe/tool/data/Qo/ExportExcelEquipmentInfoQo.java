@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class ExportExcelEquipmentInfoQo {
-    private String filePath;
+    private String parentNodeCode;
 }

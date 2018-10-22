@@ -97,10 +97,10 @@ public interface MonitorPropertyService {
     /**
      * 导出监控属性表
      *
-     * @param exportExcelMonitorPropertyQo
+     * @param
      * @return
      */
-    WebResponse exportExcelMonitorProperty(ExportExcelMonitorPropertyQo exportExcelMonitorPropertyQo) throws Exception;
+    WebResponse exportExcelMonitorProperty() throws Exception;
 
     /**
      * 导入监控属性表

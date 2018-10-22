@@ -184,8 +184,8 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
     }
 
     @Override
-    public WebResponse exportExcelEquipmentType(ExportExcelEquipmentTypeQo exportExcelEquipmentTypeQo) throws Exception {
-        String filePath = exportExcelEquipmentTypeQo.getFilePath();
+    public WebResponse exportExcelEquipmentType() throws Exception {
+        String filePath = "D://excel//temp.xls";
         String title = "设备类型表";
         Integer colunmNumber = 3;
         List<EquipmentType> equipmentTypes = equipmentTypeDao.selectAll();
@@ -199,7 +199,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
             strings[c][2] = equipmentTypes.get(c - 1).getEquipmentTypeName();
         }
         excelService.exportExcel(filePath, strings, title, colunmNumber);
-        return WebResponse.success();
+        return WebResponse.success("http://192.168.52.50:8099/excel/temp.xls");
     }
 
     @Override

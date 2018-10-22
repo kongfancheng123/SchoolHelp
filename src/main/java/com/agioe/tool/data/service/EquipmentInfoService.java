@@ -106,7 +106,15 @@ public interface EquipmentInfoService {
      * @param sendEquipmentRealtimeDataQo
      * @return
      */
-    WebResponse sendEquipmentRealtimeData(SendEquipmentRealtimeDataQo sendEquipmentRealtimeDataQo);
+    WebResponse sendEquipmentRealtimeData(SendEquipmentRealtimeDataQo sendEquipmentRealtimeDataQo, String ip) throws Exception;
+
+    /**
+     * 停止发送数据
+     *
+     * @param
+     * @return
+     */
+    WebResponse stopSendEquipmentRealtimeData(String ip);
 
     /**
      * 发送历史事件
@@ -151,7 +159,7 @@ public interface EquipmentInfoService {
     /**
      * 导出设备信息表
      *
-     * @param exportExcelEquipmentInfoQo
+     * @param
      * @return
      * @throws Exception
      */
@@ -165,5 +173,18 @@ public interface EquipmentInfoService {
      * @throws Exception
      */
     WebResponse importExcelEquipmentInfo(ImportExcelEquipmentInfoQo importExcelEquipmentInfoQo) throws Exception;
+
+    /**
+     * 获取发送数据控制值
+     */
+    WebResponse getSendControlVal();
+
+    /**
+     * 获取解除事件相关值
+     *
+     * @param getDealEventHistoryValueQo
+     * @return
+     */
+    WebResponse getDealEventHistoryValue(GetDealEventHistoryValueQo getDealEventHistoryValueQo);
 
 }

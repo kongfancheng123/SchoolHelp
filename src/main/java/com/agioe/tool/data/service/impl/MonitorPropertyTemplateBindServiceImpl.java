@@ -234,8 +234,8 @@ public class MonitorPropertyTemplateBindServiceImpl implements MonitorPropertyTe
     }
 
     @Override
-    public WebResponse exportExcelMonitorPropertyTemplateBind(ExportExcelMonitorPropertyTemplateBindQo exportExcelMonitorPropertyTemplateBindQo) throws Exception {
-        String filePath = exportExcelMonitorPropertyTemplateBindQo.getFilePath();
+    public WebResponse exportExcelMonitorPropertyTemplateBind() throws Exception {
+        String filePath = "D://excel//temp.xls";
         String title = "监控信号模板关联表";
         Integer colunmNumber = 6;
         List<MonitorPropertyTemplateBind> monitorPropertyTemplateBinds = monitorPropertyTemplateBindDao.selectAll();
@@ -287,7 +287,7 @@ public class MonitorPropertyTemplateBindServiceImpl implements MonitorPropertyTe
             }
         }
         excelService.exportExcel(filePath, strings, title, colunmNumber);
-        return WebResponse.success();
+        return WebResponse.success("http://192.168.52.50:8099/excel/temp.xls");
     }
 
     @Override

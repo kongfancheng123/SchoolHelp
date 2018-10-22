@@ -88,11 +88,11 @@ public interface ParentNodeService {
     /**
      * 导出上层节点表
      *
-     * @param exportExcelParentNodeQo
+     * @param
      * @return
      * @throws Exception
      */
-    WebResponse exportExcelParentNode(ExportExcelParentNodeQo exportExcelParentNodeQo) throws Exception;
+    WebResponse exportExcelParentNode() throws Exception;
 
     /**
      * 导入上层节点表

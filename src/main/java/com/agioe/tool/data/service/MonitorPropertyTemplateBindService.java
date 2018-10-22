@@ -96,11 +96,11 @@ public interface MonitorPropertyTemplateBindService {
     /**
      * 导出监控信号模板关联表
      *
-     * @param exportExcelMonitorPropertyTemplateBindQo
+     * @param
      * @return
      * @throws Exception
      */
-    WebResponse exportExcelMonitorPropertyTemplateBind(ExportExcelMonitorPropertyTemplateBindQo exportExcelMonitorPropertyTemplateBindQo) throws Exception;
+    WebResponse exportExcelMonitorPropertyTemplateBind() throws Exception;
 
     /**
      * 导入监控信号模板关联表

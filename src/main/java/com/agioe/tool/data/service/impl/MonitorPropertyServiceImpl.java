@@ -214,8 +214,8 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
     }
 
     @Override
-    public WebResponse exportExcelMonitorProperty(ExportExcelMonitorPropertyQo exportExcelMonitorPropertyQo) throws Exception {
-        String filePath = exportExcelMonitorPropertyQo.getFilePath();
+    public WebResponse exportExcelMonitorProperty() throws Exception {
+        String filePath = "D://excel//temp.xls";
         String title = "设备监控信号表";
         Integer colunmNumber = 4;
         List<MonitorProperty> monitorProperties = monitorPropertyDao.selectAll();
@@ -242,7 +242,7 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
             }
         }
         excelService.exportExcel(filePath, strings, title, colunmNumber);
-        return WebResponse.success();
+        return WebResponse.success("http://192.168.52.50:8099/excel/temp.xls");
     }
 
     @Override

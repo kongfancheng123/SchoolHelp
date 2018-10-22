@@ -74,13 +74,13 @@ public class MonitorPropertyController {
     /**
      * 导出监控信号表
      *
-     * @param exportExcelMonitorPropertyQo
+     * @param
      * @return
      */
     @RequestMapping(value = "/exportExcelMonitorProperty", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse exportExcelMonitorProperty(@RequestBody ExportExcelMonitorPropertyQo exportExcelMonitorPropertyQo) throws Exception {
-        return monitorPropertyService.exportExcelMonitorProperty(exportExcelMonitorPropertyQo);
+    public WebResponse exportExcelMonitorProperty() throws Exception {
+        return monitorPropertyService.exportExcelMonitorProperty();
     }
 
     /**

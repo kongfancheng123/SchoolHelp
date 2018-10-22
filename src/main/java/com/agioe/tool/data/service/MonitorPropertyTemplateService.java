@@ -91,11 +91,11 @@ public interface MonitorPropertyTemplateService {
     /**
      * 导出监控信号模板表
      *
-     * @param exportExcelMonitorPropertyTemplateQo
+     * @param
      * @return
      * @throws Exception
      */
-    WebResponse exportExcelMonitorPropertyTemplate(ExportExcelMonitorPropertyTemplateQo exportExcelMonitorPropertyTemplateQo) throws Exception;
+    WebResponse exportExcelMonitorPropertyTemplate() throws Exception;
 
     /**
      * 导入监控信号模板表

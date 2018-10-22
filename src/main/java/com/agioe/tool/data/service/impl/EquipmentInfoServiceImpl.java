@@ -1,24 +1,20 @@
 package com.agioe.tool.data.service.impl;
 
 import com.agioe.tool.data.Qo.*;
-import com.agioe.tool.data.Vo.GetPropertyByTypeAndTemplateAndParentNodeVo;
-import com.agioe.tool.data.Vo.GetPropertyByTypeAndTemplateVo;
-import com.agioe.tool.data.Vo.ShowAllEquipmentInfoVo;
-import com.agioe.tool.data.Vo.ShowPageEquipmentInfoVo;
+import com.agioe.tool.data.Vo.*;
 import com.agioe.tool.data.dao.EquipmentInfoDao;
 import com.agioe.tool.data.entity.*;
 import com.agioe.tool.data.page.PageBean;
 import com.agioe.tool.data.service.*;
 import com.agioe.tool.data.singleton.TcpApiSingleton;
 import com.agioe.tool.data.tcp.api.DefaultTcpApiInstance;
-import com.agioe.tool.data.tcp.payload.SensorData;
 import com.agioe.tool.data.tcp.payload.SensorEvent;
+import com.agioe.tool.data.thread.SendEquipmentRealtimeDataThread;
 import com.agioe.tool.data.util.TimeUtil;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -42,6 +38,8 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     private ParamsConfigService paramsConfigService;
     @Autowired
     private ExcelService excelService;
+    @Autowired
+    private SendControlService sendControlService;
 
 
     @Override
@@ -571,7 +569,8 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     }
 
     @Override
-    public WebResponse sendEquipmentRealtimeData(SendEquipmentRealtimeDataQo sendEquipmentRealtimeDataQo) {   //批量发送
+    public WebResponse sendEquipmentRealtimeData(SendEquipmentRealtimeDataQo sendEquipmentRealtimeDataQo, String ip) throws Exception {
+        //批量发送
         String parentNodeCode = sendEquipmentRealtimeDataQo.getParentNodeCode();
         String equipmentPropertyTemplateCode = sendEquipmentRealtimeDataQo.getEquipmentPropertyTemplateCode();
         String equipmentType = sendEquipmentRealtimeDataQo.getEquipmentType();
@@ -583,8 +582,17 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             feedCycle = paramsConfigs.get(0).getFeedCycle();
         }
         if (propertyCodeAndValue.length > 0) {
+//            //todo:启动线程
+//            SendEquipmentRealtimeDataThread sendEquipmentRealtimeDataThread=new SendEquipmentRealtimeDataThread(propertyCodeAndValue,monitorPropertyService,parentNodeCode,equipmentType,equipmentPropertyTemplateCode,equipmentInfoDao,feedCycle,countDownLatch);
+//            Thread thread=new Thread(sendEquipmentRealtimeDataThread);
+//            thread.setName("sendEquipmentRealtimeDataThread");
+//            thread.start();
+//            countDownLatch.await();
+//            System.out.println(Thread.currentThread().getName());
+//            Thread.currentThread().join();
+//            Thread.currentThread().start();
             for (String[] propertyCodeAndValue1 : propertyCodeAndValue) {
-                System.out.println(propertyCodeAndValue1.length);
+//                System.out.println(propertyCodeAndValue1.length);
                 String equipmentPropertyCode = propertyCodeAndValue1[0];
                 //获取信号类型
                 Integer equipmentPropertyType = 0;
@@ -627,58 +635,120 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
                 equipmentInfo.setEquipmentPropertyCode(equipmentPropertyCode);
                 List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
-                if (equipmentInfos.size() > 0) {
-                    for (EquipmentInfo equipmentInfo1 : equipmentInfos) {
-                        String dataVal = "";
-                        List<SensorData> dataList = new ArrayList<>();
-                        Double baseValueDouble = Double.valueOf(baseValue);
-                        Double upAndDownDouble = Double.valueOf(upAndDown);
-                        Double minBaseValue = baseValueDouble - upAndDownDouble;
-                        //获取信号类型
-                        //todo:获取随机的数据
-                        Random random = new Random();
-                        Double dataValDouble1 = random.nextDouble() * upAndDownDouble * 2 + minBaseValue;
-                        //todo:保留两位小数
-                        BigDecimal b = new BigDecimal(dataValDouble1);
-                        Double dataValDouble = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                        if (equipmentPropertyType == 0) {//信号类型为0,浮点数
-                            dataVal = String.valueOf(dataValDouble);
-                        } else if (equipmentPropertyType == 1) {//信号类型为1,只能为0或者1
-                            int i = random.nextInt(2);
-                            dataVal = String.valueOf(i);
-                        } else {
-                            return WebResponse.error(400, "属性类型错误,发送失败");
-                        }
-                        Date dataUpdate = new Date();
-                        equipmentInfo1.setDataVal(dataVal);
-                        equipmentInfo1.setDataUpdate(dataUpdate);
-                        equipmentInfoDao.updateEquipmentInfo(equipmentInfo1);
-                        SensorData sensorData = new SensorData();
-                        sensorData.setKey(equipmentInfo1.getKeyword());
-                        sensorData.setOrg("");
-                        sensorData.setTime(dataUpdate.getTime());
-                        sensorData.setType(Byte.decode(String.valueOf(equipmentPropertyType)));
-                        sensorData.setVal(dataVal);
-                        dataList.add(sensorData);
-                        //todo:发送实时数据
-                        DefaultTcpApiInstance defaultTcpApiInstance = TcpApiSingleton.getDefaultTcpApiInstance();
-                        defaultTcpApiInstance.sendSensorData(dataList);
-                        try {
-                            Thread.sleep(feedCycle);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+//                if (equipmentInfos.size() > 0) {
+////                    ThreadSingleton.getSendEquipmentRealtimeDataThread()
+//                    SendEquipmentRealtimeDataThread sendEquipmentRealtimeDataThread=new SendEquipmentRealtimeDataThread(equipmentInfos,baseValue,upAndDown,
+//                            equipmentPropertyType,feedCycle,equipmentInfoDao);
+//                    Thread thread=new Thread(sendEquipmentRealtimeDataThread);
+//                    thread.setName("sendEquipmentRealtimeDataThread");
+//                    thread.start();
+//                    for (EquipmentInfo equipmentInfo1 : equipmentInfos) {
+//                        String dataVal = "";
+//                        List<SensorData> dataList = new ArrayList<>();
+//                        Double baseValueDouble = Double.valueOf(baseValue);
+//                        Double upAndDownDouble = Double.valueOf(upAndDown);
+//                        Double minBaseValue = baseValueDouble - upAndDownDouble;
+//                        //获取信号类型
+//                        //todo:获取随机的数据
+//                        Random random = new Random();
+//                        Double dataValDouble1 = random.nextDouble() * upAndDownDouble * 2 + minBaseValue;
+//                        //todo:保留两位小数
+//                        BigDecimal b = new BigDecimal(dataValDouble1);
+//                        Double dataValDouble = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+//                        if (equipmentPropertyType == 0) {//信号类型为0,浮点数
+//                            dataVal = String.valueOf(dataValDouble);
+//                        } else if (equipmentPropertyType == 1) {//信号类型为1,只能为0或者1
+//                            int i = random.nextInt(2);
+//                            dataVal = String.valueOf(i);
+//                        } else {
+//                            return WebResponse.error(400, "属性类型错误,发送失败");
+//                        }
+//                        Date dataUpdate = new Date();
+//                        equipmentInfo1.setDataVal(dataVal);
+//                        equipmentInfo1.setDataUpdate(dataUpdate);
+//                        equipmentInfoDao.updateEquipmentInfo(equipmentInfo1);
+//                        SensorData sensorData = new SensorData();
+//                        sensorData.setKey(equipmentInfo1.getKeyword());
+//                        sensorData.setOrg("");
+//                        sensorData.setTime(dataUpdate.getTime());
+//                        sensorData.setType(Byte.decode(String.valueOf(equipmentPropertyType)));
+//                        sensorData.setVal(dataVal);
+//                        dataList.add(sensorData);
+//                        //todo:发送实时数据
+//                        DefaultTcpApiInstance defaultTcpApiInstance = TcpApiSingleton.getDefaultTcpApiInstance();
+//                        defaultTcpApiInstance.sendSensorData(dataList);
+//                        Thread.currentThread().sleep(feedCycle);
+//                    }
+//                }
             }
+        }
+        Random random = new Random();
+        Integer dataValInteger = random.nextInt(100);
+        String threadName = "sendEquipmentRealtimeDataThread:" + String.valueOf(ip);
+        if (propertyCodeAndValue.length > 0) {
+            //todo:启动线程
+            SendEquipmentRealtimeDataThread sendEquipmentRealtimeDataThread = new SendEquipmentRealtimeDataThread(propertyCodeAndValue, monitorPropertyService, parentNodeCode, equipmentType, equipmentPropertyTemplateCode, equipmentInfoDao, feedCycle);
+            Thread thread = new Thread(sendEquipmentRealtimeDataThread);
+            //获取0-100的正整数
+            thread.setName(threadName);
+            thread.start();
+        }
+        //更改控制值
+        List<SendControl> sendControls = sendControlService.selectOne(ip);
+        if (sendControls.size() > 0) {
+            SendControl sendControl = sendControls.get(0);
+            sendControl.setControlVal(0);
+            sendControlService.updateSendControl(sendControl);
+        } else {
+            //先添加,在查询
+            SendControl sendControl = new SendControl();
+            sendControl.setControlVal(0);
+            sendControl.setIp(ip);
+            sendControlService.insertSendControl(sendControl);
         }
         return WebResponse.success();
     }
 
     @Override
-    public WebResponse sendEventHistory(SendEventHistoryQo sendEventHistoryQo) {  //发送消息失败,保存数据成功
+    public WebResponse stopSendEquipmentRealtimeData(String ip) {
+        ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
+        int noThreads = currentGroup.activeCount();
+        Thread[] lstThreads = new Thread[noThreads];
+        currentGroup.enumerate(lstThreads);
+        for (Thread thread : lstThreads) {
+            if (thread.getName().equals("sendEquipmentRealtimeDataThread:" + ip)) {
+                thread.interrupt();
+                System.out.println("停止了线程:" + thread.getName());
+            }
+
+        }
+        //更改控制值
+        List<SendControl> sendControls = sendControlService.selectOne(ip);
+        if (sendControls.size() > 0) {
+            SendControl sendControl = sendControls.get(0);
+            sendControl.setControlVal(1);
+            sendControlService.updateSendControl(sendControl);
+        } else {
+            //先添加,在查询
+            SendControl sendControl = new SendControl();
+            sendControl.setControlVal(1);
+            sendControl.setIp(ip);
+            sendControlService.insertSendControl(sendControl);
+        }
+        return WebResponse.success();
+    }
+
+    @Override
+    public WebResponse sendEventHistory(SendEventHistoryQo sendEventHistoryQo) {
         String eventCode = sendEventHistoryQo.getEventCode();
         String eventType = sendEventHistoryQo.getEventType();
+        //获取事件类型值
+        String eventTypeValue = "";
+        if (eventType.equals("0")) {
+            eventTypeValue = "报警";
+        } else {
+            eventTypeValue = "故障";
+        }
         String eventValue = sendEventHistoryQo.getEventValue();
         String parentNodeCode = sendEventHistoryQo.getParentNodeCode();
         Integer equipmentPropertyType = sendEventHistoryQo.getEquipmentPropertyType();
@@ -711,7 +781,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 
         String keyword = sendEventHistoryQo.getKeyword();
         EquipmentInfo equipmentInfo = new EquipmentInfo();
-        String alarmVal = "事件类型:" + eventType + ",事件码:" + eventCode + ",事件值:" + eventValue;
+        String alarmVal = "事件类型:" + eventTypeValue + ",事件码:" + eventCode + ",事件值:" + eventValue;
         equipmentInfo.setKeyword(keyword);
         equipmentInfo.setParentNodeCode(parentNodeCode);
         List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
@@ -744,7 +814,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     }
 
     @Override
-    public WebResponse dealEventHistory(DealEventHistoryQo dealEventHistoryQo) { //发送消息失败,保存数据成功
+    public WebResponse dealEventHistory(DealEventHistoryQo dealEventHistoryQo) {
         String keyword = dealEventHistoryQo.getKeyword();
         String alarmVal = dealEventHistoryQo.getAlarmVal();
         //获取事件值和事件编码
@@ -806,7 +876,16 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         List<GetPropertyByTypeAndTemplateAndParentNodeVo> getPropertyByTypeAndTemplateAndParentNodeVos = new ArrayList<>();
         if (equipmentInfos.size() > 0) {
             for (EquipmentInfo equipmentInfo1 : equipmentInfos) {
-                propertyCodeSet.add(equipmentInfo1.getEquipmentPropertyCode());
+                String equipmentPropertyCode555 = equipmentInfo1.getEquipmentPropertyCode();
+                MonitorProperty monitorProperty = new MonitorProperty();
+                monitorProperty.setEquipmentPropertyCode(equipmentPropertyCode555);
+                List<MonitorProperty> monitorProperties = monitorPropertyService.selectByMonitorProperty(monitorProperty);
+                if (monitorProperties.size() > 0) {
+                    MonitorProperty monitorProperty1 = monitorProperties.get(0);
+                    if (monitorProperty1.getEquipmentPropertyType().equals(0) || monitorProperty1.getEquipmentPropertyType().equals(1)) {
+                        propertyCodeSet.add(equipmentInfo1.getEquipmentPropertyCode());
+                    }
+                }
             }
         }
         if (propertyCodeSet.size() > 0) {
@@ -867,22 +946,13 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 
     @Override
     public WebResponse exportExcelEquipmentInfo(ExportExcelEquipmentInfoQo exportExcelEquipmentInfoQo) throws Exception {
-        String filePath = exportExcelEquipmentInfoQo.getFilePath();
+        String parentNodeCode1 = exportExcelEquipmentInfoQo.getParentNodeCode();
+        String filePath = "D://excel//temp.xls";
         String title = "设备信息表";
         Integer colunmNumber = 9;
-        List<EquipmentInfo> equipmentInfoList = new ArrayList<>();
-        //获取所有的上层节点编码
-        List<ParentNode> parentNodes = parentNodeService.selectAll();
-        if (parentNodes.size() > 0) {
-            for (ParentNode parentNode : parentNodes) {
-                List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectAll(parentNode);
-                if (equipmentInfos.size() > 0) {
-                    for (EquipmentInfo equipmentInfo : equipmentInfos) {
-                        equipmentInfoList.add(equipmentInfo);
-                    }
-                }
-            }
-        }
+        ParentNode parentNode33 = new ParentNode();
+        parentNode33.setParentNodeCode(parentNodeCode1);
+        List<EquipmentInfo> equipmentInfoList = equipmentInfoDao.selectAll(parentNode33);
         String[][] strings = new String[equipmentInfoList.size() + 1][9];
         strings[0][0] = "序号";
         strings[0][1] = "上层节点";
@@ -945,7 +1015,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             strings[c][8] = equipmentInfoList.get(c - 1).getKeyword();
         }
         excelService.exportExcel(filePath, strings, title, colunmNumber);
-        return WebResponse.success();
+        return WebResponse.success("http://192.168.52.50:8099/excel/temp.xls");
     }
 
     @Override
@@ -1009,5 +1079,50 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         }
         return WebResponse.success();
     }
+
+    @Override
+    public WebResponse getSendControlVal() {
+        List<SendControl> sendControls = sendControlService.selectOne("192.168.52.50");
+        if (sendControls.size() > 0) {
+            return WebResponse.success(sendControls.get(0));
+        } else {
+            //先添加,在查询
+            SendControl sendControl = new SendControl();
+            sendControl.setControlVal(1);
+            sendControl.setIp("192.168.52.50");
+            sendControlService.insertSendControl(sendControl);
+            return WebResponse.success(sendControl);
+        }
+    }
+
+    @Override
+    public WebResponse getDealEventHistoryValue(GetDealEventHistoryValueQo getDealEventHistoryValueQo) {
+        String keyword = getDealEventHistoryValueQo.getKeyword();
+        String parentNodeCode = getDealEventHistoryValueQo.getParentNodeCode();
+        EquipmentInfo equipmentInfo = new EquipmentInfo();
+        equipmentInfo.setParentNodeCode(parentNodeCode);
+        equipmentInfo.setKeyword(keyword);
+        List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
+        GetDealEventHistoryValueVo getDealEventHistoryValueVo = new GetDealEventHistoryValueVo();
+        if (equipmentInfos.size() > 0) {
+            EquipmentInfo equipmentInfo1 = equipmentInfos.get(0);
+            String alarmVal = equipmentInfo1.getAlarmVal();
+            String[] split = alarmVal.split(",");
+            String eventType = "";
+            String eventCode = "";
+            String eventValue = "";
+            if (split.length > 0) {
+                eventType = split[0].split(":")[1];
+                eventCode = split[1].split(":")[1];
+                eventValue = split[2].split(":")[1];
+            }
+            getDealEventHistoryValueVo.setEventCode(eventCode);
+            getDealEventHistoryValueVo.setEventType(eventType);
+            getDealEventHistoryValueVo.setEventValue(eventValue);
+        }
+        return WebResponse.success(getDealEventHistoryValueVo);
+    }
+
+
 
 }

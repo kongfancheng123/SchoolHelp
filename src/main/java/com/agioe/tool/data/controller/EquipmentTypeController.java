@@ -74,13 +74,13 @@ public class EquipmentTypeController {
     /**
      * 导出设备类型
      *
-     * @param exportExcelEquipmentTypeQo
+     * @param
      * @return
      */
     @RequestMapping(value = "/exportExcelEquipmentType", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse exportExcelEquipmentType(@RequestBody ExportExcelEquipmentTypeQo exportExcelEquipmentTypeQo) throws Exception {
-        return equipmentTypeService.exportExcelEquipmentType(exportExcelEquipmentTypeQo);
+    public WebResponse exportExcelEquipmentType() throws Exception {
+        return equipmentTypeService.exportExcelEquipmentType();
     }
 
     /**

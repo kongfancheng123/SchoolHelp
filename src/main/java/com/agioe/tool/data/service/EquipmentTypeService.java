@@ -88,11 +88,11 @@ public interface EquipmentTypeService {
     /**
      * 导出设备类型表
      *
-     * @param exportExcelEquipmentTypeQo
+     * @param
      * @return
      * @throws Exception
      */
-    WebResponse exportExcelEquipmentType(ExportExcelEquipmentTypeQo exportExcelEquipmentTypeQo) throws Exception;
+    WebResponse exportExcelEquipmentType() throws Exception;
 
     /**
      * 导入设备类型表

@@ -88,13 +88,13 @@ public class MonitorPropertyTemplateBindController {
     /**
      * 导出信号模板关联表
      *
-     * @param exportExcelMonitorPropertyTemplateBindQo
+     * @param
      * @return
      */
     @RequestMapping(value = "/exportExcelMonitorPropertyTemplateBind", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse exportExcelMonitorPropertyTemplateBind(@RequestBody ExportExcelMonitorPropertyTemplateBindQo exportExcelMonitorPropertyTemplateBindQo) throws Exception {
-        return monitorPropertyTemplateBindService.exportExcelMonitorPropertyTemplateBind(exportExcelMonitorPropertyTemplateBindQo);
+    public WebResponse exportExcelMonitorPropertyTemplateBind() throws Exception {
+        return monitorPropertyTemplateBindService.exportExcelMonitorPropertyTemplateBind();
     }
 
     /**

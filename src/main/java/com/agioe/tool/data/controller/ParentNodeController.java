@@ -73,13 +73,13 @@ public class ParentNodeController {
     /**
      * 导出上层节点表
      *
-     * @param exportExcelParentNodeQo
+     * @param
      * @return
      */
     @RequestMapping(value = "/exportExcelParentNode", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse exportExcelParentNode(@RequestBody ExportExcelParentNodeQo exportExcelParentNodeQo) throws Exception {
-        return parentNodeService.exportExcelParentNode(exportExcelParentNodeQo);
+    public WebResponse exportExcelParentNode() throws Exception {
+        return parentNodeService.exportExcelParentNode();
     }
 
     /**
