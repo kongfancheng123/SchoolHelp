@@ -43,13 +43,18 @@ export default {
             vm.txtArr.push(str)
 
             vm.$nextTick(() => {
-              let sh = document.querySelector('.msg').scrollHeight
-              document.querySelector('.msg').scrollTop = sh
+              if (document.querySelector('.msg')) {
+                let sh = document.querySelector('.msg').scrollHeight
+                document.querySelector('.msg').scrollTop = sh
+              }
             })
           })
         }
       )
     }
+  },
+  destroyed() {
+    this.stompClient = null
   }
 }
 </script>
