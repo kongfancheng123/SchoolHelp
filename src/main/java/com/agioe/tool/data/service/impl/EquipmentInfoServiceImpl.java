@@ -694,18 +694,20 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             thread.start();
         }
         //更改控制值
-        List<SendControl> sendControls = sendControlService.selectOne(ip);
-        if (sendControls.size() > 0) {
-            SendControl sendControl = sendControls.get(0);
-            sendControl.setControlVal(0);
-            sendControlService.updateSendControl(sendControl);
-        } else {
-            //先添加,在查询
-            SendControl sendControl = new SendControl();
-            sendControl.setControlVal(0);
-            sendControl.setIp(ip);
-            sendControlService.insertSendControl(sendControl);
-        }
+//        List<SendControl> sendControls = sendControlService.selectOne(ip);
+//        if (sendControls.size() > 0) {
+//            SendControl sendControl = sendControls.get(0);
+//            sendControl.setControlVal(0);
+//            sendControlService.updateSendControl(sendControl);
+//        } else {
+//            //先添加,在查询
+//            SendControl sendControl = new SendControl();
+//            sendControl.setControlVal(0);
+//            sendControl.setIp(ip);
+//            sendControlService.insertSendControl(sendControl);
+//        }
+        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
+        sendControlVal.setVal(0);
         return WebResponse.success();
     }
 
@@ -723,18 +725,20 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 
         }
         //更改控制值
-        List<SendControl> sendControls = sendControlService.selectOne(ip);
-        if (sendControls.size() > 0) {
-            SendControl sendControl = sendControls.get(0);
-            sendControl.setControlVal(1);
-            sendControlService.updateSendControl(sendControl);
-        } else {
-            //先添加,在查询
-            SendControl sendControl = new SendControl();
-            sendControl.setControlVal(1);
-            sendControl.setIp(ip);
-            sendControlService.insertSendControl(sendControl);
-        }
+//        List<SendControl> sendControls = sendControlService.selectOne(ip);
+//        if (sendControls.size() > 0) {
+//            SendControl sendControl = sendControls.get(0);
+//            sendControl.setControlVal(1);
+//            sendControlService.updateSendControl(sendControl);
+//        } else {
+//            //先添加,在查询
+//            SendControl sendControl = new SendControl();
+//            sendControl.setControlVal(1);
+//            sendControl.setIp(ip);
+//            sendControlService.insertSendControl(sendControl);
+//        }
+        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
+        sendControlVal.setVal(1);
         return WebResponse.success();
     }
 
@@ -1082,17 +1086,18 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 
     @Override
     public WebResponse getSendControlVal() {
-        List<SendControl> sendControls = sendControlService.selectOne("192.168.52.50");
-        if (sendControls.size() > 0) {
-            return WebResponse.success(sendControls.get(0));
-        } else {
+//        List<SendControl> sendControls = sendControlService.selectOne("192.168.52.50");
+//        if (sendControls.size() > 0) {
+//            return WebResponse.success(sendControls.get(0));
+//        } else {
             //先添加,在查询
-            SendControl sendControl = new SendControl();
-            sendControl.setControlVal(1);
-            sendControl.setIp("192.168.52.50");
-            sendControlService.insertSendControl(sendControl);
-            return WebResponse.success(sendControl);
-        }
+        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
+        SendControl sendControl = new SendControl();
+        sendControl.setControlVal(sendControlVal.getVal());
+        sendControl.setIp("192.168.52.50");
+        sendControlService.insertSendControl(sendControl);
+        return WebResponse.success(sendControl);
+//        }
     }
 
     @Override
