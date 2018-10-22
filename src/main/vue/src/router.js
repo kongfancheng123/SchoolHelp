@@ -24,9 +24,6 @@ let router = new Router({
           meta: {
             title: '综合展示'
           },
-          params: {
-            age: 15111
-          },
           component: () => import('./views/comprehensive/comprehensive.vue')
         },
         {
@@ -41,7 +38,7 @@ let router = new Router({
                 title: '基础设置'
               },
               component: () =>
-                import('./views/component/systemConfig/basciSeting/basciSeting.vue')
+                import('./views/systemConfig/basciSeting/basciSeting.vue')
             },
             {
               path: 'equipmentType',
@@ -98,6 +95,14 @@ let router = new Router({
                 import('./views/systemConfig/equipmentInfo/equipmentInfo.vue')
             }
           ]
+        },
+        {
+          path: '/log',
+          name: 'Log',
+          meta: {
+            title: '实时日志'
+          },
+          component: () => import('./views/log/log.vue')
         }
       ]
     },

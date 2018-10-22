@@ -1,13 +1,6 @@
 // 引入配置中导出的对象
 import { instance } from '@/axiosConfig.js'
 
-// 获取所有
-let getAllDataList = {
-  r: params => {
-    return instance.post('/MonitorProperty/showAllMonitorProperty', params)
-  }
-}
-
 // 新增
 let addData = {
   r: params => {
@@ -29,4 +22,18 @@ let deleteData = {
   }
 }
 
-export { getAllDataList, addData, editData, deleteData }
+// 分页
+let pageData = {
+  r: params => {
+    return instance.post('/MonitorProperty/showPageMonitorProperty', params)
+  }
+}
+
+// 导出
+let exportData = {
+  r: params => {
+    return instance.post('/MonitorProperty/exportExcelMonitorProperty', params)
+  }
+}
+
+export { addData, editData, deleteData, pageData, exportData }

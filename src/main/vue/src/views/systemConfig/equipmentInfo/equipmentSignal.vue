@@ -10,7 +10,8 @@
                  @click="addEvent">新 增</el-button>
       <el-button size="mini"
                  type="info">导 入</el-button>
-      <el-button size="mini">导 出</el-button>
+      <el-button size="mini"
+                 @click="exportEvent">导 出</el-button>
     </div>
 
     <!--表格 -->
@@ -26,7 +27,7 @@
       <el-table-column prop="equipmentPropertyName"
                        label="属性名称">
       </el-table-column>
-      <el-table-column prop="equipmentPropertyType"
+      <el-table-column prop="equipmentPropertyTypeName"
                        label="属性类型">
       </el-table-column>
       <el-table-column label="操作">
@@ -39,6 +40,18 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!--page分页信息 -->
+    <div class="page">
+      <el-pagination @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :current-page="pageNow"
+                     :page-sizes="[30, 50, 100]"
+                     :page-size="30"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="totalPage">
+      </el-pagination>
+    </div>
 
     <!--弹出层：创建 -->
     <el-dialog title="新增"
@@ -158,6 +171,10 @@ import * as AJAX from '@/api/systemConfig/equipmentInfo/equipmentSignal.js'
 export default {
   data() {
     return {
+      // 当前页码
+      pageNow: 1,
+      pageSize: 30,
+      totalPage: 0,
       // 表格数据
       tableData: [],
       // 弹窗flag
@@ -221,28 +238,7 @@ export default {
   },
   methods: {
     /* 
-      获取所有数据 
-      01：equipmentPropertyType转为文字
-    */
-    getAllData() {
-      let vm = this
-      AJAX.getAllDataList
-        .r()
-        .then(response => {
-          vm.tableData = response.data.data.map(item => {
-            let num = item.equipmentPropertyType
-            item.equipmentPropertyType = vm.PropertyList[num].label
-            return item
-          })
-        })
-        .catch(error => {
-          console.log(error)
-        })
-    },
-
-    /* 
       数据校验是否重复 
-
       01: 400 说明数据库存在, 相同数据
       02：vm.$refs[formName].resetFields() 重置表单
       03:
@@ -266,7 +262,7 @@ export default {
       }, 200)
 
       vm.dialog[dialogFlag] = false
-      vm.getAllData()
+      vm.getPageData()
     },
 
     /*
@@ -323,9 +319,7 @@ export default {
       let vm = this
       vm.formEdit.equipmentPropertyCode = row.equipmentPropertyCode
       vm.formEdit.equipmentPropertyName = row.equipmentPropertyName
-      vm.formEdit.equipmentPropertyType = vm.PropertyList.find(
-        item => item.label === row.equipmentPropertyType
-      ).value
+      vm.formEdit.equipmentPropertyType = row.equipmentPropertyType
       vm.dialog.editFlag = true
     },
     editSumit(formName) {
@@ -358,13 +352,56 @@ export default {
     removeSumit(formName) {
       let vm = this
       vm.httpRequst('deleteData', formName, 'delFlag', '删除成功', '删除失败')
+    },
+
+    /* 根据分页：获取数据
+      修改totalPage：总数据个数
+    */
+    getPageData() {
+      let vm = this
+      AJAX.pageData
+        .r({ pageSize: vm.pageSize, pageNow: vm.pageNow })
+        .then(response => {
+          vm.totalPage = response.data.data.totalNum
+          vm.tableData = response.data.data.items.map(item => {
+            item.equipmentPropertyTypeName = vm.PropertyList.find(target => {
+              return target.value === item.equipmentPropertyType
+            }).label
+            return item
+          })
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
+
+    /* 分页功能*/
+    handleSizeChange(val) {
+      let vm = this
+      vm.pageSize = val
+      vm.getPageData()
+    },
+    handleCurrentChange(val) {
+      let vm = this
+      vm.pageNow = val
+      vm.getPageData()
+    },
+
+    /* 导出*/
+    exportEvent() {
+      AJAX.exportData.r().then(res => {
+        let url = res.data.data
+        let a = document.createElement('a')
+        a.setAttribute('href', url)
+        a.click()
+      })
     }
   },
 
   /* 获取表格数据 */
   created() {
     let vm = this
-    vm.getAllData()
+    vm.getPageData()
   }
 }
 </script>

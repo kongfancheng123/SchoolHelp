@@ -8,16 +8,6 @@ let getEquipmentTypeList = {
   }
 }
 
-// 获取所有
-let getAllDataList = {
-  r: params => {
-    return instance.post(
-      '/MonitorPropertyTemplate/showAllMonitorPropertyTemplate',
-      params
-    )
-  }
-}
-
 // 新增
 let addData = {
   r: params => {
@@ -48,4 +38,31 @@ let deleteData = {
   }
 }
 
-export { getEquipmentTypeList, getAllDataList, addData, editData, deleteData }
+// 分页
+let pageData = {
+  r: params => {
+    return instance.post(
+      '/MonitorPropertyTemplate/showPageMonitorPropertyTemplate',
+      params
+    )
+  }
+}
+
+// 导出
+let exportData = {
+  r: params => {
+    return instance.post(
+      '/MonitorPropertyTemplate/exportExcelMonitorPropertyTemplate',
+      params
+    )
+  }
+}
+
+export {
+  getEquipmentTypeList,
+  pageData,
+  addData,
+  editData,
+  deleteData,
+  exportData
+}

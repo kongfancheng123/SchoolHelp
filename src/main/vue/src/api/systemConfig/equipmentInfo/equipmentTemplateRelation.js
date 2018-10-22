@@ -1,7 +1,7 @@
 // 引入配置中导出的对象
 import { instance } from '@/axiosConfig.js'
 
-// 弹窗：设备类型 =>下拉数据
+// 弹窗：设备属性 =>下拉数据
 let getEquipmentProtoList = {
   r: params => {
     return instance.post('/MonitorProperty/showAllMonitorProperty', params)
@@ -13,16 +13,6 @@ let getTreeDataList = {
   r: params => {
     return instance.post(
       '/MonitorPropertyTemplateBind/getEquipmentTypeTemplateLink',
-      params
-    )
-  }
-}
-
-// 获取所有
-let getAllDataList = {
-  r: params => {
-    return instance.post(
-      '/MonitorPropertyTemplateBind/showAllMonitorPropertyTemplateBind',
       params
     )
   }
@@ -58,11 +48,32 @@ let deleteData = {
   }
 }
 
+// 分页
+let pageData = {
+  r: params => {
+    return instance.post(
+      '/MonitorPropertyTemplateBind/showPageMonitorPropertyTemplateBind',
+      params
+    )
+  }
+}
+
+// 导出
+let exportData = {
+  r: params => {
+    return instance.post(
+      '/MonitorPropertyTemplate/exportExcelMonitorPropertyTemplate',
+      params
+    )
+  }
+}
+
 export {
   getEquipmentProtoList,
   getTreeDataList,
-  getAllDataList,
+  pageData,
   addData,
   editData,
-  deleteData
+  deleteData,
+  exportData
 }

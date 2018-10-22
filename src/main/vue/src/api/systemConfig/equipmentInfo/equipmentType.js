@@ -2,11 +2,11 @@
 import { instance } from '@/axiosConfig.js'
 
 // 获取所有
-let getAllDataList = {
-  r: params => {
-    return instance.post('/EquipmentType/showAllEquipmentType', params)
-  }
-}
+// let getAllDataList = {
+//   r: params => {
+//     return instance.post('/EquipmentType/showAllEquipmentType', params)
+//   }
+// }
 
 // 新增
 let addData = {
@@ -29,4 +29,18 @@ let deleteData = {
   }
 }
 
-export { getAllDataList, addData, editData, deleteData }
+// 分页
+let pageData = {
+  r: params => {
+    return instance.post('/EquipmentType/showPageEquipmentType', params)
+  }
+}
+
+// 导出
+let exportData = {
+  r: params => {
+    return instance.post('/EquipmentType/exportExcelEquipmentType', params)
+  }
+}
+
+export { addData, editData, deleteData, pageData, exportData }

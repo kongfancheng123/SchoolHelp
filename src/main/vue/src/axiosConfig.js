@@ -5,7 +5,7 @@ import axios from 'axios'
 const instance = axios.create({
   // baseURL: 'http://192.168.52.50:8080',
   baseURL: '',
-  timeout: 5000,
+  timeout: 100000,
   responseType: 'json',
   headers: {
     username: 'atm8000',

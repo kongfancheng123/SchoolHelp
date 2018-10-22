@@ -11,3 +11,7 @@ html,
   padding: 0;
   font-family: "微软雅黑"
 }
+
+.page {
+  padding: 10px 0;
+}
