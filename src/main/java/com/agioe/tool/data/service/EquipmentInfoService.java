@@ -56,6 +56,7 @@ public interface EquipmentInfoService {
      * 建表
      */
     Integer createTable(CreateTableParam createTableParam);
+
     /**
      * 展示设备
      *

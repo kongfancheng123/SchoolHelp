@@ -1124,5 +1124,4 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     }
 
 
-
 }

@@ -35,7 +35,6 @@ public class Ping extends AbstractProtocol {
     }
 
 
-
     @Override
     public void onAvailable(Message msg) {
 

@@ -53,7 +53,7 @@ public class Worker implements Runnable {
      * @param buf
      */
     public static void unicast(String ipAndPortString, ByteBuf buf) {
-        logger.info("向客户端:{}单播数据:{}", ipAndPortString, ByteBufUtil.hexDump(buf));
+        logger.info("向客户端:" + ipAndPortString + "单播数据:" + ByteBufUtil.hexDump(buf));
         clientMap.get(ipAndPortString).writeAndFlush(buf);
     }
 
@@ -63,11 +63,19 @@ public class Worker implements Runnable {
      * @param buf
      */
     public static void broadcast(ByteBuf buf) {
-        logger.info("准备广播数据:{}", ByteBufUtil.hexDump(buf));
+        logger.info("准备广播数据:" + ByteBufUtil.hexDump(buf));
         clientMap.forEach((k, v) -> {
             ByteBuf copyBuf = buf.copy();
             v.writeAndFlush(copyBuf);
         });
+    }
+
+    public static Map<String, Channel> getClientMap() {
+        return clientMap;
+    }
+
+    public static void setClientMap(Map<String, Channel> clientMap) {
+        Worker.clientMap = clientMap;
     }
 
     @Override
@@ -111,14 +119,6 @@ public class Worker implements Runnable {
                 }
             });
         }
-    }
-
-    public static Map<String, Channel> getClientMap() {
-        return clientMap;
-    }
-
-    public static void setClientMap(Map<String, Channel> clientMap) {
-        Worker.clientMap = clientMap;
     }
 }
 

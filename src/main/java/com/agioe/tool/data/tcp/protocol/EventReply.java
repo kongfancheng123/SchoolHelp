@@ -32,7 +32,6 @@ public class EventReply extends AbstractProtocol {
     }
 
 
-
     @Override
     public void onAvailable(Message msg) {
 

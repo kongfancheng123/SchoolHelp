@@ -81,7 +81,6 @@ public class DataSend extends AbstractProtocol {
     }
 
 
-
     @Override
     public void onAvailable(Message msg) {
 
