@@ -54,7 +54,11 @@ export default {
     }
   },
   destroyed() {
-    this.stompClient = null
+    let vm = this
+    if (vm.stompClient !== null) {
+      vm.stompClient.disconnect()
+      vm.stompClient = null
+    }
   }
 }
 </script>
