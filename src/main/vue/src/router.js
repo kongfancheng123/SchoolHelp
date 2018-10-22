@@ -6,34 +6,25 @@ Vue.use(Router)
 let router = new Router({
   routes: [
     {
-      path: '',
-      name: 'Comprehensive',
+      path: '/',
+      name: 'login',
       meta: {
-        title: '综合展示'
+        title: '登录'
       },
-      component: () => import('./views/comprehensive/comprehensive.vue')
+      component: () => import('./views/login.vue'),
+      alias: '/login'
     },
     {
-      path: '',
-      name: 'Comprehensive',
-      meta: {
-        title: '综合展示'
-      },
-      component: () => import('./views/comprehensive/comprehensive.vue')
-    },
-    {
-      path: '/systemConfig',
-      component: () => import('./views/systemConfig/index.vue'),
-      redirect: '/systemConfig/basciSeting',
+      path: '/comprehensive',
+      component: () => import('./views/index.vue'),
       children: [
         {
-          path: 'basciSeting',
-          name: 'BasciSeting',
+          path: '',
+          name: 'Comprehensive',
           meta: {
-            title: '基础设置'
+            title: '综合展示'
           },
-          component: () =>
-            import('./views/systemConfig/basciSeting/basciSeting.vue')
+          component: () => import('./views/comprehensive/comprehensive.vue')
         },
         {
           path: '/systemConfig',
