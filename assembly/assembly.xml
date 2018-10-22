@@ -59,6 +59,12 @@
             <directory>${project.basedir}/logs</directory>
             <outputDirectory>/logs</outputDirectory>
         </fileSet>
+
+        <!-- SQL脚本 -->
+        <fileSet>
+            <directory>${project.basedir}/sql</directory>
+            <outputDirectory>/sql</outputDirectory>
+        </fileSet>
     </fileSets>
 
     <!-- 依赖管理 -->
