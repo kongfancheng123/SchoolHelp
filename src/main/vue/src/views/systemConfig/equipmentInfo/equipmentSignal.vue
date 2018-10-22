@@ -3,14 +3,15 @@
     <!-- tagTip -->
     <div class="tagTip">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item class="title">设备类型配置</el-breadcrumb-item>
+        <el-breadcrumb-item class="title">设备监控信号配置</el-breadcrumb-item>
       </el-breadcrumb>
       <el-button type="primary"
                  size="mini"
                  @click="addEvent">新 增</el-button>
       <el-button size="mini"
                  type="info">导 入</el-button>
-      <el-button size="mini">导 出</el-button>
+      <el-button size="mini"
+                 @click="exportEvent">导 出</el-button>
     </div>
 
     <!--表格 -->
@@ -19,12 +20,15 @@
               style="width: 100%">
       <el-table-column type="index">
       </el-table-column>
-      <el-table-column prop="equipmentTypeCode"
-                       label="类型编码"
+      <el-table-column prop="equipmentPropertyCode"
+                       label="属性编码"
                        width="180">
       </el-table-column>
-      <el-table-column prop="equipmentTypeName"
-                       label="类型名称">
+      <el-table-column prop="equipmentPropertyName"
+                       label="属性名称">
+      </el-table-column>
+      <el-table-column prop="equipmentPropertyTypeName"
+                       label="属性类型">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -37,6 +41,18 @@
       </el-table-column>
     </el-table>
 
+    <!--page分页信息 -->
+    <div class="page">
+      <el-pagination @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :current-page="pageNow"
+                     :page-sizes="[30, 50, 100]"
+                     :page-size="30"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="totalPage">
+      </el-pagination>
+    </div>
+
     <!--弹出层：创建 -->
     <el-dialog title="新增"
                width="400px"
@@ -48,16 +64,28 @@
                size="small"
                label-width="100px">
 
-        <el-form-item label="类型编码"
-                      prop="equipmentTypeCode">
-          <el-input v-model="formAdd.equipmentTypeCode"
-                    placeholder="请输入类型编码"></el-input>
+        <el-form-item label="属性编码"
+                      prop="equipmentPropertyCode">
+          <el-input v-model="formAdd.equipmentPropertyCode"
+                    placeholder="请输入属性编码"></el-input>
         </el-form-item>
 
-        <el-form-item label="类型名称"
-                      prop="equipmentTypeName">
-          <el-input v-model="formAdd.equipmentTypeName"
-                    placeholder="请输入类型名称"></el-input>
+        <el-form-item label="属性名称"
+                      prop="equipmentPropertyName">
+          <el-input v-model="formAdd.equipmentPropertyName"
+                    placeholder="请输入属性名称"></el-input>
+        </el-form-item>
+
+        <el-form-item label="属性类型"
+                      prop="equipmentPropertyType">
+          <el-select v-model="formAdd.equipmentPropertyType"
+                     placeholder="请输入属性类型">
+            <el-option v-for="item in PropertyList"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
 
       </el-form>
@@ -82,17 +110,30 @@
                size="small"
                label-width="100px">
 
-        <el-form-item label="类型编码"
-                      prop="equipmentTypeCode">
-          <el-input v-model="formEdit.equipmentTypeCode"
+        <el-form-item label="属性编码"
+                      prop="equipmentPropertyCode">
+          <el-input v-model="formEdit.equipmentPropertyCode"
                     disabled
-                    placeholder="请输入类型编码"></el-input>
+                    placeholder="请输入属性编码"></el-input>
         </el-form-item>
 
-        <el-form-item label="类型名称"
-                      prop="equipmentTypeName">
-          <el-input v-model="formEdit.equipmentTypeName"
-                    placeholder="请输入类型名称"></el-input>
+        <el-form-item label="属性名称"
+                      prop="equipmentPropertyName">
+          <el-input v-model="formEdit.equipmentPropertyName"
+                    placeholder="请输入属性名称"></el-input>
+        </el-form-item>
+
+        <el-form-item label="属性类型"
+                      prop="equipmentPropertyType">
+          <el-select v-model="formEdit.equipmentPropertyType"
+                     disabled
+                     placeholder="请输入属性类型">
+            <el-option v-for="item in PropertyList"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
 
       </el-form>
@@ -117,7 +158,7 @@
                    size="small">取 消</el-button>
         <el-button type="primary"
                    size="small"
-                   @click="removeSumit">确 定</el-button>
+                   @click="removeSumit('formDelete')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -130,6 +171,10 @@ import * as AJAX from '@/api/systemConfig/equipmentInfo/equipmentSignal.js'
 export default {
   data() {
     return {
+      // 当前页码
+      pageNow: 1,
+      pageSize: 30,
+      totalPage: 0,
       // 表格数据
       tableData: [],
       // 弹窗flag
@@ -138,50 +183,117 @@ export default {
         delFlag: false,
         editFlag: false
       },
+      // 属性类型
+      PropertyList: [
+        {
+          value: 0,
+          label: '遥测'
+        },
+        {
+          value: 1,
+          label: '遥信'
+        },
+        {
+          value: 2,
+          label: '遥控'
+        },
+        {
+          value: 3,
+          label: '遥调'
+        },
+        {
+          value: 4,
+          label: '说明'
+        }
+      ],
       // 增加表单
       formAdd: {
-        equipmentTypeCode: null,
-        equipmentTypeName: null
+        equipmentPropertyCode: null,
+        equipmentPropertyName: null,
+        equipmentPropertyType: null
       },
       // 编辑表单
       formEdit: {
-        equipmentTypeCode: null,
-        equipmentTypeName: null
+        equipmentPropertyCode: null,
+        equipmentPropertyName: null,
+        equipmentPropertyType: null
       },
       // 删除表单
       formDelete: {
-        equipmentTypeCode: null
+        equipmentPropertyCode: null
       },
       // 验证规则
       rules: {
-        equipmentTypeCode: [
+        equipmentPropertyCode: [
           { required: true, message: '内容不能为空', trigger: 'blur' }
         ],
-        equipmentTypeName: [
+        equipmentPropertyName: [
+          { required: true, message: '内容不能为空', trigger: 'blur' }
+        ],
+        equipmentPropertyType: [
           { required: true, message: '内容不能为空', trigger: 'blur' }
         ]
       }
     }
   },
   methods: {
-    /* 获取所有数据 */
-    getAllData() {
+    /* 
+      数据校验是否重复 
+      01: 400 说明数据库存在, 相同数据
+      02：vm.$refs[formName].resetFields() 重置表单
+      03:
+        response: 后端返回数据
+        formName: 表单名
+        dialogFlag : 被关闭的弹层flag
+        sucessMsg: 成功提示文字
+    */
+    check(response, formName, dialogFlag, sucessMsg) {
       let vm = this
-      AJAX.getAllDataList
-        .r()
+
+      response.data.code === 400
+        ? vm.$message.error(response.data.message)
+        : vm.$message.success(sucessMsg)
+
+      setTimeout(() => {
+        // 删除表单不需要重置
+        if (formName !== 'formDelete') {
+          vm.$refs[formName].resetFields()
+        }
+      }, 200)
+
+      vm.dialog[dialogFlag] = false
+      vm.getPageData()
+    },
+
+    /*
+      后端请求
+      01: 参数解释：
+          urlName：调用的那个接口
+          formName：表单名字
+          dialogFlag：关闭的弹层falg
+          sucessMsg：成功提示文字
+          failMsg：失败提示文字
+      02：
+      vm.check()校验数据库重复，返回提示
+    */
+    httpRequst(urlName, formName, dialogFlag, sucessMsg, failMsg) {
+      let vm = this
+      AJAX[urlName]
+        .r(vm[formName])
         .then(response => {
-          vm.tableData = response.data.data
+          vm.check(response, formName, dialogFlag, sucessMsg)
         })
         .catch(error => {
+          vm.$message.error(failMsg)
           console.log(error)
         })
     },
 
     /* 
-      增加
-      01: addEvent 增加弹窗
-      02：addSumit 增加弹窗表格提交
-    */
+       增加
+       01: addEvent 增加弹窗
+       02：addSumit 增加弹窗表格提交
+     */
     addEvent() {
       let vm = this
       vm.dialog.addFlag = true
@@ -190,17 +302,7 @@ export default {
       let vm = this
       vm.$refs[formName].validate(valid => {
         if (valid) {
-          vm.dialog.addFlag = false
-          AJAX.addData
-            .r(vm.formAdd)
-            .then(response => {
-              vm.$message.success('增加成功')
-              vm.getAllData()
-            })
-            .catch(error => {
-              vm.$message.error('增加失败')
-              console.log(error)
-            })
+          vm.httpRequst('addData', formName, 'addFlag', '增加成功', '增加失败')
         } else {
           return false
         }
@@ -211,28 +313,26 @@ export default {
       编辑
       01: editEvent 编辑弹窗
       02：editSumit 编辑弹窗表格提交
+      03: equipmentPropertyType文字转数字
     */
     editEvent(index, row) {
       let vm = this
-      vm.formEdit.equipmentTypeCode = row.equipmentTypeCode
-      vm.formEdit.equipmentTypeName = row.equipmentTypeName
+      vm.formEdit.equipmentPropertyCode = row.equipmentPropertyCode
+      vm.formEdit.equipmentPropertyName = row.equipmentPropertyName
+      vm.formEdit.equipmentPropertyType = row.equipmentPropertyType
       vm.dialog.editFlag = true
     },
     editSumit(formName) {
       let vm = this
       vm.$refs[formName].validate(valid => {
         if (valid) {
-          vm.dialog.editFlag = false
-          AJAX.editData
-            .r(vm.formEdit)
-            .then(response => {
-              vm.$message.success('修改成功')
-              vm.getAllData()
-            })
-            .catch(error => {
-              vm.$message.error('修改失败')
-              console.log(error)
-            })
+          vm.httpRequst(
+            'editData',
+            formName,
+            'editFlag',
+            '修改成功',
+            '修改失败'
+          )
         } else {
           return false
         }
@@ -247,28 +347,61 @@ export default {
     removeEvent(index, row) {
       let vm = this
       vm.dialog.delFlag = true
-      vm.formDelete.equipmentTypeCode = row.equipmentTypeCode
+      vm.formDelete.equipmentPropertyCode = row.equipmentPropertyCode
     },
-    removeSumit() {
+    removeSumit(formName) {
       let vm = this
-      vm.dialog.delFlag = false
-      AJAX.deleteData
-        .r(vm.formDelete)
+      vm.httpRequst('deleteData', formName, 'delFlag', '删除成功', '删除失败')
+    },
+
+    /* 根据分页：获取数据
+      修改totalPage：总数据个数
+    */
+    getPageData() {
+      let vm = this
+      AJAX.pageData
+        .r({ pageSize: vm.pageSize, pageNow: vm.pageNow })
         .then(response => {
-          vm.$message.success('删除成功')
-          vm.getAllData()
+          vm.totalPage = response.data.data.totalNum
+          vm.tableData = response.data.data.items.map(item => {
+            item.equipmentPropertyTypeName = vm.PropertyList.find(target => {
+              return target.value === item.equipmentPropertyType
+            }).label
+            return item
+          })
         })
         .catch(error => {
-          vm.$message.error('删除失败')
           console.log(error)
         })
+    },
+
+    /* 分页功能*/
+    handleSizeChange(val) {
+      let vm = this
+      vm.pageSize = val
+      vm.getPageData()
+    },
+    handleCurrentChange(val) {
+      let vm = this
+      vm.pageNow = val
+      vm.getPageData()
+    },
+
+    /* 导出*/
+    exportEvent() {
+      AJAX.exportData.r().then(res => {
+        let url = res.data.data
+        let a = document.createElement('a')
+        a.setAttribute('href', url)
+        a.click()
+      })
     }
   },
 
   /* 获取表格数据 */
   created() {
     let vm = this
-    vm.getAllData()
+    vm.getPageData()
   }
 }
 </script>

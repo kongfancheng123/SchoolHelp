@@ -10,6 +10,8 @@
                  @click="addEvent">新 增</el-button>
       <el-button size="mini"
                  type="info">导 入</el-button>
+      <el-button size="mini"
+                 @click="exportEvent">导 出</el-button>
     </div>
 
     <!--表格 -->
@@ -35,6 +37,18 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!--page分页信息 -->
+    <div class="page">
+      <el-pagination @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :current-page="pageNow"
+                     :page-sizes="[30, 50, 100]"
+                     :page-size="30"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="totalPage">
+      </el-pagination>
+    </div>
 
     <!--弹出层：创建 -->
     <el-dialog title="新增"
@@ -116,7 +130,7 @@
                    size="small">取 消</el-button>
         <el-button type="primary"
                    size="small"
-                   @click="removeSumit">确 定</el-button>
+                   @click="removeSumit('formDelete')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -129,6 +143,10 @@ import * as AJAX from '@/api/systemConfig/equipmentInfo/equipmentType.js'
 export default {
   data() {
     return {
+      // 当前页码
+      pageNow: 1,
+      pageSize: 30,
+      totalPage: 0,
       // 表格数据
       tableData: [],
       // 弹窗flag
@@ -163,21 +181,58 @@ export default {
     }
   },
   methods: {
-    /* 获取所有数据 */
-    getAllData() {
+    /* 数据校验是否重复 
+
+      01: 400 说明数据库存在, 相同数据
+      02：vm.$refs[formName].resetFields() 重置表单
+      03:
+        response: 后端返回数据
+        formName: 表单名
+        dialogFlag : 被关闭的弹层flag
+        sucessMsg: 成功提示文字
+    */
+    check(response, formName, dialogFlag, sucessMsg) {
       let vm = this
-      AJAX.getAllDataList
-        .r()
+
+      response.data.code === 400
+        ? vm.$message.error(response.data.message)
+        : vm.$message.success(sucessMsg)
+
+      setTimeout(() => {
+        // 删除表单不需要重置
+        if (formName !== 'formDelete') {
+          vm.$refs[formName].resetFields()
+        }
+      }, 200)
+
+      vm.dialog[dialogFlag] = false
+      vm.getPageData()
+    },
+
+    /* 后端请求
+      01: 参数解释：
+          urlName：调用的那个接口
+          formName：表单名字
+          dialogFlag：关闭的弹层falg
+          sucessMsg：成功提示文字
+          failMsg：失败提示文字
+      02：
+      vm.check()校验数据库重复，返回提示
+    */
+    httpRequst(urlName, formName, dialogFlag, sucessMsg, failMsg) {
+      let vm = this
+      AJAX[urlName]
+        .r(vm[formName])
         .then(response => {
-          vm.tableData = response.data.data
+          vm.check(response, formName, dialogFlag, sucessMsg)
         })
         .catch(error => {
+          vm.$message.error(failMsg)
           console.log(error)
         })
     },
 
-    /* 
-      增加
+    /* 增加
       01: addEvent 增加弹窗
       02：addSumit 增加弹窗表格提交
     */
@@ -189,25 +244,14 @@ export default {
       let vm = this
       vm.$refs[formName].validate(valid => {
         if (valid) {
-          vm.dialog.addFlag = false
-          AJAX.addData
-            .r(vm.formAdd)
-            .then(response => {
-              vm.$message.success('增加成功')
-              vm.getAllData()
-            })
-            .catch(error => {
-              vm.$message.error('增加失败')
-              console.log(error)
-            })
+          vm.httpRequst('addData', formName, 'addFlag', '增加成功', '增加失败')
         } else {
           return false
         }
       })
     },
 
-    /* 
-      编辑
+    /* 编辑
       01: editEvent 编辑弹窗
       02：editSumit 编辑弹窗表格提交
     */
@@ -221,17 +265,13 @@ export default {
       let vm = this
       vm.$refs[formName].validate(valid => {
         if (valid) {
-          vm.dialog.editFlag = false
-          AJAX.editData
-            .r(vm.formEdit)
-            .then(response => {
-              vm.$message.success('修改成功')
-              vm.getAllData()
-            })
-            .catch(error => {
-              vm.$message.error('修改失败')
-              console.log(error)
-            })
+          vm.httpRequst(
+            'editData',
+            formName,
+            'editFlag',
+            '修改成功',
+            '修改失败'
+          )
         } else {
           return false
         }
@@ -248,26 +288,53 @@ export default {
       vm.dialog.delFlag = true
       vm.formDelete.equipmentTypeCode = row.equipmentTypeCode
     },
-    removeSumit() {
+    removeSumit(formName) {
       let vm = this
-      vm.dialog.delFlag = false
-      AJAX.deleteData
-        .r(vm.formDelete)
+      vm.httpRequst('deleteData', formName, 'delFlag', '删除成功', '删除失败')
+    },
+
+    /* 根据分页：获取数据
+      修改totalPage：总数据个数
+    */
+    getPageData() {
+      let vm = this
+      AJAX.pageData
+        .r({ pageSize: vm.pageSize, pageNow: vm.pageNow })
         .then(response => {
-          vm.$message.success('删除成功')
-          vm.getAllData()
+          vm.totalPage = response.data.data.totalNum
+          vm.tableData = response.data.data.items
         })
         .catch(error => {
-          vm.$message.error('删除失败')
           console.log(error)
         })
+    },
+
+    /* 分页功能*/
+    handleSizeChange(val) {
+      let vm = this
+      vm.pageSize = val
+      vm.getPageData()
+    },
+    handleCurrentChange(val) {
+      let vm = this
+      vm.pageNow = val
+      vm.getPageData()
+    },
+    /* 导出*/
+    exportEvent() {
+      AJAX.exportData.r().then(res => {
+        let url = res.data.data
+        let a = document.createElement('a')
+        a.setAttribute('href', url)
+        a.click()
+      })
     }
   },
 
   /* 获取表格数据 */
   created() {
     let vm = this
-    vm.getAllData()
+    vm.getPageData()
   }
 }
 </script>

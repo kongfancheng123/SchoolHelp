@@ -29,6 +29,10 @@
               <el-menu-item index="/systemConfig/equipmentInfo">设备信息</el-menu-item>
             </el-submenu>
           </el-submenu>
+
+          <el-menu-item index="/log"
+                        route>
+            <i class="el-icon-tickets"></i>实时日志</el-menu-item>
         </el-menu>
       </div>
 
@@ -50,6 +54,11 @@ export default {
   }
 }
 </script>
+<style>
+.el-menu.el-menu--horizontal {
+  border-bottom: none;
+}
+</style>
 
 
 <style lang="scss">

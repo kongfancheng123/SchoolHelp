@@ -1,9 +1,15 @@
 <template>
   <div class="flex">
     <el-aside width="220px">
-      <el-tree :data="data"
+      <el-tree :data="treeData"
+               accordion
                :props="defaultProps"
-               @node-click="handleNodeClick"></el-tree>
+               :render-content="renderContent"
+               @node-click="treeNodeClick"
+               node-key="code"
+               :default-expanded-keys="[treeExpandedKey]"
+               :default-checked-keys="[treeCheckedKey]"
+               id="tree"></el-tree>
     </el-aside>
 
     <main>
@@ -14,10 +20,11 @@
         </el-breadcrumb>
         <el-button type="primary"
                    size="mini"
-                   @click="dialog.addFlag = true">创建</el-button>
+                   @click="addEvent('formAdd')">创建</el-button>
         <el-button size="mini"
-                   type="info">导入</el-button>
-        <el-button size="mini">导出</el-button>
+                   type="info">导 入</el-button>
+        <el-button size="mini"
+                   @click="exportEvent">导 出</el-button>
       </div>
 
       <!--表格 -->
@@ -26,53 +33,75 @@
                 style="width: 100%">
         <el-table-column type="index">
         </el-table-column>
-        <el-table-column prop="name"
+        <el-table-column prop="equipmentTypeName"
                          label="设备类型"
                          width="180">
         </el-table-column>
-        <el-table-column prop="address"
+        <el-table-column prop="equipmentPropertyTemplateName"
                          label="模板名称">
         </el-table-column>
-        <el-table-column prop="address"
+        <el-table-column prop="equipmentPropertyCode"
                          label="属性编码">
         </el-table-column>
-        <el-table-column prop="address"
+        <el-table-column prop="equipmentPropertyName"
                          label="属性名称">
         </el-table-column>
-        <el-table-column prop="address"
+        <el-table-column prop="equipmentPropertyTypeName"
                          label="属性类型">
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button size="mini"
-                       @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                       @click="editEvent(scope.$index, scope.row)">编辑</el-button>
             <el-button size="mini"
                        type="danger"
-                       @click="handleRemove(scope.$index, scope.row)">删除</el-button>
+                       @click="removeEvent(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+
+      <!--page分页信息 -->
+      <div class="page">
+        <el-pagination @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :current-page="pageNow"
+                       :page-sizes="[30, 50, 100]"
+                       :page-size="30"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="totalPage">
+        </el-pagination>
+      </div>
 
       <!--弹出层：创建 -->
       <el-dialog title="新增"
                  width="400px"
                  :visible.sync="dialog.addFlag">
+
         <el-form :model="formAdd"
+                 status-icon
+                 :rules="rules"
+                 ref="formAdd"
                  size="small"
-                 label-width="100px">
+                 label-width="120px">
 
           <el-form-item label="设备类型">
-            <el-input disabled></el-input>
+            <el-input v-model="formAdd.equipmentTypeName"
+                      disabled
+                      placeholder="请输入设备类型"></el-input>
           </el-form-item>
 
           <el-form-item label="设备属性模板">
-            <el-input disabled></el-input>
+            <el-input v-model="formAdd.equipmentPropertyTemplateName"
+                      disabled
+                      placeholder="请输入设备属性模板"></el-input>
           </el-form-item>
 
-          <el-form-item label="设备属性类型">
-            <el-select v-model="value"
+          <el-form-item label="设备属性类型"
+                        prop="equipmentPropertyType">
+            <el-select v-model="formAdd.equipmentPropertyType"
+                       @change="changEvent('formAdd')"
                        placeholder="请选择">
-              <el-option v-for="item in options"
+              <el-option v-for="item in PropertyList"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value">
@@ -80,13 +109,14 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="设备属性">
-            <el-select v-model="value"
+          <el-form-item label="设备属性"
+                        prop="equipmentPropertyCode">
+            <el-select v-model="formAdd.equipmentPropertyCode"
                        placeholder="请选择">
-              <el-option v-for="item in options"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
+              <el-option v-for="item in equipmentProList"
+                         :key="item.equipmentPropertyCode"
+                         :label="item.equipmentPropertyName"
+                         :value="item.equipmentPropertyCode">
               </el-option>
             </el-select>
           </el-form-item>
@@ -98,7 +128,7 @@
                      size="small">取 消</el-button>
           <el-button type="primary"
                      size="small"
-                     @click="dialog.addFlag = false">确 定</el-button>
+                     @click="addSumit('formAdd')">确 定</el-button>
         </div>
       </el-dialog>
 
@@ -106,22 +136,31 @@
       <el-dialog title="编辑"
                  width="400px"
                  :visible.sync="dialog.editFlag">
-        <el-form :model="formAdd"
+        <el-form :model="formEdit"
+                 status-icon
+                 :rules="rules"
+                 ref="formEdit"
                  size="small"
-                 label-width="100px">
+                 label-width="120px">
 
           <el-form-item label="设备类型">
-            <el-input disabled></el-input>
+            <el-input v-model="formEdit.equipmentTypeName"
+                      disabled
+                      placeholder="请输入设备类型"></el-input>
           </el-form-item>
 
           <el-form-item label="设备属性模板">
-            <el-input disabled></el-input>
+            <el-input v-model="formEdit.equipmentPropertyTemplateName"
+                      disabled
+                      placeholder="请输入设备属性模板"></el-input>
           </el-form-item>
 
-          <el-form-item label="设备属性类型">
-            <el-select v-model="value"
+          <el-form-item label="设备属性类型"
+                        prop="equipmentPropertyType">
+            <el-select v-model="formEdit.equipmentPropertyType"
+                       @change="changEvent('formEdit')"
                        placeholder="请选择">
-              <el-option v-for="item in options"
+              <el-option v-for="item in PropertyList"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value">
@@ -129,13 +168,14 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="设备属性">
-            <el-select v-model="value"
+          <el-form-item label="设备属性"
+                        prop="equipmentPropertyCode">
+            <el-select v-model="formEdit.equipmentPropertyCode"
                        placeholder="请选择">
-              <el-option v-for="item in options"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
+              <el-option v-for="item in equipmentProList"
+                         :key="item.equipmentPropertyCode"
+                         :label="item.equipmentPropertyName"
+                         :value="item.equipmentPropertyCode">
               </el-option>
             </el-select>
           </el-form-item>
@@ -147,7 +187,7 @@
                      size="small">取 消</el-button>
           <el-button type="primary"
                      size="small"
-                     @click="dialog.editFlag = false">确 定</el-button>
+                     @click="editSumit('formEdit')">确 定</el-button>
         </div>
       </el-dialog>
 
@@ -162,7 +202,7 @@
                      size="small">取 消</el-button>
           <el-button type="primary"
                      size="small"
-                     @click="dialog.delFlag = false">确 定</el-button>
+                     @click="removeSumit('formDelete')">确 定</el-button>
         </div>
       </el-dialog>
     </main>
@@ -170,10 +210,15 @@
 </template>
 
 <script>
+import * as AJAX from '@/api/systemConfig/equipmentInfo/equipmentTemplateRelation.js'
 export default {
   name: 'basicseting',
   data() {
     return {
+      // 当前页码
+      pageNow: 1,
+      pageSize: 30,
+      totalPage: 0,
       // 弹窗flag
       dialog: {
         addFlag: false,
@@ -181,117 +226,400 @@ export default {
         editFlag: false
       },
       // 属性类型
-      options: [
+      PropertyList: [
         {
-          value: 'YC',
+          value: 0,
           label: '遥测'
         },
         {
-          value: 'YX',
+          value: 1,
           label: '遥信'
         },
         {
-          value: 'YK',
+          value: 2,
           label: '遥控'
         },
         {
-          value: 'YT',
+          value: 3,
           label: '遥调'
         },
         {
-          value: 'EXPLAN',
+          value: 4,
           label: '说明'
         }
       ],
-      value: '',
+      // 设备属性(所有，根据设备类型筛选)
+      equipmentAllProList: [],
+      equipmentProList: [],
+
+      // 获取树,选中项的，设备类型code和模板code(后端使用)，name前端显示表格使用
+      treeEquipmentTypeName: null,
+      treeEquipmentTypeCode: null,
+      treeEquipmentPropertyTemplateName: null,
+      treeEquipmentPropertyTemplateCode: null,
+
       // 增加表单
-      formAdd: {},
+      formAdd: {
+        equipmentType: null,
+        equipmentPropertyTemplateName: null,
+        equipmentPropertyTemplateCode: null,
+        equipmentPropertyCode: null
+      },
+      // 增加表单
+      formEdit: {
+        equipmentType: null,
+        equipmentPropertyTemplateName: null,
+        equipmentPropertyTemplateCode: null,
+        equipmentPropertyCode: null,
+        id: null
+      },
+      // 删除表单
+      formDelete: {
+        id: null
+      },
       // 表格数据
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }
-      ],
+      tableData: [],
+      // 验证规则
+      rules: {
+        equipmentPropertyName: [
+          { required: true, message: '内容不能为空', trigger: 'blur' }
+        ],
+        equipmentPropertyType: [
+          { required: true, message: '内容不能为空', trigger: 'blur' }
+        ],
+        equipmentPropertyCode: [
+          { required: true, message: '内容不能为空', trigger: 'blur' }
+        ]
+      },
       // 树数据
-      data: [
-        {
-          label: '一级 1',
-          children: [
-            {
-              label: '二级 1-1',
-              children: [
-                {
-                  label: '三级 1-1-1'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          label: '一级 2',
-          children: [
-            {
-              label: '二级 2-1',
-              children: [
-                {
-                  label: '三级 2-1-1'
-                }
-              ]
-            },
-            {
-              label: '二级 2-2',
-              children: [
-                {
-                  label: '三级 2-2-1'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          label: '一级 3',
-          children: [
-            {
-              label: '二级 3-1',
-              children: [
-                {
-                  label: '三级 3-1-1'
-                }
-              ]
-            },
-            {
-              label: '二级 3-2',
-              children: [
-                {
-                  label: '三级 3-2-1'
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      treeData: [],
+      // 树默认展开项: code
+      treeExpandedKey: '',
+      // 树选中项
+      treeCheckedKey: '',
       // 树渲染规则
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'name'
       }
     }
   },
   methods: {
-    handleEdit() {
-      this.dialog.editFlag = true
+    /* 
+      树
+    */
+    geTreeData() {
+      let vm = this
+      AJAX.getTreeDataList
+        .r()
+        .then(response => {
+          vm.treeData = response.data.data
+          vm.geTreeFirstCode()
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
-    handleRemove() {
-      this.dialog.delFlag = true
+
+    /*
+      获取树默认展开的项的code
+      01: 弹出层
+      02：获取树,选中项的，设备类型code和模板code(后端使用)，name前端显示表格使用
+    */
+    geTreeFirstCode() {
+      let vm = this
+      let Data = vm.treeData[0]
+      let treeExpandedKey = Data.code
+      let treeCheckedKey = Data.code
+      while (Reflect.has(Data, 'children') && Data.children.length > 0) {
+        vm.treeEquipmentTypeName = Data.name
+        vm.treeEquipmentTypeCode = Data.code
+        Data = Data.children[0]
+        treeExpandedKey = Data.code
+        treeCheckedKey = Data.code
+      }
+
+      vm.treeExpandedKey = treeExpandedKey
+      vm.treeCheckedKey = treeCheckedKey
+      vm.treeEquipmentPropertyTemplateName = Data.name
+      vm.treeEquipmentPropertyTemplateCode = Data.code
     },
-    handleNodeClick(data) {
-      console.log(data)
+
+    /* 
+     自定义树结构
+    */
+    renderContent(h, { node, data, store }) {
+      // console.log(node)
+      let vm = this
+      // console.log(store)
+      let flag = vm.treeCheckedKey === data.code ? true : false
+      return h(
+        'span',
+        {
+          class: {
+            current: flag
+          }
+        },
+        [`${node.label}`]
+      )
+    },
+
+    /* 
+     点击树：获取选中栏目的treeCheckedKey \ treeExpandedKey
+    */
+    treeNodeClick(data, Nodes) {
+      let vm = this
+      if (Nodes.parent.data.name && Nodes.parent.data.code) {
+        vm.treeEquipmentTypeName = Nodes.parent.data.name
+        vm.treeEquipmentTypeCode = Nodes.parent.data.code
+        vm.treeEquipmentPropertyTemplateName = data.name
+        vm.treeEquipmentPropertyTemplateCode = data.code
+        vm.treeExpandedKey = data.code
+        vm.treeCheckedKey = data.code
+      }
+    },
+
+    /* 
+      设备属性类型：change联动，筛选对应 => 设备属性数据
+    */
+    changEvent(formName) {
+      let vm = this
+      let codeNum = vm[formName].equipmentPropertyType
+
+      vm[formName].equipmentPropertyCode = ''
+
+      vm.equipmentProList = vm.equipmentAllProList.filter(
+        item => item.equipmentPropertyType === codeNum
+      )
+
+      console.log(vm.equipmentProList)
+    },
+
+    /* 
+    获取弹窗: 设备属性下拉所有数据
+     */
+    getEquipmentProData() {
+      let vm = this
+      AJAX.getEquipmentProtoList
+        .r()
+        .then(response => {
+          vm.equipmentAllProList.push(...response.data.data)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
+
+    /* 
+      数据校验是否重复 
+  
+      01: 400 说明数据库存在, 相同数据
+      02：vm.$refs[formName].resetFields() 重置表单
+      03:
+        response: 后端返回数据
+        formName: 表单名
+        dialogFlag : 被关闭的弹层flag
+        sucessMsg: 成功提示文字
+    */
+    check(response, formName, dialogFlag, sucessMsg) {
+      let vm = this
+
+      response.data.code === 400
+        ? vm.$message.error(response.data.message)
+        : vm.$message.success(sucessMsg)
+
+      setTimeout(() => {
+        // 删除表单不需要重置
+        if (formName !== 'formDelete') {
+          vm.$refs[formName].resetFields()
+        }
+      }, 200)
+
+      vm.dialog[dialogFlag] = false
+      vm.getPageData()
+    },
+
+    /*
+      后端请求
+      01: 参数解释：
+          urlName：调用的那个接口
+          formName：表单名字
+          dialogFlag：关闭的弹层falg
+          sucessMsg：成功提示文字
+          failMsg：失败提示文字
+      02：
+      vm.check()校验数据库重复，返回提示
+    */
+    httpRequst(urlName, formName, dialogFlag, sucessMsg, failMsg) {
+      let vm = this
+      AJAX[urlName]
+        .r(vm[formName])
+        .then(response => {
+          vm.check(response, formName, dialogFlag, sucessMsg)
+        })
+        .catch(error => {
+          vm.$message.error(failMsg)
+          console.log(error)
+        })
+    },
+
+    /* 
+       增加
+       01: addEvent 增加弹窗
+       02：addSumit 增加弹窗表格提交
+     */
+    addEvent() {
+      let vm = this
+
+      vm.formAdd.equipmentType = vm.treeEquipmentTypeCode
+      vm.formAdd.equipmentTypeName = vm.treeEquipmentTypeName
+
+      vm.formAdd.equipmentPropertyTemplateCode =
+        vm.treeEquipmentPropertyTemplateCode
+      vm.formAdd.equipmentPropertyTemplateName =
+        vm.treeEquipmentPropertyTemplateName
+      vm.dialog.addFlag = true
+    },
+    addSumit(formName) {
+      let vm = this
+      console.log(vm[formName])
+      vm.$refs[formName].validate(valid => {
+        if (valid) {
+          vm.httpRequst('addData', formName, 'addFlag', '增加成功', '增加失败')
+        } else {
+          return false
+        }
+      })
+    },
+
+    /* 
+      编辑
+      01: editEvent 编辑弹窗
+      02：editSumit 编辑弹窗表格提交
+      03: equipmentPropertyType文字转数字
+    */
+    editEvent(index, row) {
+      let vm = this
+      console.log(row)
+
+      vm.formEdit.equipmentType = row.equipmentType
+      vm.formEdit.equipmentTypeName = row.equipmentTypeName
+
+      vm.formEdit.equipmentPropertyTemplateCode =
+        row.equipmentPropertyTemplateCode
+
+      vm.formEdit.equipmentPropertyTemplateName =
+        row.equipmentPropertyTemplateName
+
+      vm.formEdit.equipmentPropertyType = row.equipmentPropertyType
+
+      vm.formEdit.equipmentPropertyName = row.equipmentPropertyName
+      vm.formEdit.equipmentPropertyCode = row.equipmentPropertyCode
+
+      vm.formEdit.id = row.id
+
+      vm.equipmentProList = vm.equipmentAllProList.filter(
+        item => item.equipmentPropertyType === row.equipmentPropertyType
+      )
+
+      vm.dialog.editFlag = true
+    },
+    editSumit(formName) {
+      let vm = this
+      vm.$refs[formName].validate(valid => {
+        if (valid) {
+          vm.httpRequst(
+            'editData',
+            formName,
+            'editFlag',
+            '修改成功',
+            '修改失败'
+          )
+        } else {
+          return false
+        }
+      })
+    },
+
+    /* 
+      删除
+      01: removeEvent 删除弹窗
+      02：removeSumit 删除弹窗表格提交
+    */
+    removeEvent(index, row) {
+      let vm = this
+      vm.dialog.delFlag = true
+      vm.formDelete.id = row.id
+    },
+    removeSumit(formName) {
+      let vm = this
+      vm.httpRequst('deleteData', formName, 'delFlag', '删除成功', '删除失败')
+    },
+
+    /* 根据分页：获取数据
+        修改totalPage：总数据个数
+    */
+    getPageData() {
+      let vm = this
+      AJAX.pageData
+        .r({ pageSize: vm.pageSize, pageNow: vm.pageNow })
+        .then(response => {
+          vm.totalPage = response.data.data.totalNum
+          vm.tableData = response.data.data.items
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
+
+    /* 分页功能*/
+    handleSizeChange(val) {
+      let vm = this
+      vm.pageSize = val
+      vm.getPageData()
+    },
+    handleCurrentChange(val) {
+      let vm = this
+      vm.pageNow = val
+      vm.getPageData()
+    },
+    /* 导出*/
+    exportEvent() {
+      AJAX.exportData.r().then(res => {
+        let url = res.data.data
+        let a = document.createElement('a')
+        a.setAttribute('href', url)
+        a.click()
+      })
     }
+  },
+  /* 
+    00: 获取树数据 vm.geTreeData()
+    01: 获取表格数据
+    02: 获取弹窗：设备类型下拉数据
+  */
+  created() {
+    let vm = this
+    vm.getEquipmentProData()
+    vm.geTreeData()
+    vm.getPageData()
   }
 }
 </script>
+
+<style lang="scss">
+#tree {
+  font-size: 14px;
+  line-height: 40px;
+  .el-tree-node__content {
+    height: auto;
+  }
+  .current {
+    color: #409eff;
+  }
+}
+</style>
+
 
 <style lang="scss" scoped>
 .tagTip {

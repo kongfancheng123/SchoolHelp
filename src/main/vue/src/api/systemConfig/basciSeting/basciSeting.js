@@ -1,15 +1,18 @@
 // 引入配置中导出的对象
-import {instance} from '@/axiosConfig.js'
+import { instance } from '@/axiosConfig.js'
 
-// 设置一个对象，属性r为请求数据
-let getdata = {
-    r: (params, cancelToke) = > {
-    return instance.post(
-        '/mock/5aa8bd8dbefc9a434dd948cf/list/postarg',
-        params,
-        cancelToke
-    )
-}
+// 展示配置信息
+let getShowData = {
+  r: params => {
+    return instance.post('/ParamsConfig/showParamsConfig', params)
+  }
 }
 
-export {getdata}
+// 保存修改数据
+let saveDta = {
+  r: params => {
+    return instance.post('/ParamsConfig/updateOrAddParamsConfig', params)
+  }
+}
+
+export { getShowData, saveDta }
