@@ -879,10 +879,21 @@ export default {
       AJAX.exportData
         .r({ parentNodeCode: vm.formPage.parentNodeCode })
         .then(res => {
-          let url = res.data.data
-          let a = document.createElement('a')
-          a.setAttribute('href', url)
-          a.click()
+          const fileName = decodeURIComponent(res.headers['filename'])
+          const fileType = res.headers['filetype']
+          // 这里res.data是返回的blob对象
+          let blob = new Blob([res.data], {
+            type:
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'
+          })
+          let downloadElement = document.createElement('a')
+          let href = window.URL.createObjectURL(blob) // 创建下载的链接
+          downloadElement.href = href
+          downloadElement.download = fileName + fileType // 下载后文件名
+          document.body.appendChild(downloadElement)
+          downloadElement.click() // 点击下载
+          document.body.removeChild(downloadElement) // 下载完成移除元素
+          window.URL.revokeObjectURL(href) // 释放掉blob对象
         })
     }
   },

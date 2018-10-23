@@ -34,7 +34,9 @@ let pageData = {
 // 导出
 let exportData = {
   r: params => {
-    return instance.post('/ParentNode/exportExcelParentNode', params)
+    return instance.post('/ParentNode/exportExcelParentNode', params, {
+      responseType: 'blob'
+    })
   }
 }
 export { pageData, addData, editData, deleteData, exportData }

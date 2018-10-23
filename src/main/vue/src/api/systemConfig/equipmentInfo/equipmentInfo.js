@@ -84,7 +84,9 @@ let deleteData = {
 // 导出
 let exportData = {
   r: params => {
-    return instance.post('/EquipmentInfo/exportExcelEquipmentInfo', params)
+    return instance.post('/EquipmentInfo/exportExcelEquipmentInfo', params, {
+      responseType: 'blob'
+    })
   }
 }
 

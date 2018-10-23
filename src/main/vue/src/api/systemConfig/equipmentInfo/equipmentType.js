@@ -39,7 +39,9 @@ let pageData = {
 // 导出
 let exportData = {
   r: params => {
-    return instance.post('/EquipmentType/exportExcelEquipmentType', params)
+    return instance.post('/EquipmentType/exportExcelEquipmentType', params, {
+      responseType: 'blob'
+    })
   }
 }
 
