@@ -841,6 +841,7 @@ export default {
     */
     getPageData() {
       let vm = this
+      console.log(vm.formPage)
       AJAX.getSearchData
         .r(vm.formPage)
         .then(response => {
@@ -864,13 +865,13 @@ export default {
     handleSizeChange(val) {
       let vm = this
       vm.pageSize = val
-      vm.formSearch.pageSize = val
+      vm.formPage.pageSize = val
       vm.getPageData()
     },
     handleCurrentChange(val) {
       let vm = this
       vm.pageNow = val
-      vm.formSearch.pageNow = val
+      vm.formPage.pageNow = val
       vm.getPageData()
     },
     /* 导出*/
