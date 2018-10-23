@@ -640,7 +640,7 @@ export default {
         .r(vm.formPage)
         .then(response => {
           vm.tableData = response.data.data.items
-          vm.totalPage = vm.tableData.length
+          vm.totalPage = response.data.data.totalNum
           vm.pollingEvent()
         })
         .catch(error => {

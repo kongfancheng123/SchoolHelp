@@ -430,6 +430,8 @@ export default {
       pageNow: 1,
       pageSize: 30,
       totalPage: 0,
+      // 增加未成功前,提交按钮不能再去点击了,防止多次提交
+      loading: null,
       // 弹窗flag
       dialog: {
         addFlag: false,
@@ -679,6 +681,10 @@ export default {
         return false
       }
 
+      if (formName === 'formAdd' || formName === 'formKey') {
+        vm.loading.close()
+      }
+
       response.data.code === 400
         ? vm.$message.error(response.data.message)
         : vm.$message.success(sucessMsg)
@@ -719,6 +725,14 @@ export default {
       let vm = this
       vm.$refs[formName].validate(valid => {
         if (valid) {
+          // loading
+          vm.loading = vm.$loading({
+            lock: true,
+            text: 'Loading',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          })
+
           vm.httpRequst('keyData', formName, 'keyFlag', '配置成功', '配置失败')
         } else {
           return false
@@ -767,7 +781,14 @@ export default {
             vm.$message.warning(
               '设备类型和设备信号模板之间无关联属性，请重新选择'
             )
-            return false
+          } else {
+            // loading
+            vm.loading = vm.$loading({
+              lock: true,
+              text: 'Loading',
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            })
           }
           vm.httpRequst('addData', formName, 'addFlag', '增加成功', '增加失败')
         } else {
@@ -854,7 +875,7 @@ export default {
             }
             return item
           })
-          vm.totalPage = vm.tableData.length
+          vm.totalPage = response.data.data.totalNum
         })
         .catch(error => {
           console.log(error)
