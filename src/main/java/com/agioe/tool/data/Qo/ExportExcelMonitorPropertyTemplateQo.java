@@ -4,5 +4,9 @@ import lombok.Data;
 
 @Data
 public class ExportExcelMonitorPropertyTemplateQo {
-    private String filePath;
+    private String orderNumber;
+    private String equipmentType;
+    private String equipmentPropertyTemplateCode;
+    private String equipmentPropertyTemplateName;
+    private String equipmentPropertyTemplateDesc;
 }

@@ -21,7 +21,7 @@ if %errorlevel% == 0 ( echo 服务已经启动
 ) else (
 echo begin to start service...
 echo %java_opts%
- java -XX:+UseConcMarkSweepGC -Xloggc:../../logs/gc.log -Dspring.config.location=../../conf/application.yaml -jar ../../%APP_NAME%.jar
+ java -XX:+UseConcMarkSweepGC -Xloggc:../../logs/gc.log -Dspring.config.location=../../conf/application.yml -jar ../../%APP_NAME%.jar
  title %APP_NAME%
 )
 pause

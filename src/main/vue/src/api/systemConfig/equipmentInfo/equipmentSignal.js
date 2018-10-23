@@ -32,7 +32,13 @@ let pageData = {
 // 导出
 let exportData = {
   r: params => {
-    return instance.post('/MonitorProperty/exportExcelMonitorProperty', params)
+    return instance.post(
+      '/MonitorProperty/exportExcelMonitorProperty',
+      params,
+      {
+        responseType: 'blob'
+      }
+    )
   }
 }
 

@@ -62,8 +62,11 @@ let pageData = {
 let exportData = {
   r: params => {
     return instance.post(
-      '/MonitorPropertyTemplate/exportExcelMonitorPropertyTemplate',
-      params
+      '/MonitorPropertyTemplateBind/exportExcelMonitorPropertyTemplateBind',
+      params,
+      {
+        responseType: 'blob'
+      }
     )
   }
 }

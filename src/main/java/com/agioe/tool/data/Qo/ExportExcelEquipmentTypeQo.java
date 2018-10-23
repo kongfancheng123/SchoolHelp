@@ -4,5 +4,7 @@ import lombok.Data;
 
 @Data
 public class ExportExcelEquipmentTypeQo {
-    private String filePath;
+    private String orderNumber;
+    private String equipmentTypeCode;
+    private String equipmentTypeName;
 }

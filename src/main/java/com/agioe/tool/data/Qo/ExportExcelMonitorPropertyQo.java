@@ -4,5 +4,8 @@ import lombok.Data;
 
 @Data
 public class ExportExcelMonitorPropertyQo {
-    private String filePath;
+    private String orderNumber;
+    private String monitorPropertyCode;
+    private String monitorPropertyName;
+    private String monitorPropertyType;
 }

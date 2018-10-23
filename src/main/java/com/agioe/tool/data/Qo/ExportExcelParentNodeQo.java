@@ -4,5 +4,7 @@ import lombok.Data;
 
 @Data
 public class ExportExcelParentNodeQo {
-    private String filePath;
+    private String orderNumber;
+    private String parentNodeCode;
+    private String parentNodeName;
 }
