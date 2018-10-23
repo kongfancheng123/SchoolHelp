@@ -4,5 +4,10 @@ import lombok.Data;
 
 @Data
 public class ExportExcelMonitorPropertyTemplateBindQo {
-    private String filePath;
+    private String orderNumber;
+    private String equipmentType;
+    private String propertyTemplateName;
+    private String monitorPropertyCode;
+    private String monitorPropertyName;
+    private String monitorPropertyType;
 }

@@ -1,18 +1,35 @@
 package com.agioe.tool.data.controller;
 
 import com.agioe.tool.data.Qo.*;
-import com.agioe.tool.data.entity.WebResponse;
-import com.agioe.tool.data.service.EquipmentInfoService;
+import com.agioe.tool.data.entity.*;
+import com.agioe.tool.data.excel.ExcelHelperWrite;
+import com.agioe.tool.data.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/EquipmentInfo")
 public class EquipmentInfoController {
     @Autowired
     private EquipmentInfoService equipmentInfoService;
+
+    @Autowired
+    private ParentNodeService parentNodeService;
+
+    @Autowired
+    private EquipmentTypeService equipmentTypeService;
+    @Autowired
+    private MonitorPropertyTemplateService monitorPropertyTemplateService;
+    @Autowired
+    private MonitorPropertyService monitorPropertyService;
+
 
     /**
      * 展示所有设备
@@ -166,8 +183,82 @@ public class EquipmentInfoController {
      */
     @RequestMapping(value = "/exportExcelEquipmentInfo", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse exportExcelEquipmentInfo(@RequestBody ExportExcelEquipmentInfoQo exportExcelEquipmentInfoQo) throws Exception {
-        return equipmentInfoService.exportExcelEquipmentInfo(exportExcelEquipmentInfoQo);
+    public void exportExcelEquipmentInfo(@RequestBody ExportExcelEquipmentInfoQo exportExcelEquipmentInfoQo, HttpServletResponse response, HttpServletRequest request) throws Exception {
+        List<ExportExcelEquipmentInfoQo1> exportExcelEquipmentInfoQo1s=new ArrayList<>();
+        ParentNode parentNode=new ParentNode();
+        parentNode.setParentNodeCode(exportExcelEquipmentInfoQo.getParentNodeCode());
+        List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectAll(parentNode);
+        if(equipmentInfos.size()>0){
+            int i=1;
+            for(EquipmentInfo equipmentInfo:equipmentInfos){
+                ExportExcelEquipmentInfoQo1 exportExcelEquipmentInfoQo1=new ExportExcelEquipmentInfoQo1();
+                exportExcelEquipmentInfoQo1.setOrderNumber(String.valueOf(i));
+                //获取上层节点名称
+                ParentNode parentNode1 = new ParentNode();
+                parentNode1.setParentNodeCode(exportExcelEquipmentInfoQo.getParentNodeCode());
+                List<ParentNode> parentNodes1 = parentNodeService.selectByParentNode(parentNode);
+                if (parentNodes1.size() > 0) {
+                    exportExcelEquipmentInfoQo1.setParentNodeName(parentNodes1.get(0).getParentNodeName());
+                }
+                exportExcelEquipmentInfoQo1.setEquipmentCode(equipmentInfo.getEquipmentCode());
+                exportExcelEquipmentInfoQo1.setEquipmentName(equipmentInfo.getEquipmentName());
+                //获取设备类型
+                String equipmentType = equipmentInfo.getEquipmentType();
+                EquipmentType equipmentType1 = new EquipmentType();
+                equipmentType1.setEquipmentTypeCode(equipmentType);
+                List<EquipmentType> equipmentTypes = equipmentTypeService.selectByEquipmentType(equipmentType1);
+                if (equipmentTypes.size() > 0) {
+                    exportExcelEquipmentInfoQo1.setEquipmentType(equipmentTypes.get(0).getEquipmentTypeName());
+                }
+                //获取模板
+                String equipmentPropertyTemplateCode = equipmentInfo.getEquipmentPropertyTemplateCode();
+                MonitorPropertyTemplate monitorPropertyTemplate = new MonitorPropertyTemplate();
+                monitorPropertyTemplate.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
+                List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateService.selectByMonitorPropertyTemplate(monitorPropertyTemplate);
+                if (monitorPropertyTemplates.size() > 0) {
+                    exportExcelEquipmentInfoQo1.setEquipmentPropertyTemplate(monitorPropertyTemplates.get(0).getEquipmentPropertyTemplateName());
+                }
+                //获取信号
+                String equipmentPropertyCode = equipmentInfo.getEquipmentPropertyCode();
+                MonitorProperty monitorProperty = new MonitorProperty();
+                monitorProperty.setEquipmentPropertyCode(equipmentPropertyCode);
+                List<MonitorProperty> monitorProperties = monitorPropertyService.selectByMonitorProperty(monitorProperty);
+                String equipmentPropertyTypeName="";
+                if (monitorProperties.size() > 0) {
+                    Integer equipmentPropertyType = monitorProperties.get(0).getEquipmentPropertyType();
+                    if (equipmentPropertyType == 0) {
+                        equipmentPropertyTypeName = "遥测";
+                    } else if (equipmentPropertyType == 1) {
+                        equipmentPropertyTypeName = "遥信";
+                    } else if (equipmentPropertyType == 2) {
+                        equipmentPropertyTypeName = "遥控";
+                    } else if (equipmentPropertyType == 3) {
+                        equipmentPropertyTypeName = "遥调";
+                    } else {
+                        equipmentPropertyTypeName = "说明";
+                    }
+                    exportExcelEquipmentInfoQo1.setEquipmentPropertyCode(monitorProperties.get(0).getEquipmentPropertyName());
+                }
+                exportExcelEquipmentInfoQo1.setEquipmentPropertyType(equipmentPropertyTypeName);
+                exportExcelEquipmentInfoQo1.setKeyword(equipmentInfo.getKeyword());
+                i++;
+                exportExcelEquipmentInfoQo1s.add(exportExcelEquipmentInfoQo1);
+            }
+        }
+        //定义一个 fieldMap ，里面存放的key值要和查询出来的数据字段相对应，里面放的数据也是excel展示的数据
+        Map<String, String> fieldMap = new LinkedHashMap<>();
+        fieldMap.put("orderNumber", "序号");
+        fieldMap.put("parentNodeName", "上层节点");
+        fieldMap.put("equipmentCode", "设备编码");
+        fieldMap.put("equipmentName", "设备名称");
+        fieldMap.put("equipmentType", "设备类型");
+        fieldMap.put("equipmentPropertyTemplate", "设备信号模板");
+        fieldMap.put("equipmentPropertyType", "监控信号类型");
+        fieldMap.put("equipmentPropertyCode", "设备信号");
+        fieldMap.put("keyword", "设备点号");
+
+
+        ExcelHelperWrite.listToExcel("设备信息表", exportExcelEquipmentInfoQo1s, fieldMap, "设备信息表", 30000, response, request);
     }
 
     /**

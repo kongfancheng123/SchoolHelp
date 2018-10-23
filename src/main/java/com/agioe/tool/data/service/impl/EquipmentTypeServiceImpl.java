@@ -4,6 +4,7 @@ import com.agioe.tool.data.Qo.*;
 import com.agioe.tool.data.Vo.ShowAllEquipmentTypeVo;
 import com.agioe.tool.data.dao.EquipmentTypeDao;
 import com.agioe.tool.data.entity.*;
+import com.agioe.tool.data.excel.ExcelHelperWrite;
 import com.agioe.tool.data.page.PageBean;
 import com.agioe.tool.data.service.*;
 import com.github.pagehelper.PageHelper;
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EquipmentTypeServiceImpl implements EquipmentTypeService {
@@ -185,20 +188,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
 
     @Override
     public WebResponse exportExcelEquipmentType() throws Exception {
-        String filePath = "D://excel//temp.xls";
-        String title = "设备类型表";
-        Integer colunmNumber = 3;
-        List<EquipmentType> equipmentTypes = equipmentTypeDao.selectAll();
-        String[][] strings = new String[equipmentTypes.size() + 1][3];
-        strings[0][0] = "序号";
-        strings[0][1] = "类型编码";
-        strings[0][2] = "类型名称";
-        for (int c = 1; c < strings.length; c++) {
-            strings[c][0] = String.valueOf(c);
-            strings[c][1] = equipmentTypes.get(c - 1).getEquipmentTypeCode();
-            strings[c][2] = equipmentTypes.get(c - 1).getEquipmentTypeName();
-        }
-        excelService.exportExcel(filePath, strings, title, colunmNumber);
+
         return WebResponse.success("http://192.168.52.50:8099/excel/temp.xls");
     }
 
