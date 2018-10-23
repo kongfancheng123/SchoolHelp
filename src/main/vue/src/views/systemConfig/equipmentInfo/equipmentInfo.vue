@@ -217,16 +217,14 @@
         <el-row :gutter="15">
 
           <el-col :span="12">
-            <el-form-item label="设备编号前缀"
-                          prop="equipmentCodeBefore">
+            <el-form-item label="设备编号前缀">
               <el-input v-model="formAdd.equipmentCodeBefore"
                         placeholder="请设置设备编号前缀"></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="设备编号起始数值"
-                          prop="equipmentCodeStart">
+            <el-form-item label="设备编号起始数值">
               <el-input v-model.number="formAdd.equipmentCodeStart"
                         placeholder="起始数值1，正整形数字"></el-input>
             </el-form-item>
@@ -235,8 +233,7 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="设备名称前缀"
-                          prop="equipmentNameBefore">
+            <el-form-item label="设备名称前缀">
               <el-input v-model="formAdd.equipmentNameBefore"
                         placeholder="请设置设备名称前缀"></el-input>
             </el-form-item>
