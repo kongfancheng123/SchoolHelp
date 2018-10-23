@@ -281,6 +281,12 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         for (int i = 0; i < equipmentNumber; i++) {
             //获取设备编码
             String equipmentCodeStart1 = String.valueOf(equipmentCodeStart + i);
+            int length = equipmentCodeStart1.length();
+            if(length<6){
+                for(int j=0;j<6-length;j++){
+                    equipmentCodeStart1="0"+equipmentCodeStart1;
+                }
+            }
             String equipmentCode = equipmentCodeBefore + equipmentCodeStart1;
             //获取设备名称
             String equipmentNameStart1 = String.valueOf(equipmentNameStart + i);
