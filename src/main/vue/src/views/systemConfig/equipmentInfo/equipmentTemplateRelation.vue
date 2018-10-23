@@ -315,6 +315,7 @@ export default {
         .then(response => {
           vm.treeData = response.data.data
           vm.geTreeFirstCode()
+          vm.getPageData()
         })
         .catch(error => {
           console.log(error)
@@ -376,6 +377,7 @@ export default {
         vm.treeEquipmentPropertyTemplateCode = data.code
         vm.treeExpandedKey = data.code
         vm.treeCheckedKey = data.code
+        vm.getPageData()
       }
     },
 
@@ -562,7 +564,11 @@ export default {
     getPageData() {
       let vm = this
       AJAX.pageData
-        .r({ pageSize: vm.pageSize, pageNow: vm.pageNow })
+        .r({
+          pageSize: vm.pageSize,
+          pageNow: vm.pageNow,
+          equipmentPropertyTemplateCode: vm.treeEquipmentPropertyTemplateCode
+        })
         .then(response => {
           vm.totalPage = response.data.data.totalNum
           vm.tableData = response.data.data.items
@@ -613,7 +619,6 @@ export default {
     let vm = this
     vm.getEquipmentProData()
     vm.geTreeData()
-    vm.getPageData()
   }
 }
 </script>
