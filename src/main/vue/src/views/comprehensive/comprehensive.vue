@@ -14,6 +14,7 @@
         <el-form-item label="上层节点"
                       prop="parentNodeCode">
           <el-select v-model="formSearch.parentNodeCode"
+                     @change="clearEvent"
                      placeholder="请选择">
             <el-option v-for="item in parentNodeList"
                        :key="item.parentNodeCode"
@@ -531,7 +532,7 @@ export default {
       response.data.code === 400
         ? vm.$message.error(response.data.message)
         : vm.$message.success(sucessMsg)
-      vm.getAllData()
+      vm.getPageData()
     },
 
     /* 后端请求
@@ -594,13 +595,21 @@ export default {
             vm.alarmEnableFalg = true
           }
 
+          vm.formPage.parentNodeCode = vm.parentNodeList[0].parentNodeCode
+
           vm.getPageData()
         })
         .catch(error => {
           console.log(error)
         })
     },
-
+    // 筛选条件,清除后面的选择置空
+    clearEvent() {
+      let vm = this
+      vm.formSearch.equipmentType = null
+      vm.formSearch.equipmentPropertyTemplateCode = null
+      vm.formSearch.equipmentPropertyCode = null
+    },
     /* 
     过滤条件 监测：设备类型，设备信号模板选择事件
     获取: 弹窗表格展示数据 
@@ -627,8 +636,6 @@ export default {
     /* 获取分页数据 */
     getPageData() {
       let vm = this
-      vm.formPage.parentNodeCode = vm.parentNodeList[0].parentNodeCode
-      // vm.formSearch.parentNodeCode = vm.parentNodeList[0].parentNodeCode
       AJAX.getSearchData
         .r(vm.formPage)
         .then(response => {
