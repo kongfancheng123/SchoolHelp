@@ -59,10 +59,10 @@ public interface MonitorPropertyTemplateBindService {
     /**
      * 分页展示所有信息模板关联
      *
-     * @param pageQo
+     * @param showPageMonitorPropertyTemplateBindQo
      * @return
      */
-    WebResponse showPageMonitorPropertyTemplateBind(PageQo pageQo);
+    WebResponse showPageMonitorPropertyTemplateBind(ShowPageMonitorPropertyTemplateBindQo showPageMonitorPropertyTemplateBindQo);
 
     /**
      * 新增加信息模板关联

@@ -109,13 +109,16 @@ public class MonitorPropertyTemplateBindServiceImpl implements MonitorPropertyTe
     }
 
     @Override
-    public WebResponse showPageMonitorPropertyTemplateBind(PageQo pageQo) {
-        Integer pageNow = pageQo.getPageNow();
-        Integer pageSize = pageQo.getPageSize();
-        Integer countNums = monitorPropertyTemplateBindDao.selectAll().size();
+    public WebResponse showPageMonitorPropertyTemplateBind(ShowPageMonitorPropertyTemplateBindQo showPageMonitorPropertyTemplateBindQo) {
+        Integer pageNow = showPageMonitorPropertyTemplateBindQo.getPageNow();
+        Integer pageSize = showPageMonitorPropertyTemplateBindQo.getPageSize();
+        String equipmentPropertyTemplateCode1 = showPageMonitorPropertyTemplateBindQo.getEquipmentPropertyTemplateCode();
+        MonitorPropertyTemplateBind monitorPropertyTemplateBind111=new MonitorPropertyTemplateBind();
+        monitorPropertyTemplateBind111.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode1);
+        Integer countNums = monitorPropertyTemplateBindDao.selectByMonitorPropertyTemplateBind(monitorPropertyTemplateBind111).size();
         List<ShowAllMonitorPropertyTemplateBindVo> showAllMonitor_propertyTemplateBindVos = new ArrayList<>();
         PageHelper.startPage(pageNow, pageSize);
-        List<MonitorPropertyTemplateBind> monitorPropertyTemplateBinds = monitorPropertyTemplateBindDao.selectAll();
+        List<MonitorPropertyTemplateBind> monitorPropertyTemplateBinds = monitorPropertyTemplateBindDao.selectByMonitorPropertyTemplateBind(monitorPropertyTemplateBind111);
         if (monitorPropertyTemplateBinds.size() > 0) {
             for (MonitorPropertyTemplateBind monitorPropertyTemplateBind : monitorPropertyTemplateBinds) {
                 ShowAllMonitorPropertyTemplateBindVo showAllMonitorPropertyTemplateBindVo = new ShowAllMonitorPropertyTemplateBindVo();

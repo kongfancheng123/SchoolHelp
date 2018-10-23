@@ -51,8 +51,8 @@ public class MonitorPropertyTemplateBindController {
      */
     @RequestMapping(value = "/showPageMonitorPropertyTemplateBind", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse showPageMonitorPropertyTemplateBind(@RequestBody PageQo pageQo) {
-        return monitorPropertyTemplateBindService.showPageMonitorPropertyTemplateBind(pageQo);
+    public WebResponse showPageMonitorPropertyTemplateBind(@RequestBody ShowPageMonitorPropertyTemplateBindQo showPageMonitorPropertyTemplateBindQo) {
+        return monitorPropertyTemplateBindService.showPageMonitorPropertyTemplateBind(showPageMonitorPropertyTemplateBindQo);
     }
 
     /**
