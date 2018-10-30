@@ -1092,18 +1092,9 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 
     @Override
     public WebResponse getSendControlVal() {
-//        List<SendControl> sendControls = sendControlService.selectOne("192.168.52.50");
-//        if (sendControls.size() > 0) {
-//            return WebResponse.success(sendControls.get(0));
-//        } else {
-            //先添加,在查询
-        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
-        SendControl sendControl = new SendControl();
-        sendControl.setControlVal(sendControlVal.getVal());
-        sendControl.setIp("192.168.52.50");
-        sendControlService.insertSendControl(sendControl);
-        return WebResponse.success(sendControl);
-//        }
+       SendControlVal sendControlVal = SendControlVal.getSendControlVal();
+        Integer controlVal = sendControlVal.getVal();
+        return WebResponse.success(controlVal);
     }
 
     @Override
