@@ -1094,7 +1094,9 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     public WebResponse getSendControlVal() {
        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
         Integer controlVal = sendControlVal.getVal();
-        return WebResponse.success(controlVal);
+        GetSendControlValVo getSendControlValVo=new GetSendControlValVo();
+        getSendControlValVo.setControlVal(controlVal);
+        return WebResponse.success(getSendControlValVo);
     }
 
     @Override
