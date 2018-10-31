@@ -9,6 +9,8 @@ import com.agioe.tool.data.entity.*;
 import com.agioe.tool.data.page.PageBean;
 import com.agioe.tool.data.service.*;
 import com.github.pagehelper.PageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,8 @@ public class MonitorPropertyTemplateBindServiceImpl implements MonitorPropertyTe
 
     @Autowired
     private ExcelService excelService;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public Integer insertMonitorPropertyTemplateBind(MonitorPropertyTemplateBind monitorPropertyTemplateBind) {
@@ -174,6 +178,7 @@ public class MonitorPropertyTemplateBindServiceImpl implements MonitorPropertyTe
         //判重
         List<MonitorPropertyTemplateBind> monitorPropertyTemplateBinds = monitorPropertyTemplateBindDao.selectByMonitorPropertyTemplateBind(monitorPropertyTemplateBind);
         if (monitorPropertyTemplateBinds.size() > 0) {
+            logger.error("关联模板添加失败");
             return WebResponse.error(400, "绑定关系已存在");
         }
         //添加
@@ -193,6 +198,7 @@ public class MonitorPropertyTemplateBindServiceImpl implements MonitorPropertyTe
         monitorPropertyTemplateBind.setEquipmentPropertyCode(equipmentPropertyCode);
         monitorPropertyTemplateBind.setEquipmentType(equipmentType);
         monitorPropertyTemplateBindDao.updateMonitorPropertyTemplateBind(monitorPropertyTemplateBind);
+        logger.info("更新关联模板");
         return WebResponse.success();
     }
 

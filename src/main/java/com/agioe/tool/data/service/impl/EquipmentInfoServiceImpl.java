@@ -12,6 +12,8 @@ import com.agioe.tool.data.tcp.payload.SensorEvent;
 import com.agioe.tool.data.thread.SendEquipmentRealtimeDataThread;
 import com.agioe.tool.data.util.TimeUtil;
 import com.github.pagehelper.PageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +42,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     private ExcelService excelService;
     @Autowired
     private SendControlService sendControlService;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     @Override
@@ -156,6 +159,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 }
             }
         }
+        logger.info("展示所有数据成功");
         return WebResponse.success(showAllEquipmentInfoVos);
     }
 
@@ -297,6 +301,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             equipmentInfo.setParentNodeCode(parentNodeCode);
             List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
             if (equipmentInfos.size() > 0) {
+                logger.error("设备编码已存在");
                 return WebResponse.error(400, "设备编码已存在");
             }
             //名字判重
@@ -305,6 +310,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             equipmentInfo1.setParentNodeCode(parentNodeCode);
             List<EquipmentInfo> equipmentInfos1 = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo1);
             if (equipmentInfos1.size() > 0) {
+                logger.error("设备名已存在");
                 return WebResponse.error(400, "设备名已存在");
             }
             //添加
@@ -348,7 +354,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 //        if (EquipmentInfos.size() > 0) {
 //            return WebResponse.error(400, "key值已存在");
 //        }
-
+        logger.info("成功添加设备");
         return WebResponse.success();
     }
 
@@ -366,6 +372,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             equipmentInfo.setParentNodeCode(parentNodeCode);
             List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
             if (equipmentInfos.size() > 0) {
+                logger.error("keyword已存在");
                 return WebResponse.error(400, "keyword已存在");
             } else {
                 //进行更新
@@ -381,6 +388,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 }
             }
         }
+        logger.info("成功更新设备信息");
         return WebResponse.success();
     }
 
@@ -393,6 +401,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         equipmentInfo.setParentNodeCode(parentNodeCode);
         //删除
         equipmentInfoDao.deleteEquipmentInfo(equipmentInfo);
+        logger.info("成功删除设备");
         return WebResponse.success();
     }
 
@@ -571,6 +580,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         }
         PageBean<ShowAllEquipmentInfoVo> pageData = new PageBean<>(pageNow, pageSize, countNums);
         pageData.setItems(showAllEquipmentInfoVos);
+        logger.info("分页查询设备信息");
         return WebResponse.success(pageData);
     }
 
@@ -586,6 +596,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         List<ParamsConfig> paramsConfigs = paramsConfigService.selectAll();
         if (paramsConfigs.size() > 0) {
             feedCycle = paramsConfigs.get(0).getFeedCycle();
+            logger.info("上传周期为:"+String.valueOf(feedCycle));
         }
         if (propertyCodeAndValue.length > 0) {
 //            //todo:启动线程
@@ -616,11 +627,13 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                     boolean isInt = Pattern.compile("^-?[1-9]\\d*$").matcher(baseValue).find();
                     boolean isDouble = Pattern.compile("^-?([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*|0?\\.0+|0)$").matcher(baseValue).find();
                     if (!(isInt || isDouble)) {
+                        logger.error("基础值类型错误");
                         return WebResponse.error(400, "基础值类型错误");
                     } else {
                         boolean isInt1 = Pattern.compile("^-?[1-9]\\d*$").matcher(upAndDown).find();
                         boolean isDouble1 = Pattern.compile("^-?([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*|0?\\.0+|0)$").matcher(upAndDown).find();
                         if (!(isInt1 || isDouble1)) {
+                            logger.error("浮动值类型错误");
                             return WebResponse.error(400, "浮动值类型错误");
                         }
                     }
@@ -630,9 +643,11 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                     boolean is0Or1 = baseValue.equals("0") || baseValue.equals("1");
                     boolean is0Or2 = upAndDown.equals("0") || upAndDown.equals("1");
                     if (!(is0Or1 && is0Or2)) {
+                        logger.error("参数类型错误,基础值和浮动只能为0或者1");
                         return WebResponse.error(400, "参数类型错误,基础值和浮动只能为0或者1");
                     }
                 } else {
+                    logger.error("属性类型错误");
                     return WebResponse.error(400, "属性类型错误");
                 }
                 EquipmentInfo equipmentInfo = new EquipmentInfo();
@@ -697,6 +712,8 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             Thread thread = new Thread(sendEquipmentRealtimeDataThread);
             //获取0-100的正整数
             thread.setName(threadName);
+            logger.info("启动线程,开始发送数据");
+            logger.info("上传周期为:"+String.valueOf(feedCycle));
             thread.start();
         }
         //更改控制值
@@ -726,6 +743,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         for (Thread thread : lstThreads) {
             if (thread.getName().equals("sendEquipmentRealtimeDataThread:" + ip)) {
                 thread.interrupt();
+                logger.info("停止发送数据");
                 System.out.println("停止了线程:" + thread.getName());
             }
 
