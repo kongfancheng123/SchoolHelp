@@ -134,7 +134,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini"
-                     :disabled="alarmEnableFalg||scope.row.alarmVal===''?true:false"
+                     :disabled="alarmEnableFalg||scope.row.alarmVal===''?false:true"
                      @click="warnEvent(scope.$index, scope.row)">发送报警</el-button>
 
           <el-button size="mini"
@@ -280,6 +280,7 @@
         <el-form-item label="事件类型"
                       prop="eventType">
           <el-select v-model="formTrouble.eventType"
+                     disabled
                      placeholder="请选择事件类型">
             <el-option v-for="item in eventList"
                        :key="item.value"
@@ -292,6 +293,7 @@
         <el-form-item label="事件码"
                       prop="eventCode">
           <el-input v-model.number="formTrouble.eventCode"
+                    disabled
                     placeholder="请输入事件码"></el-input>
         </el-form-item>
       </el-form>
@@ -302,7 +304,7 @@
                    size="small">取 消</el-button>
         <el-button type="primary"
                    size="small"
-                   @click="dialog.troubleshootingFlag = false">确 定</el-button>
+                   @click="troublesHootingSumit">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -529,8 +531,6 @@ export default {
       ]).then(res => {
         let { dataEnable, alarmEnable } = res[0].data.data
         let { controlVal } = res[1].data.data
-        console.log(res)
-
         if (dataEnable === 1 && controlVal === 1) {
           vm.dataEnableFalg = false
           vm.stopFlag = true
@@ -601,7 +601,6 @@ export default {
     /* 获取分页数据 */
     getPageData() {
       let vm = this
-      console.log(vm.formPage)
       AJAX.getSearchData
         .r(vm.formPage)
         .then(response => {
@@ -786,6 +785,18 @@ export default {
       vm.formTrouble.parentNodeCode = row.parentNodeCode
       vm.formTrouble.equipmentPropertyType = row.equipmentPropertyType
       vm.dialog.troubleshootingFlag = true
+
+      let alarmVal = row.alarmVal.split(',')
+      vm.formTrouble.eventType = alarmVal[0].split(':')[1]
+      vm.formTrouble.eventCode = parseInt(alarmVal[1].replace(/[^0-9]/gi, ''))
+      vm.formTrouble.alarmVal = row.alarmVal
+    },
+
+    troublesHootingSumit() {
+      let vm = this
+      AJAX.troublesHootingData.r({ ...vm.formTrouble }).then(res => {
+        vm.dialog.troubleshootingFlag = false
+      })
     },
 
     /* 分页功能*/

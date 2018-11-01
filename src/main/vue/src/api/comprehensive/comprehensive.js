@@ -71,7 +71,7 @@ let sendWarnData = {
 // 解除故障
 let troublesHootingData = {
   r: params => {
-    return instance.post('/EquipmentInfo/sendEventHistory', params)
+    return instance.post('/EquipmentInfo/dealEventHistory', params)
   }
 }
 
