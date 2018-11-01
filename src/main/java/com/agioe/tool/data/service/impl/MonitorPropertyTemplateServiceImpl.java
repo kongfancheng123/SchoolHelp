@@ -7,6 +7,8 @@ import com.agioe.tool.data.entity.*;
 import com.agioe.tool.data.page.PageBean;
 import com.agioe.tool.data.service.*;
 import com.github.pagehelper.PageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,8 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
 
     @Autowired
     private ExcelService excelService;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public Integer insertMonitorPropertyTemplate(MonitorPropertyTemplate monitorPropertyTemplate) {
@@ -132,6 +136,7 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
         monitorPropertyTemplate.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
         List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateDao.selectByMonitorPropertyTemplate(monitorPropertyTemplate);
         if (monitorPropertyTemplates.size() > 0) {
+            logger.error("模板编码已存在,添加模板失败");
             return WebResponse.error(400, "模板编码已存在");
         }
         //模板名称判重
@@ -139,6 +144,7 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
         monitorPropertyTemplate1.setEquipmentPropertyTemplateName(equipmentPropertyTemplateName);
         List<MonitorPropertyTemplate> monitorPropertyTemplates1 = monitorPropertyTemplateDao.selectByMonitorPropertyTemplate(monitorPropertyTemplate1);
         if (monitorPropertyTemplates1.size() > 0) {
+            logger.error("模板名称已存在,添加模板失败");
             return WebResponse.error(400, "模板名称已存在");
         }
         //添加
@@ -171,6 +177,7 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
                 monitorPropertyTemplate2.setEquipmentPropertyTemplateName(equipmentPropertyTemplateName);
                 List<MonitorPropertyTemplate> monitorPropertyTemplates1 = monitorPropertyTemplateDao.selectByMonitorPropertyTemplate(monitorPropertyTemplate2);
                 if (monitorPropertyTemplates1.size() > 0) {
+                    logger.error("模板名称已存在,更新模板失败");
                     return WebResponse.error(400, "模板名称已存在");
                 } else {//进行更新
                     //            monitorPropertyTemplate1.setEquipmentType(equipmentType);
@@ -196,6 +203,7 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
                 equipmentInfo.setParentNodeCode(parentNode.getParentNodeCode());
                 List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
                 if (equipmentInfos.size() > 0) {
+                    logger.error("与设备存在绑定关系,删除失败");
                     return WebResponse.error(400, "与设备存在绑定关系,删除失败");
                 }
             }
@@ -205,6 +213,7 @@ public class MonitorPropertyTemplateServiceImpl implements MonitorPropertyTempla
         monitorPropertyTemplateBind.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
         List<MonitorPropertyTemplateBind> monitorPropertyTemplateBinds = monitorPropertyTemplateBindService.selectByMonitorPropertyTemplateBind(monitorPropertyTemplateBind);
         if (monitorPropertyTemplateBinds.size() > 0) {
+            logger.error("与监控信息存在绑定关系,删除失败");
             return WebResponse.error(400, "与监控信息存在绑定关系,删除失败");
         }
         //删除

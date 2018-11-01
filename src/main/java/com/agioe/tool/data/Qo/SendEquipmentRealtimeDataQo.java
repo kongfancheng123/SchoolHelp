@@ -15,10 +15,10 @@ public class SendEquipmentRealtimeDataQo {
      * 设备类型编码
      */
     private String equipmentType;
-    /**
-     * 模板编码
-     */
-    private String equipmentPropertyTemplateCode;
+//    /**
+//     * 模板编码
+//     */
+//    private String equipmentPropertyTemplateCode;
     /**
      * 属性和值
      */

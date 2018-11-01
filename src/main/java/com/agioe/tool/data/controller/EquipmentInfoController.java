@@ -121,9 +121,8 @@ public class EquipmentInfoController {
      */
     @RequestMapping(value = "/stopSendEquipmentRealtimeData", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse stopSendEquipmentRealtimeData() {
-        String ip = "192.168.52.50";
-        return equipmentInfoService.stopSendEquipmentRealtimeData(ip);
+    public WebResponse stopSendEquipmentRealtimeData(@RequestBody GetSendControlValQo getSendControlValQo) {
+        return equipmentInfoService.stopSendEquipmentRealtimeData(getSendControlValQo);
     }
 
     /**
@@ -278,8 +277,8 @@ public class EquipmentInfoController {
      */
     @RequestMapping(value = "/getSendControlVal", method = RequestMethod.POST)
     @ResponseBody
-    public WebResponse getSendControlVal() {
-        return equipmentInfoService.getSendControlVal();
+    public WebResponse getSendControlVal(@RequestBody GetSendControlValQo getSendControlValQo) {
+        return equipmentInfoService.getSendControlVal(getSendControlValQo);
     }
 
     /**

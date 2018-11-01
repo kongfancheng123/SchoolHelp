@@ -8,6 +8,8 @@ import com.agioe.tool.data.excel.ExcelHelperWrite;
 import com.agioe.tool.data.page.PageBean;
 import com.agioe.tool.data.service.*;
 import com.github.pagehelper.PageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
 
     @Autowired
     private ExcelService excelService;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public Integer insertEquipmentType(EquipmentType equipmentType) {
@@ -75,6 +78,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
                 showAllEquipmentTypeVos.add(showAllEquipmentTypeVo);
             }
         }
+        logger.info("获取所有设备类型");
         return WebResponse.success(showAllEquipmentTypeVos);
     }
 
@@ -96,6 +100,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
         }
         PageBean<ShowAllEquipmentTypeVo> pageData = new PageBean<>(pageNow, pageSize, countNums);
         pageData.setItems(showAllEquipmentTypeVos);
+        logger.info("分页获取设备类型");
         return WebResponse.success(pageData);
     }
 
@@ -108,6 +113,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
         equipmentType.setEquipmentTypeCode(equipmentTypeCode);
         List<EquipmentType> equipmentTypes = equipmentTypeDao.selectByEquipmentType(equipmentType);
         if (equipmentTypes.size() > 0) {
+            logger.error("编码已存在");
             return WebResponse.error(400, "编码已存在");
         }
 
@@ -115,6 +121,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
         equipmentType1.setEquipmentTypeName(equipmentTypeName);
         List<EquipmentType> equipmentTypes1 = equipmentTypeDao.selectByEquipmentType(equipmentType1);
         if (equipmentTypes1.size() > 0) {
+            logger.error("设备类型已存在");
             return WebResponse.error(400, "设备类型已存在");
         }
 
@@ -145,6 +152,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
                 equipmentType2.setEquipmentTypeName(equipmentTypeName);
                 List<EquipmentType> equipmentTypes1 = equipmentTypeDao.selectByEquipmentType(equipmentType2);
                 if (equipmentTypes1.size() > 0) {
+                    logger.error("设备类型名已存在");
                     return WebResponse.error(400, "设备类型名已存在");
                 } else {
                     //进行更新
@@ -165,6 +173,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
         monitorPropertyTemplate.setEquipmentType(equipmentTypeCode);
         List<MonitorPropertyTemplate> monitorPropertyTemplates = monitorPropertyTemplateService.selectByMonitorPropertyTemplate(monitorPropertyTemplate);
         if (monitorPropertyTemplates.size() > 0) {
+            logger.error("有绑定关系,删除失败");
             return WebResponse.error(400, "有绑定关系,删除失败");
         }
         //确认是否是设备有关联
@@ -177,6 +186,7 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
                 equipmentInfo.setParentNodeCode(parentNode.getParentNodeCode());
                 List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
                 if (equipmentInfos.size() > 0) {
+                    logger.error("与设备存在绑定关系,删除失败");
                     return WebResponse.error(400, "与设备存在绑定关系,删除失败");
                 }
             }

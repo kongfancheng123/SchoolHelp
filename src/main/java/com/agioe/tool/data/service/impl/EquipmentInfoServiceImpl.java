@@ -12,6 +12,8 @@ import com.agioe.tool.data.tcp.payload.SensorEvent;
 import com.agioe.tool.data.thread.SendEquipmentRealtimeDataThread;
 import com.agioe.tool.data.util.TimeUtil;
 import com.github.pagehelper.PageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +41,11 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     @Autowired
     private ExcelService excelService;
     @Autowired
+    private SendDataControlService sendDataControlService;
+
+    @Autowired
     private SendControlService sendControlService;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     @Override
@@ -156,6 +162,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 }
             }
         }
+        logger.info("展示所有数据成功");
         return WebResponse.success(showAllEquipmentInfoVos);
     }
 
@@ -297,6 +304,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             equipmentInfo.setParentNodeCode(parentNodeCode);
             List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
             if (equipmentInfos.size() > 0) {
+                logger.error("设备编码已存在");
                 return WebResponse.error(400, "设备编码已存在");
             }
             //名字判重
@@ -305,6 +313,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             equipmentInfo1.setParentNodeCode(parentNodeCode);
             List<EquipmentInfo> equipmentInfos1 = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo1);
             if (equipmentInfos1.size() > 0) {
+                logger.error("设备名已存在");
                 return WebResponse.error(400, "设备名已存在");
             }
             //添加
@@ -348,7 +357,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 //        if (EquipmentInfos.size() > 0) {
 //            return WebResponse.error(400, "key值已存在");
 //        }
-
+        logger.info("成功添加设备");
         return WebResponse.success();
     }
 
@@ -366,6 +375,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             equipmentInfo.setParentNodeCode(parentNodeCode);
             List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
             if (equipmentInfos.size() > 0) {
+                logger.error("keyword已存在");
                 return WebResponse.error(400, "keyword已存在");
             } else {
                 //进行更新
@@ -381,6 +391,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                 }
             }
         }
+        logger.info("成功更新设备信息");
         return WebResponse.success();
     }
 
@@ -393,6 +404,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         equipmentInfo.setParentNodeCode(parentNodeCode);
         //删除
         equipmentInfoDao.deleteEquipmentInfo(equipmentInfo);
+        logger.info("成功删除设备");
         return WebResponse.success();
     }
 
@@ -407,7 +419,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         Integer pageSize = showEquipmentInfoByConditionQo.getPageSize();
         ParentNode parentNode5555 = new ParentNode();
         parentNode5555.setParentNodeCode(parentNodeCode);
-        Integer countNums = equipmentInfoDao.selectAll(parentNode5555).size();
+        Integer countNums = 0;
         if (parentNodeCode == "全部") {//查询所有的表
             //获取所有的parentNodeCode
             List<ParentNode> parentNodes = parentNodeService.selectAll();
@@ -497,8 +509,10 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
             EquipmentInfo.setEquipmentPropertyCode(equipmentPropertyCode == "" ? null : equipmentPropertyCode);
             EquipmentInfo.setEquipmentType(equipmentType == "" ? null : equipmentType);
             EquipmentInfo.setParentNodeCode(parentNodeCode == "" ? null : parentNodeCode);
+            List<EquipmentInfo> EquipmentInfos1 = equipmentInfoDao.selectByEquipmentInfo(EquipmentInfo);
             PageHelper.startPage(pageNow, pageSize);
             List<EquipmentInfo> EquipmentInfos = equipmentInfoDao.selectByEquipmentInfo(EquipmentInfo);
+            countNums=EquipmentInfos1.size();
             if (EquipmentInfos.size() > 0) {
                 for (EquipmentInfo equipmentInfo : EquipmentInfos) {
                     ShowAllEquipmentInfoVo showAllEquipmentInfoVo = new ShowAllEquipmentInfoVo();
@@ -571,6 +585,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         }
         PageBean<ShowAllEquipmentInfoVo> pageData = new PageBean<>(pageNow, pageSize, countNums);
         pageData.setItems(showAllEquipmentInfoVos);
+        logger.info("分页查询设备信息");
         return WebResponse.success(pageData);
     }
 
@@ -578,7 +593,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     public WebResponse sendEquipmentRealtimeData(SendEquipmentRealtimeDataQo sendEquipmentRealtimeDataQo, String ip) throws Exception {
         //批量发送
         String parentNodeCode = sendEquipmentRealtimeDataQo.getParentNodeCode();
-        String equipmentPropertyTemplateCode = sendEquipmentRealtimeDataQo.getEquipmentPropertyTemplateCode();
+//        String equipmentPropertyTemplateCode = sendEquipmentRealtimeDataQo.getEquipmentPropertyTemplateCode();
         String equipmentType = sendEquipmentRealtimeDataQo.getEquipmentType();
         String[][] propertyCodeAndValue = sendEquipmentRealtimeDataQo.getPropertyCodeAndValue();
         //todo:获取上送周期并进行睡眠
@@ -586,6 +601,7 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         List<ParamsConfig> paramsConfigs = paramsConfigService.selectAll();
         if (paramsConfigs.size() > 0) {
             feedCycle = paramsConfigs.get(0).getFeedCycle();
+            logger.info("上传周期为:"+String.valueOf(feedCycle));
         }
         if (propertyCodeAndValue.length > 0) {
 //            //todo:启动线程
@@ -616,11 +632,13 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                     boolean isInt = Pattern.compile("^-?[1-9]\\d*$").matcher(baseValue).find();
                     boolean isDouble = Pattern.compile("^-?([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*|0?\\.0+|0)$").matcher(baseValue).find();
                     if (!(isInt || isDouble)) {
+                        logger.error("基础值类型错误");
                         return WebResponse.error(400, "基础值类型错误");
                     } else {
                         boolean isInt1 = Pattern.compile("^-?[1-9]\\d*$").matcher(upAndDown).find();
                         boolean isDouble1 = Pattern.compile("^-?([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*|0?\\.0+|0)$").matcher(upAndDown).find();
                         if (!(isInt1 || isDouble1)) {
+                            logger.error("浮动值类型错误");
                             return WebResponse.error(400, "浮动值类型错误");
                         }
                     }
@@ -630,15 +648,17 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
                     boolean is0Or1 = baseValue.equals("0") || baseValue.equals("1");
                     boolean is0Or2 = upAndDown.equals("0") || upAndDown.equals("1");
                     if (!(is0Or1 && is0Or2)) {
+                        logger.error("参数类型错误,基础值和浮动只能为0或者1");
                         return WebResponse.error(400, "参数类型错误,基础值和浮动只能为0或者1");
                     }
                 } else {
+                    logger.error("属性类型错误");
                     return WebResponse.error(400, "属性类型错误");
                 }
                 EquipmentInfo equipmentInfo = new EquipmentInfo();
                 equipmentInfo.setParentNodeCode(parentNodeCode);
                 equipmentInfo.setEquipmentType(equipmentType);
-                equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
+//                equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
                 equipmentInfo.setEquipmentPropertyCode(equipmentPropertyCode);
                 List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
 //                if (equipmentInfos.size() > 0) {
@@ -690,13 +710,15 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
         }
         Random random = new Random();
         Integer dataValInteger = random.nextInt(100);
-        String threadName = "sendEquipmentRealtimeDataThread:" + String.valueOf(ip);
+        String threadName = "sendEquipmentRealtimeDataThread:" + parentNodeCode+equipmentType;
         if (propertyCodeAndValue.length > 0) {
             //todo:启动线程
-            SendEquipmentRealtimeDataThread sendEquipmentRealtimeDataThread = new SendEquipmentRealtimeDataThread(propertyCodeAndValue, monitorPropertyService, parentNodeCode, equipmentType, equipmentPropertyTemplateCode, equipmentInfoDao, feedCycle);
+            SendEquipmentRealtimeDataThread sendEquipmentRealtimeDataThread = new SendEquipmentRealtimeDataThread(propertyCodeAndValue, monitorPropertyService, parentNodeCode, equipmentType, equipmentInfoDao, feedCycle);
             Thread thread = new Thread(sendEquipmentRealtimeDataThread);
             //获取0-100的正整数
             thread.setName(threadName);
+            logger.info("启动线程,开始发送数据");
+            logger.info("上传周期为:"+String.valueOf(feedCycle));
             thread.start();
         }
         //更改控制值
@@ -712,20 +734,33 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 //            sendControl.setIp(ip);
 //            sendControlService.insertSendControl(sendControl);
 //        }
-        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
-        sendControlVal.setVal(0);
+        SendDataControl sendDataControl=new SendDataControl();
+        sendDataControl.setEquipmentTypeCode(equipmentType);
+        sendDataControl.setParentNodeCode(parentNodeCode);
+        List<SendDataControl> sendDataControls = sendDataControlService.selectBySendDataControl(sendDataControl);
+        if(sendDataControls.size()>0){//更新
+            SendDataControl sendDataControl1 = sendDataControls.get(0);
+            sendDataControl1.setControlVal(0);
+            sendDataControlService.updateSendDataControl(sendDataControl1);
+        }else{//添加
+            sendDataControl.setControlVal(0);
+            sendDataControlService.insertSendDataControl(sendDataControl);
+        }
+//        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
+//        sendControlVal.setVal(0);
         return WebResponse.success();
     }
 
     @Override
-    public WebResponse stopSendEquipmentRealtimeData(String ip) {
+    public WebResponse stopSendEquipmentRealtimeData(GetSendControlValQo getSendControlValQo) {
         ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
         int noThreads = currentGroup.activeCount();
         Thread[] lstThreads = new Thread[noThreads];
         currentGroup.enumerate(lstThreads);
         for (Thread thread : lstThreads) {
-            if (thread.getName().equals("sendEquipmentRealtimeDataThread:" + ip)) {
+            if (thread.getName().equals("sendEquipmentRealtimeDataThread:" + getSendControlValQo.getParentNodeCode()+getSendControlValQo.getEquipmentType())) {
                 thread.interrupt();
+                logger.info("停止发送数据");
                 System.out.println("停止了线程:" + thread.getName());
             }
 
@@ -743,8 +778,21 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 //            sendControl.setIp(ip);
 //            sendControlService.insertSendControl(sendControl);
 //        }
-        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
-        sendControlVal.setVal(1);
+
+        SendDataControl sendDataControl=new SendDataControl();
+        sendDataControl.setEquipmentTypeCode(getSendControlValQo.getEquipmentType());
+        sendDataControl.setParentNodeCode(getSendControlValQo.getParentNodeCode());
+        List<SendDataControl> sendDataControls = sendDataControlService.selectBySendDataControl(sendDataControl);
+        if(sendDataControls.size()>0){//更新
+            SendDataControl sendDataControl1 = sendDataControls.get(0);
+            sendDataControl1.setControlVal(1);
+            sendDataControlService.updateSendDataControl(sendDataControl1);
+        }else{//添加
+            sendDataControl.setControlVal(1);
+            sendDataControlService.insertSendDataControl(sendDataControl);
+        }
+//        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
+//        sendControlVal.setVal(1);
         return WebResponse.success();
     }
 
@@ -874,13 +922,13 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
 
     @Override
     public WebResponse getPropertyByTypeAndTemplateAndParentNode(GetPropertyByTypeAndTemplateAndParentNodeQo getPropertyByTypeAndTemplateAndParentNodeQo) {
-        String equipmentPropertyTemplateCode = getPropertyByTypeAndTemplateAndParentNodeQo.getEquipmentPropertyTemplateCode();
-        String equipmentTypeCode = getPropertyByTypeAndTemplateAndParentNodeQo.getEquipmentTypeCode();
+//        String equipmentPropertyTemplateCode = getPropertyByTypeAndTemplateAndParentNodeQo.getEquipmentPropertyTemplateCode();
+        String equipmentTypeCode = getPropertyByTypeAndTemplateAndParentNodeQo.getEquipmentType();
         String parentNodeCode = getPropertyByTypeAndTemplateAndParentNodeQo.getParentNodeCode();
         EquipmentInfo equipmentInfo = new EquipmentInfo();
         equipmentInfo.setParentNodeCode(parentNodeCode);
         equipmentInfo.setEquipmentType(equipmentTypeCode);
-        equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
+//        equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
         List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
         Set<String> propertyCodeSet = new HashSet<>();
         List<GetPropertyByTypeAndTemplateAndParentNodeVo> getPropertyByTypeAndTemplateAndParentNodeVos = new ArrayList<>();
@@ -1091,19 +1139,21 @@ public class EquipmentInfoServiceImpl implements EquipmentInfoService {
     }
 
     @Override
-    public WebResponse getSendControlVal() {
-//        List<SendControl> sendControls = sendControlService.selectOne("192.168.52.50");
-//        if (sendControls.size() > 0) {
-//            return WebResponse.success(sendControls.get(0));
-//        } else {
-            //先添加,在查询
-        SendControlVal sendControlVal = SendControlVal.getSendControlVal();
-        SendControl sendControl = new SendControl();
-        sendControl.setControlVal(sendControlVal.getVal());
-        sendControl.setIp("192.168.52.50");
-        sendControlService.insertSendControl(sendControl);
-        return WebResponse.success(sendControl);
-//        }
+    public WebResponse getSendControlVal(GetSendControlValQo getSendControlValQo) {
+        GetSendControlValVo getSendControlValVo=new GetSendControlValVo();
+        SendDataControl sendDataControl=new SendDataControl();
+        sendDataControl.setEquipmentTypeCode(getSendControlValQo.getEquipmentType());
+        sendDataControl.setParentNodeCode(getSendControlValQo.getParentNodeCode());
+        List<SendDataControl> sendDataControls = sendDataControlService.selectBySendDataControl(sendDataControl);
+        if(sendDataControls.size()>0){//直接获取
+            SendDataControl sendDataControl1 = sendDataControls.get(0);
+            getSendControlValVo.setControlVal(sendDataControl1.getControlVal());
+        }else{//添加
+            sendDataControl.setControlVal(1);
+            sendDataControlService.insertSendDataControl(sendDataControl);
+            getSendControlValVo.setControlVal(1);
+        }
+        return WebResponse.success(getSendControlValVo);
     }
 
     @Override

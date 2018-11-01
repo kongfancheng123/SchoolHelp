@@ -73,7 +73,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         AbstractProtocol replyProtocol = protocol.getReplyProtocol();
         Message replyMsg = protocol.buildReplyMessage(sessionId, msg.getBody());
         //发送响应协议
-        replyProtocol.send(getIpAndPortString(ctx), replyMsg);
+        if(replyProtocol != null){
+            replyProtocol.send(getIpAndPortString(ctx), replyMsg);
+        }
         //业务处理
         protocol.onAvailable(msg);
         buf.release();

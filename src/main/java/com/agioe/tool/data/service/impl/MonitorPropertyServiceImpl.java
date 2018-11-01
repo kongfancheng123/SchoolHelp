@@ -8,6 +8,8 @@ import com.agioe.tool.data.entity.*;
 import com.agioe.tool.data.page.PageBean;
 import com.agioe.tool.data.service.*;
 import com.github.pagehelper.PageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,8 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
 
     @Autowired
     private ExcelService excelService;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public Integer insertMonitorProperty(MonitorProperty monitorProperty) {
@@ -81,6 +85,7 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
                 getPropertyByTypeAndTemplateVos.add(getPropertyByTypeAndTemplateVo);
             }
         }
+        logger.info("条件获取属性");
         return getPropertyByTypeAndTemplateVos;
     }
 
@@ -102,6 +107,7 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
                 showAllMonitorPropertyVos.add(showAllMonitorPropertyVo);
             }
         }
+        logger.info("获取所有属性");
         return WebResponse.success(showAllMonitorPropertyVos);
     }
 
@@ -124,6 +130,7 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
         }
         PageBean<ShowAllMonitorPropertyVo> pageData = new PageBean<>(pageNow, pageSize, countNums);
         pageData.setItems(showAllMonitorPropertyVos);
+        logger.info("分页获取属性");
         return WebResponse.success(pageData);
     }
 
@@ -137,6 +144,7 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
         monitorProperty.setEquipmentPropertyCode(equipmentPropertyCode);
         List<MonitorProperty> monitorProperties = monitorPropertyDao.selectByMonitorProperty(monitorProperty);
         if (monitorProperties.size() > 0) {
+            logger.error("设备编码已存在");
             return WebResponse.error(400, "编码已存在");
         }
         //名称判重
@@ -144,6 +152,7 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
         monitorProperty1.setEquipmentPropertyName(equipmentPropertyName);
         List<MonitorProperty> monitorProperties1 = monitorPropertyDao.selectByMonitorProperty(monitorProperty1);
         if (monitorProperties1.size() > 0) {
+            logger.error("监控信息名已存在");
             return WebResponse.error(400, "监控信息名已存在");
         }
         //添加
@@ -174,6 +183,7 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
                 monitorProperty2.setEquipmentPropertyName(equipmentPropertyName);
                 List<MonitorProperty> monitorProperties1 = monitorPropertyDao.selectByMonitorProperty(monitorProperty2);
                 if (monitorProperties1.size() > 0) {
+                    logger.error("属性名称已存在");
                     return WebResponse.error(400, "属性名称已存在");
                 } else {
                     monitorProperty1.setEquipmentPropertyName(equipmentPropertyName);
@@ -197,6 +207,7 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
                 equipmentInfo.setParentNodeCode(parentNode.getParentNodeCode());
                 List<EquipmentInfo> equipmentInfos = equipmentInfoService.selectByEquipmentInfo(equipmentInfo);
                 if (equipmentInfos.size() > 0) {
+                    logger.error("与设备存在绑定关系,删除失败");
                     return WebResponse.error(400, "与设备存在绑定关系,删除失败");
                 }
             }
@@ -206,10 +217,12 @@ public class MonitorPropertyServiceImpl implements MonitorPropertyService {
         monitorPropertyTemplateBind.setEquipmentPropertyCode(equipmentPropertyCode);
         List<MonitorPropertyTemplateBind> monitorPropertyTemplateBinds = monitorPropertyTemplateBindService.selectByMonitorPropertyTemplateBind(monitorPropertyTemplateBind);
         if (monitorPropertyTemplateBinds.size() > 0) {
+            logger.error("与属性模板有绑定关系,删除失败");
             return WebResponse.error(400, "与属性模板有绑定关系,删除失败");
         }
         //删除
         monitorPropertyDao.deleteMonitorProperty(equipmentPropertyCode);
+        logger.info("成功删除属性");
         return WebResponse.success();
     }
 

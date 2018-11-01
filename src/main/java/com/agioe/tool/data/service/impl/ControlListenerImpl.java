@@ -4,6 +4,8 @@ import com.agioe.tool.data.entity.EquipmentInfo;
 import com.agioe.tool.data.service.EquipmentInfoService;
 import com.agioe.tool.data.tcp.api.ControlListener;
 import com.agioe.tool.data.tcp.payload.ControlParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +16,7 @@ import java.util.List;
 public class ControlListenerImpl implements ControlListener {
     @Autowired
     private EquipmentInfoService equipmentInfoService;
-
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Override
     public void onControlArrive(List<ControlParameter> parameterList) {
         //todo:操作数据库
@@ -31,6 +33,7 @@ public class ControlListenerImpl implements ControlListener {
                 equipmentInfo.setParentNodeCode(parentNodeCode);
                 equipmentInfoService.updateEquipmentInfo(equipmentInfo);
             }
+            logger.info("下发命令已存入数据库");
         }
     }
 }
