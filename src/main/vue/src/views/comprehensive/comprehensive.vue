@@ -14,7 +14,7 @@
         <el-form-item label="上层节点"
                       prop="parentNodeCode">
           <el-select v-model="formSearch.parentNodeCode"
-                     @change="clearEvent"
+                     @change="conditionEvent"
                      placeholder="请选择">
             <el-option v-for="item in parentNodeList"
                        :key="item.parentNodeCode"
@@ -25,8 +25,10 @@
         </el-form-item>
 
         <!-- 设备类型 -->
-        <el-form-item label="设备类型">
+        <el-form-item label="设备类型"
+                      prop="equipmentType">
           <el-select v-model="formSearch.equipmentType"
+                     @change="conditionEvent"
                      placeholder="请选择">
             <el-option v-for="item in equipmentTypeList"
                        :key="item.equipmentTypeCode"
@@ -74,7 +76,7 @@
         <el-button type="primary"
                    size="small"
                    :disabled="dataEnableFalg"
-                   @click="dialog.sendFlag = true">开始发送</el-button>
+                   @click="SendEvent">开始发送</el-button>
         <el-button type="primary"
                    size="small"
                    :disabled="stopFlag"
@@ -167,45 +169,6 @@
                :inline="true"
                label-width="150px">
 
-        <el-form-item label="设备上层节点"
-                      prop="parentNodeCode">
-          <el-select v-model="formSend.parentNodeCode"
-                     placeholder="请输入设备上层节点"
-                     @change="changEvent">
-            <el-option v-for="item in parentNodeList"
-                       :key="item.parentNodeCode"
-                       :label="item.parentNodeName"
-                       :value="item.parentNodeCode">
-            </el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="设备类型"
-                      prop="equipmentType">
-          <el-select v-model="formSend.equipmentType"
-                     placeholder="请输入设备类型"
-                     @change="changEvent">
-            <el-option v-for="item in equipmentTypeList"
-                       :key="item.equipmentTypeCode"
-                       :label="item.equipmentTypeName"
-                       :value="item.equipmentTypeCode">
-            </el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="设备信号模板"
-                      prop="equipmentPropertyTemplateCode">
-          <el-select v-model="formSend.equipmentPropertyTemplateCode"
-                     placeholder="请输入设备信号模板"
-                     @change="changEvent">
-            <el-option v-for="item in equipmentSignalTemplateList"
-                       :key="item.equipmentPropertyTemplateCode"
-                       :label="item.equipmentPropertyTemplateName"
-                       :value="item.equipmentPropertyTemplateCode">
-            </el-option>
-          </el-select>
-        </el-form-item>
-
         <div class="biao">
           <!--表格 -->
           <el-table :data="tableKeyData"
@@ -254,7 +217,7 @@
                    size="small">取 消</el-button>
         <el-button type="primary"
                    size="small"
-                   @click="sendSumit('formSend')">确 定</el-button>
+                   @click="sendSumit">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -517,7 +480,6 @@ export default {
     */
     check(response, formName, dialogFlag, sucessMsg) {
       let vm = this
-      console.log(formName)
       setTimeout(() => {
         // 删除表单不需要重置
         if (formName !== 'formDelete') {
@@ -558,16 +520,35 @@ export default {
         })
     },
 
+    /* 判断是否可发送按钮*/
+    isSendFlagEvnt() {
+      let vm = this
+      Promise.all([
+        AJAX.getEnergyData.r(),
+        AJAX.switchData.r({ ...vm.formSearch })
+      ]).then(res => {
+        let { dataEnable, alarmEnable } = res[0].data.data
+        let { controlVal } = res[1].data.data
+        console.log(res)
+
+        if (dataEnable === 1 && controlVal === 1) {
+          vm.dataEnableFalg = false
+          vm.stopFlag = true
+        } else {
+          vm.dataEnableFalg = true
+          vm.stopFlag = false
+        }
+        if (alarmEnable !== 1) {
+          vm.alarmEnableFalg = true
+        }
+      })
+    },
     /*
     01:过滤条件数据
-
+  
     02:获取基础设置中：数据使能和报警使能
         I：数据使能：能否开始发送
         II：报警使能：能否发送报警
-
-    03: 获取开始发送和停止发送按钮是否开启判断(开始发送和数据使能配合)
-
-    04: 停止开始发送开关
     */
     getReadyData() {
       let vm = this
@@ -575,28 +556,24 @@ export default {
         AJAX.getUpNodeData.r(),
         AJAX.getEquipmentTypeData.r(),
         AJAX.getEquipmentSignalTemplateData.r(),
-        AJAX.getEquipmentSignalData.r(),
-        AJAX.getEnergyData.r(),
-        AJAX.switchData.r()
+        AJAX.getEquipmentSignalData.r()
       ])
         .then(res => {
           vm.parentNodeList = res[0].data.data
           vm.equipmentTypeList = res[1].data.data
           vm.equipmentSignalTemplateList = res[2].data.data
           vm.searchSigleList = res[3].data.data
-          let { dataEnable, alarmEnable } = res[4].data.data
-          let { controlVal } = res[5].data.data
 
-          if (dataEnable !== 1 || controlVal === 0) {
-            vm.dataEnableFalg = true
-            vm.stopFlag = false
-          }
-          if (alarmEnable !== 1) {
-            vm.alarmEnableFalg = true
-          }
+          vm.formSearch.parentNodeCode = vm.parentNodeList[0].parentNodeCode
+          vm.formSearch.equipmentType =
+            vm.equipmentTypeList[0].equipmentTypeCode
 
           vm.formPage.parentNodeCode = vm.parentNodeList[0].parentNodeCode
+          vm.formPage.equipmentType = vm.equipmentTypeList[0].equipmentTypeCode
 
+          console.log(vm.formSearch)
+
+          vm.isSendFlagEvnt()
           vm.getPageData()
         })
         .catch(error => {
@@ -604,9 +581,15 @@ export default {
         })
     },
     // 筛选条件,清除后面的选择置空
-    clearEvent() {
+    conditionEvent() {
       let vm = this
-      vm.formSearch.equipmentType = null
+      if (
+        vm.formSearch.equipmentType !== null &&
+        vm.formSearch.parentNodeCode !== null
+      ) {
+        vm.isSendFlagEvnt()
+      }
+
       vm.formSearch.equipmentPropertyTemplateCode = null
       vm.formSearch.equipmentPropertyCode = null
     },
@@ -614,28 +597,11 @@ export default {
     过滤条件 监测：设备类型，设备信号模板选择事件
     获取: 弹窗表格展示数据 
   */
-    changEvent() {
-      let vm = this
-      vm.tableKeyData = null // 下次选择重置
-      if (
-        vm.formSend.parentNodeCode &&
-        vm.formSend.equipmentType &&
-        vm.formSend.equipmentPropertyTemplateCode
-      ) {
-        AJAX.getSendTableData
-          .r(vm.formSend)
-          .then(res => {
-            vm.tableKeyData = res.data.data
-          })
-          .catch(error => {
-            console.log(error)
-          })
-      }
-    },
 
     /* 获取分页数据 */
     getPageData() {
       let vm = this
+      console.log(vm.formPage)
       AJAX.getSearchData
         .r(vm.formPage)
         .then(response => {
@@ -648,11 +614,12 @@ export default {
         })
     },
 
-    /* 查询 */
+    /* 查询*/
     searchSumit() {
       let vm = this
       vm.$refs.formSearch.validate(valid => {
         if (valid) {
+          console.log(vm.formSearch)
           vm.formPage = { ...vm.formSearch }
           vm.getPageData()
         } else {
@@ -660,12 +627,32 @@ export default {
         }
       })
     },
+    /* 开始发送事件*/
+    SendEvent() {
+      let vm = this
+      vm.tableKeyData = null // 下次选择重置
+      if (vm.formSearch.parentNodeCode && vm.formSearch.equipmentType) {
+        AJAX.getSendTableData
+          .r(vm.formSearch)
+          .then(res => {
+            vm.tableKeyData = res.data.data
+            if (vm.tableKeyData.length === 0) {
+              vm.$message.success('暂无数据')
+              return false
+            }
+            vm.dialog.sendFlag = true
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }
+    },
 
     /* 开始发送事件
      02: CancelToken | source取消令牌
      03：sendFlag 关闭弹窗
     */
-    sendSumit(formName) {
+    sendSumit() {
       const vm = this
       let emptyFlag = true // 检测表格中的input是否为空,开关(有空位false,则数据不能提交)
       vm.dialog.sendFlag = false // 关闭弹层
@@ -673,12 +660,12 @@ export default {
       vm.dataEnableFalg = true
       vm.stopFlag = false
 
-      vm.$refs[formName].validate(valid => {
+      vm.$refs['formSend'].validate(valid => {
         if (valid) {
           const CancelToken = vm.$AxiosFn.CancelToken
           vm.source = CancelToken.source()
           // 整个tableKeyData表格数据,转后端需要的格式
-          vm[formName].propertyCodeAndValue = vm.tableKeyData.map(item => {
+          vm.formSend.propertyCodeAndValue = vm.tableKeyData.map(item => {
             if (!item.baseValue || !item.upAndDown) {
               emptyFlag = false
             }
@@ -696,13 +683,15 @@ export default {
             vm.stopFlag = true
             return false
           }
+          vm.formSend.parentNodeCode = vm.formSearch.parentNodeCode
+          vm.formSend.equipmentType = vm.formSearch.equipmentType
 
           AJAX.sendData
-            .r(vm[formName], { cancelToken: vm.source.token })
+            .r(vm.formSend, { cancelToken: vm.source.token })
             .then(response => {
               if (response.data.code === 200) {
                 vm.$message.success('发送成功')
-                vm.$refs[formName].resetFields()
+                vm.$refs['formSend'].resetFields()
               } else {
                 vm.$message.error('发送失败')
               }
@@ -728,14 +717,14 @@ export default {
       clearTimeout(vm.pollingNum)
       vm.pollingNum = setTimeout(() => {
         vm.getPageData()
-      }, 3000)
+      }, 1500)
     },
 
     /* 停止发送*/
     stopSumit() {
       let vm = this
       AJAX.stopSendData
-        .r()
+        .r({ ...vm.formSearch })
         .then(res => {
           vm.dataEnableFalg = false
           vm.stopFlag = true
@@ -770,7 +759,6 @@ export default {
       }
       vm.dialog.warnFlag = true
     },
-
     warnSumit(formName) {
       let vm = this
       vm.$refs[formName].validate(valid => {

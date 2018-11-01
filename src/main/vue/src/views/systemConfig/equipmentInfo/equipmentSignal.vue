@@ -46,8 +46,8 @@
       <el-pagination @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
                      :current-page="pageNow"
-                     :page-sizes="[30, 50, 100]"
-                     :page-size="30"
+                     :page-sizes="[5, 50, 100]"
+                     :page-size="5"
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="totalPage">
       </el-pagination>
@@ -173,7 +173,7 @@ export default {
     return {
       // 当前页码
       pageNow: 1,
-      pageSize: 30,
+      pageSize: 5,
       totalPage: 0,
       // 表格数据
       tableData: [],
