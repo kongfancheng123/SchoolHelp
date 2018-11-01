@@ -570,11 +570,11 @@ export default {
         })
         .then(response => {
           vm.totalPage = response.data.data.totalNum
+          console.log(response.data.data.items)
           vm.tableData = response.data.data.items.map(item => {
             item.equipmentPropertyTypeName = vm.PropertyList.find(
               target => target.value === item.equipmentPropertyType
             ).label
-
             return item
           })
         })
