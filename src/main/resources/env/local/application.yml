@@ -2,7 +2,7 @@ server:
   port: 8080
 spring:
   datasource:
-    url: jdbc:postgresql://192.168.52.12:5432/data_tool
+    url: jdbc:postgresql://192.168.52.77:5432/data_tool
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -23,7 +23,7 @@ mybatis:
 
 atm:
   #通信端口
-  tcp-server-port: 9988
+  tcp-server-port: 6690
   #心跳间隔 单位：秒s
   protocol-heartbeat-interval: 5
   #超时时间 单位：毫秒ms
