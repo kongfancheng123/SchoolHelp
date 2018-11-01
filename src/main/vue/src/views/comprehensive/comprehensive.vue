@@ -134,12 +134,12 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini"
-                     :disabled="alarmEnableFalg||scope.row.alarmVal===''?false:true"
+                     :disabled="alarmEnableFalg||scope.row.alarmVal===null||scope.row.alarmVal===''?false:true"
                      @click="warnEvent(scope.$index, scope.row)">发送报警</el-button>
 
           <el-button size="mini"
                      type="danger"
-                     :disabled="scope.row.alarmVal===''?true:false"
+                     :disabled="scope.row.alarmVal===''||scope.row.alarmVal===null?true:false"
                      @click="troublesHootingEvent(scope.$index, scope.row)">解除故障</el-button>
         </template>
       </el-table-column>
@@ -606,6 +606,7 @@ export default {
         .then(response => {
           vm.tableData = response.data.data.items
           vm.totalPage = response.data.data.totalNum
+          console.log(response)
           vm.pollingEvent()
         })
         .catch(error => {
