@@ -21,18 +21,18 @@ public class SendEquipmentRealtimeDataThread implements Runnable {
     private MonitorPropertyService monitorPropertyService;
     private String parentNodeCode;
     private String equipmentType;
-    private String equipmentPropertyTemplateCode;
+//    private String equipmentPropertyTemplateCode;
     private EquipmentInfoDao equipmentInfoDao;
     private Integer feedCycle;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public SendEquipmentRealtimeDataThread(String[][] propertyCodeAndValue, MonitorPropertyService monitorPropertyService, String parentNodeCode, String equipmentType, String equipmentPropertyTemplateCode, EquipmentInfoDao equipmentInfoDao, Integer feedCycle) {
+    public SendEquipmentRealtimeDataThread(String[][] propertyCodeAndValue, MonitorPropertyService monitorPropertyService, String parentNodeCode, String equipmentType,  EquipmentInfoDao equipmentInfoDao, Integer feedCycle) {
         this.propertyCodeAndValue = propertyCodeAndValue;
         this.monitorPropertyService = monitorPropertyService;
         this.parentNodeCode = parentNodeCode;
         this.equipmentType = equipmentType;
-        this.equipmentPropertyTemplateCode = equipmentPropertyTemplateCode;
+//        this.equipmentPropertyTemplateCode = equipmentPropertyTemplateCode;
         this.equipmentInfoDao = equipmentInfoDao;
         this.feedCycle = feedCycle;
     }
@@ -66,7 +66,7 @@ public class SendEquipmentRealtimeDataThread implements Runnable {
                     EquipmentInfo equipmentInfo = new EquipmentInfo();
                     equipmentInfo.setParentNodeCode(parentNodeCode);
                     equipmentInfo.setEquipmentType(equipmentType);
-                    equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
+//                    equipmentInfo.setEquipmentPropertyTemplateCode(equipmentPropertyTemplateCode);
                     equipmentInfo.setEquipmentPropertyCode(equipmentPropertyCode);
                     List<EquipmentInfo> equipmentInfos = equipmentInfoDao.selectByEquipmentInfo(equipmentInfo);
                     List<SensorData> dataList = new ArrayList<>();

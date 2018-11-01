@@ -115,7 +115,7 @@ public interface EquipmentInfoService {
      * @param
      * @return
      */
-    WebResponse stopSendEquipmentRealtimeData(String ip);
+    WebResponse stopSendEquipmentRealtimeData(GetSendControlValQo getSendControlValQo);
 
     /**
      * 发送历史事件
@@ -142,7 +142,7 @@ public interface EquipmentInfoService {
     WebResponse getPropertyByTypeAndTemplate(@RequestBody GetPropertyByTypeAndTemplateQo getPropertyByTypeAndTemplateQo);
 
     /**
-     * 根据模板,设备类型和上层节点获取属性
+     * 根据设备类型和上层节点获取属性
      *
      * @param getPropertyByTypeAndTemplateAndParentNodeQo
      * @return
@@ -178,7 +178,7 @@ public interface EquipmentInfoService {
     /**
      * 获取发送数据控制值
      */
-    WebResponse getSendControlVal();
+    WebResponse getSendControlVal(GetSendControlValQo getSendControlValQo);
 
     /**
      * 获取解除事件相关值
