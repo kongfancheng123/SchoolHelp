@@ -86,7 +86,8 @@ public class SendEquipmentRealtimeDataThread implements Runnable {
                             if (equipmentPropertyType == 0) {//信号类型为0,浮点数
                                 dataVal = String.valueOf(dataValDouble);
                             } else {//信号类型为1,只能为0或者1
-                                int i = random.nextInt(2);
+                                double dd=dataValDouble;
+                                int i =(int)dd;
                                 dataVal = String.valueOf(i);
                             }
                             Date dataUpdate = new Date();
