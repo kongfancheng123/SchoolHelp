@@ -654,7 +654,7 @@ export default {
     */
     sendSumit() {
       const vm = this
-      let emptyFlag = true // 检测表格中的input是否为空,开关(有空位false,则数据不能提交)
+      // let emptyFlag = true // 检测表格中的input是否为空,开关(有空位false,则数据不能提交)
       vm.dialog.sendFlag = false // 关闭弹层
 
       vm.dataEnableFalg = true
@@ -665,24 +665,21 @@ export default {
           const CancelToken = vm.$AxiosFn.CancelToken
           vm.source = CancelToken.source()
           // 整个tableKeyData表格数据,转后端需要的格式
-          vm.formSend.propertyCodeAndValue = vm.tableKeyData.map(item => {
-            if (!item.baseValue || !item.upAndDown) {
-              emptyFlag = false
+
+          let filterTtableKeyData = vm.tableKeyData.filter(
+            item => item.baseValue || item.upAndDown
+          )
+
+          vm.formSend.propertyCodeAndValue = filterTtableKeyData.map(item => {
+            if (item.baseValue || item.upAndDown) {
+              let arr = []
+              arr[0] = item.equipmentPropertyCode
+              arr[1] = item.baseValue
+              arr[2] = item.upAndDown
+              return arr
             }
-            let arr = []
-            arr[0] = item.equipmentPropertyCode
-            arr[1] = item.baseValue
-            arr[2] = item.upAndDown
-            return arr
           })
 
-          if (!emptyFlag) {
-            vm.$message.error('基础值,上下波动范围值，必须都不为空！')
-            vm.dialog.sendFlag = true
-            vm.dataEnableFalg = false
-            vm.stopFlag = true
-            return false
-          }
           vm.formSend.parentNodeCode = vm.formSearch.parentNodeCode
           vm.formSend.equipmentType = vm.formSearch.equipmentType
 
