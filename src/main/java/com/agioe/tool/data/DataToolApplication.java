@@ -1,13 +1,7 @@
 package com.agioe.tool.data;
 
-import com.agioe.tool.data.Test.TcpComponent;
-import com.agioe.tool.data.common.SpringContextUtil;
 import com.agioe.tool.data.log.LoggerMessage;
 import com.agioe.tool.data.log.LoggerQueue;
-import com.agioe.tool.data.tcp.api.ControlListener;
-import com.agioe.tool.data.tcp.api.DefaultTcpApiInstance;
-import com.agioe.tool.data.tcp.api.TcpApi;
-import com.agioe.tool.data.tcp.server.Server;
 import com.github.pagehelper.PageHelper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -43,25 +37,12 @@ public class DataToolApplication implements CommandLineRunner {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    @Autowired
-    private ControlListener controlListener;
+
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(DataToolApplication.class);
         application.setBannerMode(Banner.Mode.OFF);
         application.run(args);
-    }
-
-    @Bean
-    public SpringContextUtil springContextUtil() {
-        return new SpringContextUtil();
-    }
-
-
-    @Override
-    public void run(String... args) throws Exception {
-        //通信服务端初始化
-        Server.init();
     }
 
     /**
@@ -89,12 +70,6 @@ public class DataToolApplication implements CommandLineRunner {
     }
 
 
-    @Bean
-    public TcpComponent tcpComponent() {
-        TcpApi instance = new DefaultTcpApiInstance(controlListener);
-        return new TcpComponent(instance);
-    }
-
     //配置mybatis的分页插件pageHelper
     @Bean
     public PageHelper pageHelper() {
@@ -106,5 +81,10 @@ public class DataToolApplication implements CommandLineRunner {
         properties.setProperty("dialect", "postgresql");    //配置mysql数据库的方言
         pageHelper.setProperties(properties);
         return pageHelper;
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+
     }
 }

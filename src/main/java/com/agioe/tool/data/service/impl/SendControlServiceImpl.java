@@ -1,8 +1,5 @@
 package com.agioe.tool.data.service.impl;
 
-import com.agioe.tool.data.dao.SendControlDao;
-import com.agioe.tool.data.entity.SendControl;
-import com.agioe.tool.data.service.SendControlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
