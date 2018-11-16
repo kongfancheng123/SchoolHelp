@@ -70,9 +70,8 @@
     <!-- 依赖管理 -->
     <dependencySets>
         <dependencySet>
-            <outputDirectory>lib</outputDirectory>
-            <!-- 不包含项目本身jar -->
-            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
         </dependencySet>
     </dependencySets>
 </assembly>
