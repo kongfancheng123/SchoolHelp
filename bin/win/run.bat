@@ -5,7 +5,7 @@ setlocal
 set CLASSPATH=%CLASSPATH%;
 set PATH=%PATH%
 set JAVA_HOME=%JAVA_HOME%
-set APP_NAME=data-tool-1.0-SNAPSHOT
+set APP_NAME=serotonin-1.0-SNAPSHOT
 title %APP_NAME%
 
 set RETVAL="0"

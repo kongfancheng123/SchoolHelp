@@ -3,7 +3,7 @@
     <formats>
         <format>zip</format>
     </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
+    <includeBaseDirectory>true</includeBaseDirectory>
     <fileSets>
         <!--需要包含的文件与输出的路径-->
         <fileSet>

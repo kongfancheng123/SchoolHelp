@@ -25,7 +25,6 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
             <charset>utf8</charset>
         </encoder>
-        <filter class="com.agioe.tool.data.log.LogFilter"></filter>
     </appender>
     <root level="INFO">
         <appender-ref ref="FILE"/>

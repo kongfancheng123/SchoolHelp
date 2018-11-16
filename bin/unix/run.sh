@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_NAME="data-tool"
+APP_NAME="serotonin"
 RETVAL="0"
 
 
