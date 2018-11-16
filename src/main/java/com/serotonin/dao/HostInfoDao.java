@@ -11,6 +11,20 @@ import java.util.List;
  */
 @Repository
 public interface HostInfoDao {
+//    /**
+//     * 新增监控信息
+//     *
+//     * @param hostInfo
+//     * @return
+//     */
+//    Integer insertHostInfo(@Param("hostInfo") HostInfo hostInfo);
+//    /**
+//     * 删除主机
+//     *
+//     * @param equipmentPropertyTemplateCode
+//     * @return
+//     */
+//    Integer deleteHostInfo(String equipmentPropertyTemplateCode);
     /**
      * 多条件查询数据
      *
@@ -18,4 +32,13 @@ public interface HostInfoDao {
      * @return
      */
     List<HostInfo> selectByHostInfo(@Param("hostInfo") HostInfo hostInfo);
+
+    /**
+     * 更新主机信息
+     *
+     * @param hostInfo
+     * @return
+     */
+    Integer updateHostInfo(@Param("hostInfo") HostInfo hostInfo);
+
 }

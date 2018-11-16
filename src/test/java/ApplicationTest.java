@@ -2,15 +2,12 @@ import com.serotonin.RunnerApplication;
 import com.serotonin.entity.HostInfo;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
-import com.serotonin.modbus4j.code.DataType;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.ip.IpParameters;
-import com.serotonin.modbus4j.locator.BaseLocator;
 import com.serotonin.service.DealEventService;
 import com.serotonin.service.HostInfoService;
-import com.serotonin.util.DecimalToBinary;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,24 +51,24 @@ public class ApplicationTest {
                 //测试数据0是否连接
                 System.out.println(master.testSlaveNode(0));
                 while (true) {
-                    for (int i = 10; i < 20; i++) {//起始和最终地址可配
+//                    for (int i = 10; i < 20; i++) {//起始和最终地址可配
                         //获取当前设备的key
-                        BaseLocator<Number> loc1 = BaseLocator.holdingRegister(1, i, DataType.TWO_BYTE_INT_UNSIGNED);
-                        Number value1 = master.getValue(loc1);
-                        String result1 = DecimalToBinary.decimalToBinary(value1);
-                        String substring1 = result1.substring(2, 4);
-                        String key1 = "";
-                        dealEventService.dealEvent(key1, substring1);
-                        String substring2 = result1.substring(6, 8);
-                        String key2 = "";
-                        dealEventService.dealEvent(key2, substring2);
-                        String substring3 = result1.substring(10, 12);
-                        String key3 = "";
-                        dealEventService.dealEvent(key3, substring3);
-                        String substring4 = result1.substring(14, 16);
-                        String key4 = "";
-                        dealEventService.dealEvent(key4, substring4);
-                    }
+//                        BaseLocator<Number> loc1 = BaseLocator.holdingRegister(1, i, DataType.TWO_BYTE_INT_UNSIGNED);
+//                        Number value1 = master.getValue(loc1);
+//                        String result1 = DecimalToBinary.decimalToBinary(value1);
+//                        String substring1 = result1.substring(2, 4);
+//                        String key1 = "";
+//                        dealEventService.dealEvent(key1, substring1);
+//                        String substring2 = result1.substring(6, 8);
+//                        String key2 = "";
+//                        dealEventService.dealEvent(key2, substring2);
+//                        String substring3 = result1.substring(10, 12);
+//                        String key3 = "";
+//                        dealEventService.dealEvent(key3, substring3);
+//                        String substring4 = result1.substring(14, 16);
+//                        String key4 = "";
+//                        dealEventService.dealEvent(key4, substring4);
+//                    }
                     System.out.println("停止获取数据,休息中..........");
                     Thread.sleep(5000);
                 }

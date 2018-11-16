@@ -19,14 +19,20 @@ public class HostInfo {
      * 主机名称
      */
     private String hostName;
-    private String hostType;
+    private Integer hostType;
     /**
      * 主机地址
      */
     private String hostAddr;
     private Integer dataProcessMode;
     private Integer isEnable;
+    /**
+     * 是否建立连接
+     */
     private Integer isConn;
+    /**
+     * 更新时间
+     */
     private Date updateTime;
     private Date paramsUpdateTime;
     /**

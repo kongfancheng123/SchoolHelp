@@ -15,4 +15,12 @@ public interface HostInfoService {
      * @return
      */
     List<HostInfo> selectByHostInfo(HostInfo hostInfo);
+
+    /**
+     * 更新主机信息
+     *
+     * @param hostInfo
+     * @return
+     */
+    Integer updateHostInfo(HostInfo hostInfo);
 }

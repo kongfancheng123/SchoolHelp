@@ -20,4 +20,9 @@ public class HostInfoServiceImpl implements HostInfoService {
     public List<HostInfo> selectByHostInfo(HostInfo hostInfo) {
         return hostInfoDao.selectByHostInfo(hostInfo);
     }
+
+    @Override
+    public Integer updateHostInfo(HostInfo hostInfo) {
+        return hostInfoDao.updateHostInfo(hostInfo);
+    }
 }
