@@ -143,4 +143,47 @@ public class DealEventServiceImpl implements DealEventService {
         createTableParam.setSeqName("seq_" + tableName);
         return createTableParam;
     }
+
+    @Override
+    public void storeCommuData1(HostInfo hostInfo) {//查询实时表,有则删除,并移除到历史表中,没有的话不做任何操作
+        //查询实时表
+        RealtimeEvent realtimeEvent = new RealtimeEvent();
+        realtimeEvent.setDevCode(hostInfo.getHostCode());
+        List<RealtimeEvent> realtimeEvents = realtimeEventService.selectByRealtimeEvent(realtimeEvent);
+        if (realtimeEvents.size() > 0) {
+            RealtimeEvent realtimeEvent1 = realtimeEvents.get(0);
+            realtimeEventService.deleteRealtimeEvent(realtimeEvent1.getId());
+            //获取历史表参数
+            CreateTableParam createTableParam = this.getCreateTableParam();
+            //进行历史表存储
+            HisEvent hisEvent = new HisEvent();
+            hisEvent.setUpdateTime(new Date());
+            hisEvent.setIsSync(0);
+            hisEvent.setIsConfirm(1);
+            hisEvent.setConfirmOperator(realtimeEvent1.getConfirmOperator());
+            hisEvent.setConfirmDetail(realtimeEvent1.getConfirmDetail());
+            hisEvent.setConfirmTime(realtimeEvent1.getConfirmTime());
+            hisEvent.setDevCode(realtimeEvent1.getDevCode());
+            hisEventService.insertHisEvent(hisEvent, createTableParam);
+        }
+    }
+
+    @Override
+    public void storeCommuData2(HostInfo hostInfo) {//查询实时表,有不操作,没有就进行添加操作
+        RealtimeEvent realtimeEvent = new RealtimeEvent();
+        realtimeEvent.setDevCode(hostInfo.getHostCode());
+        List<RealtimeEvent> realtimeEvents = realtimeEventService.selectByRealtimeEvent(realtimeEvent);
+        if (realtimeEvents.size() <= 0) {
+            RealtimeEvent realtimeEvent1 = new RealtimeEvent();
+            //进行历史表存储
+            realtimeEvent1.setUpdateTime(new Date());
+            realtimeEvent1.setIsSync(0);
+            realtimeEvent1.setIsConfirm(0);
+            realtimeEvent1.setConfirmOperator("SYSTEM");
+            realtimeEvent1.setConfirmDetail("系统确认");
+            realtimeEvent1.setConfirmTime(new Date());
+            realtimeEvent1.setDevCode(hostInfo.getHostCode());
+            realtimeEventService.insertRealtimeEvent(realtimeEvent1);
+        }
+    }
 }

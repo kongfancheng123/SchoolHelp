@@ -1,10 +1,13 @@
 package com.serotonin;
 
 
-import com.serotonin.service.DealEventService;
-import com.serotonin.service.HisEventService;
-import com.serotonin.service.RealtimeEventService;
-import com.serotonin.service.RunService;
+import com.serotonin.modbus4j.ModbusFactory;
+import com.serotonin.modbus4j.ModbusMaster;
+import com.serotonin.modbus4j.code.DataType;
+import com.serotonin.modbus4j.code.RegisterRange;
+import com.serotonin.modbus4j.ip.IpParameters;
+import com.serotonin.modbus4j.locator.NumericLocator;
+import com.serotonin.service.*;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +41,9 @@ public class RunnerApplication implements CommandLineRunner {
     @Autowired
     private RealtimeEventService realtimeEventService;
 
+    @Autowired
+    private ParamEntryService paramEntryService;
+
     public static void main(String[] args) throws Exception {
         SpringApplication application = new SpringApplication(RunnerApplication.class);
         application.run(args);
@@ -46,6 +52,32 @@ public class RunnerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        runService.paramEntry();
+//        paramEntryService.paramEntry();
+
+
+        //参数
+        IpParameters params = new IpParameters();
+        //获取主机串口编号
+        String com = "001";
+        //从站所在地址
+        params.setHost("192.168.52.50");
+        //从站端口
+        params.setPort(502);
+        //创建主站
+        ModbusMaster master = new ModbusFactory().createTcpMaster(params, false);
+        master.init();
+        NumericLocator el = new NumericLocator(2, RegisterRange.HOLDING_REGISTER, 10, DataType.TWO_BYTE_INT_UNSIGNED);
+        while (true) {
+            for (int i = 0; i < 10; i++) {
+                Thread.sleep(1000);
+                try {
+                    System.out.println("el: " + master.getValue(el));
+//                System.out.println("fjk: " + master.getValue(fjk));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 }

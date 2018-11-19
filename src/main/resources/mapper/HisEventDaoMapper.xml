@@ -31,6 +31,9 @@
     is_confirm,
     event_time,
     event_detail,
+    confirm_operator,
+    confirm_detail,
+    confirm_time,
     lowmachine_key,
     is_sync,
     update_time
@@ -43,6 +46,9 @@
     #{hisEvent.isConfirm},
     #{hisEvent.eventTime},
     #{hisEvent.eventDetail},
+    #{hisEvent.confirmOperator},
+    #{hisEvent.confirmDetail},
+    #{hisEvent.confirmTime},
     #{hisEvent.lowMachineKey},
     #{hisEvent.isSync},
     #{hisEvent.updateTime}
