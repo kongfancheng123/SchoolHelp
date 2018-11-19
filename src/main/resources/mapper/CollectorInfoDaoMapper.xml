@@ -11,6 +11,8 @@
         <result column="collector_name" jdbcType="VARCHAR" property="collectorName"/>
         <result column="container_code" jdbcType="VARCHAR" property="containerCode"/>
         <result column="lowmachine_key" jdbcType="VARCHAR" property="lowMachineKey"/>
+        <result column="collector_code" jdbcType="VARCHAR" property="collectorCode"/>
+        <result column="collector_type" jdbcType="INTEGER" property="collectorType"/>
     </resultMap>
 
     <!--<insert id="insertEquipmentHistoryData" parameterType="com.agioe.tool.data.entity.EquipmentHistoryData">-->
@@ -39,7 +41,6 @@
     <select id="selectByCollectorInfo" parameterType="com.serotonin.entity.CollectorInfo"
             resultMap="BaseResultMap">
         select *
-        -- host_code,host_addr,default2,default1
         from collector_info
         where 1=1
         <if test="collectorInfo.collectorName != null">

@@ -1,6 +1,6 @@
 package com.serotonin.dao;
 
-import com.serotonin.entity.HostInfo;
+import com.serotonin.entity.CreateTableParam;
 import com.serotonin.entity.RealtimeEvent;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -34,7 +34,7 @@ public interface RealtimeEventDao {
      * @param realtimeEvent
      * @return
      */
-    List<HostInfo> selectByRealtimeEvent(@Param("realtimeEvent") RealtimeEvent realtimeEvent);
+    List<RealtimeEvent> selectByRealtimeEvent(@Param("realtimeEvent") RealtimeEvent realtimeEvent);
 
     /**
      * 更新实时事件
@@ -43,4 +43,9 @@ public interface RealtimeEventDao {
      * @return
      */
     Integer updateRealtimeEvent(@Param("realtimeEvent") RealtimeEvent realtimeEvent);
+
+    /**
+     * 建表
+     */
+    Integer createTable(@Param("createTableParam") CreateTableParam createTableParam);
 }

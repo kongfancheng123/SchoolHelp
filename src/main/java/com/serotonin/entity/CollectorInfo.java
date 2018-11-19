@@ -12,4 +12,6 @@ public class CollectorInfo {
     private String collectorName;
     private String containerCode;
     private String lowMachineKey;
+    private String collectorCode;
+    private Integer collectorType;
 }

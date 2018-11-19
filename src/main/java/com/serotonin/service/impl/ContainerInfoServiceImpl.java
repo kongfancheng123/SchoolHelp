@@ -2,7 +2,6 @@ package com.serotonin.service.impl;
 
 import com.serotonin.dao.ContainerInfoDao;
 import com.serotonin.entity.ContainerInfo;
-import com.serotonin.entity.HostInfo;
 import com.serotonin.service.ContainerInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ public class ContainerInfoServiceImpl implements ContainerInfoService {
     private ContainerInfoDao containerInfoDao;
 
     @Override
-    public List<HostInfo> selectByContainerInfo(ContainerInfo containerInfo) {
+    public List<ContainerInfo> selectByContainerInfo(ContainerInfo containerInfo) {
         return containerInfoDao.selectByContainerInfo(containerInfo);
     }
 }

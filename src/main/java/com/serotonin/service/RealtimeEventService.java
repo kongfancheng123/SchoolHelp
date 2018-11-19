@@ -1,6 +1,6 @@
 package com.serotonin.service;
 
-import com.serotonin.entity.HostInfo;
+import com.serotonin.entity.CreateTableParam;
 import com.serotonin.entity.RealtimeEvent;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public interface RealtimeEventService {
     Integer insertRealtimeEvent(RealtimeEvent realtimeEvent);
 
     /**
-     * 删除主机
+     * 删除事件
      *
      * @param id
      * @return
@@ -31,7 +31,7 @@ public interface RealtimeEventService {
      * @param realtimeEvent
      * @return
      */
-    List<HostInfo> selectByRealtimeEvent(RealtimeEvent realtimeEvent);
+    List<RealtimeEvent> selectByRealtimeEvent(RealtimeEvent realtimeEvent);
 
     /**
      * 更新实时事件
@@ -40,4 +40,9 @@ public interface RealtimeEventService {
      * @return
      */
     Integer updateRealtimeEvent(RealtimeEvent realtimeEvent);
+
+    /**
+     * 建表
+     */
+    Integer createTable(CreateTableParam createTableParam);
 }

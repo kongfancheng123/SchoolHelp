@@ -1,7 +1,7 @@
 package com.serotonin.service.impl;
 
 import com.serotonin.dao.RealtimeEventDao;
-import com.serotonin.entity.HostInfo;
+import com.serotonin.entity.CreateTableParam;
 import com.serotonin.entity.RealtimeEvent;
 import com.serotonin.service.RealtimeEventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +28,17 @@ public class RealtimeEventServiceImpl implements RealtimeEventService {
     }
 
     @Override
-    public List<HostInfo> selectByRealtimeEvent(RealtimeEvent realtimeEvent) {
+    public List<RealtimeEvent> selectByRealtimeEvent(RealtimeEvent realtimeEvent) {
         return realtimeEventDao.selectByRealtimeEvent(realtimeEvent);
     }
 
     @Override
     public Integer updateRealtimeEvent(RealtimeEvent realtimeEvent) {
         return realtimeEventDao.updateRealtimeEvent(realtimeEvent);
+    }
+
+    @Override
+    public Integer createTable(CreateTableParam createTableParam) {
+        return realtimeEventDao.createTable(createTableParam);
     }
 }

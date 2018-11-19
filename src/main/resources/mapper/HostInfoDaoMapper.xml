@@ -69,14 +69,14 @@
     <update id="updateHostInfo" parameterType="com.serotonin.entity.HostInfo">
         UPDATE host_info
         <set>
-            <if test="hostInfo.is_conn != null">
-                is_conn = #{hostInfo.is_conn},
+            <if test="hostInfo.isConn != null">
+                is_conn = #{hostInfo.isConn},
             </if>
             <if test="hostInfo.updateTime != null">
                 update_time = #{hostInfo.updateTime},
             </if>
         </set>
-        WHERE host_code=#{hostInfo.id}
+        WHERE host_code=#{hostInfo.hostCode}
 
     </update>
 

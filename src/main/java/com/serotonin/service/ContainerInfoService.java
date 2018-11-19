@@ -1,7 +1,6 @@
 package com.serotonin.service;
 
 import com.serotonin.entity.ContainerInfo;
-import com.serotonin.entity.HostInfo;
 
 import java.util.List;
 
@@ -15,5 +14,5 @@ public interface ContainerInfoService {
      * @param containerInfo
      * @return
      */
-    List<HostInfo> selectByContainerInfo(ContainerInfo containerInfo);
+    List<ContainerInfo> selectByContainerInfo(ContainerInfo containerInfo);
 }

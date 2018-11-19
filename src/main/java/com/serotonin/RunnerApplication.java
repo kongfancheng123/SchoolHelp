@@ -1,6 +1,9 @@
 package com.serotonin;
 
 
+import com.serotonin.service.DealEventService;
+import com.serotonin.service.HisEventService;
+import com.serotonin.service.RealtimeEventService;
 import com.serotonin.service.RunService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -26,6 +29,15 @@ public class RunnerApplication implements CommandLineRunner {
     @Autowired
     private RunService runService;
 
+    @Autowired
+    private DealEventService dealEventService;
+
+    @Autowired
+    private HisEventService hisEventService;
+
+    @Autowired
+    private RealtimeEventService realtimeEventService;
+
     public static void main(String[] args) throws Exception {
         SpringApplication application = new SpringApplication(RunnerApplication.class);
         application.run(args);
@@ -34,6 +46,6 @@ public class RunnerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        runService.tcpRun();
+        runService.paramEntry();
     }
 }

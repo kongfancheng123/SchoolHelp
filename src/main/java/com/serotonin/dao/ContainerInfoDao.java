@@ -1,7 +1,6 @@
 package com.serotonin.dao;
 
 import com.serotonin.entity.ContainerInfo;
-import com.serotonin.entity.HostInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +17,5 @@ public interface ContainerInfoDao {
      * @param containerInfo
      * @return
      */
-    List<HostInfo> selectByContainerInfo(@Param("containerInfo") ContainerInfo containerInfo);
+    List<ContainerInfo> selectByContainerInfo(@Param("containerInfo") ContainerInfo containerInfo);
 }

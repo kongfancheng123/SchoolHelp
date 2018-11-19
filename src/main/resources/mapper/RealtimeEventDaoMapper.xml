@@ -4,18 +4,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.serotonin.dao.RealtimeEventDao">
     <resultMap id="BaseResultMap" type="com.serotonin.entity.RealtimeEvent">
-        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="id" jdbcType="BIGINT" property="id"/>
         <result column="dev_code" jdbcType="VARCHAR" property="devCode"/>
         <result column="dev_type" jdbcType="INTEGER" property="devType"/>
         <result column="event_type" jdbcType="INTEGER" property="eventType"/>
         <result column="event_sub_type" jdbcType="INTEGER" property="eventSubType"/>
-        <result column="event_data" jdbcType="DOUBLE" property="eventData"/>
+        <result column="event_data" jdbcType="NUMERIC" property="eventData"/>
         <result column="is_confirm" jdbcType="INTEGER" property="isConfirm"/>
         <result column="event_time" jdbcType="TIMESTAMP" property="eventTime"/>
         <result column="event_detail" jdbcType="VARCHAR" property="eventDetail"/>
         <result column="confirm_operator" jdbcType="VARCHAR" property="confirmOperator"/>
         <result column="confirm_detail" jdbcType="VARCHAR" property="confirmDetail"/>
-        <result column="confirm_time" jdbcType="TIMESTAMP" property="confirmTime"/>
+        <!--<result column="confirm_time" jdbcType="TIMESTAMP" property="confirmTime"/>-->
         <result column="lowmachine_key" jdbcType="VARCHAR" property="lowMachineKey"/>
         <result column="is_sync" jdbcType="INTEGER" property="isSync"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
@@ -28,7 +28,6 @@
     dev_type,
     event_type,
     event_sub_type,
-    event_data,
     is_confirm,
     event_time,
     event_detail,
@@ -44,7 +43,6 @@
     #{realtimeEvent.devType},
     #{realtimeEvent.eventType},
     #{realtimeEvent.eventSubType},
-    #{realtimeEvent.eventData},
     #{realtimeEvent.isConfirm},
     #{realtimeEvent.eventTime},
     #{realtimeEvent.eventDetail},
@@ -160,6 +158,11 @@
             </if>
         </set>
         WHERE id=#{realtimeEvent.id}
+    </update>
+
+
+    <update id="createTable" parameterType="com.serotonin.entity.CreateTableParam">
+      CREATE TABLE ${createTableParam.tableName} LIKE ${createTableParam.originalTableName};
     </update>
 
     <!--<select id="selectAll" resultMap="BaseResultMap">-->
