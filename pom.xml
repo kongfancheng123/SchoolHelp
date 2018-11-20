@@ -66,15 +66,6 @@
         </dependency>
         <!--mybatis end -->
 
-        <!--&lt;!&ndash;本地jar 串口&ndash;&gt;-->
-        <!--<dependency>-->
-        <!--<groupId>gnu.io</groupId>-->
-        <!--<artifactId>rxtx</artifactId>-->
-        <!--<version>2.2</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>${basedir}/file/RXTXcomm.jar</systemPath>-->
-        <!--</dependency>-->
-
     </dependencies>
 
     <profiles>
@@ -134,16 +125,6 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4.1</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.serotonin.RunnerApplication</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
                 <executions>
                     <execution>
                         <id>make-assembly</id>
