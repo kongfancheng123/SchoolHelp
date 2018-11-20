@@ -21,4 +21,8 @@ mybatis:
   type-aliases-package: com.serotonin.entity
 
 
+application:
+  interval: 5000
+
+
 

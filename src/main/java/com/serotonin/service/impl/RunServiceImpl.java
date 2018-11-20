@@ -1,6 +1,5 @@
 package com.serotonin.service.impl;
 
-import com.serotonin.constant.Constant;
 import com.serotonin.entity.HostInfo;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.code.DataType;
@@ -10,6 +9,7 @@ import com.serotonin.service.HostInfoService;
 import com.serotonin.service.RunService;
 import com.serotonin.util.DecimalToBinary;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RunServiceImpl implements RunService {
+
+    @Value("${application.interval}")
+    private int interval;
 
     @Autowired
     private HostInfoService hostInfoService;
@@ -65,7 +68,8 @@ public class RunServiceImpl implements RunService {
             }
             System.out.println("停止获取数据,休息中..........");
             try {
-                Thread.sleep(Constant.THREAD_TIME);
+                System.out.println("=========================" + interval);
+                Thread.sleep(interval);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
