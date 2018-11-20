@@ -13,8 +13,17 @@ public interface DealEventService {
 
     CreateTableParam getCreateTableParam();
 
+    /**
+     * 连接成功对数据库操作
+     *
+     * @param hostInfo
+     */
     void storeCommuData1(HostInfo hostInfo);
 
+    /**
+     * 连接失败对数据库操作
+     * @param hostInfo
+     */
     void storeCommuData2(HostInfo hostInfo);
 
 }

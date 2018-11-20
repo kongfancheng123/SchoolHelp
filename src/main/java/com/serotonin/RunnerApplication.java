@@ -1,12 +1,6 @@
 package com.serotonin;
 
 
-import com.serotonin.modbus4j.ModbusFactory;
-import com.serotonin.modbus4j.ModbusMaster;
-import com.serotonin.modbus4j.code.DataType;
-import com.serotonin.modbus4j.code.RegisterRange;
-import com.serotonin.modbus4j.ip.IpParameters;
-import com.serotonin.modbus4j.locator.NumericLocator;
 import com.serotonin.service.*;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -51,33 +45,43 @@ public class RunnerApplication implements CommandLineRunner {
 
 
     @Override
-    public void run(String... args) throws Exception {
-//        paramEntryService.paramEntry();
+    public void run(String... args) {
+        paramEntryService.paramEntry();
 
+//        try {
+//            //参数
+//            IpParameters params = new IpParameters();
+//            //获取主机串口编号
+//            String com = "001";
+//            //从站所在地址
+//            params.setHost("192.168.52.50");
+//            //从站端口
+//            params.setPort(502);
+//            //创建主站
+//            ModbusMaster master = new ModbusFactory().createTcpMaster(params, false);
+//            master.init();
+//            boolean isCoon = master.testSlaveNode(0);
+//            System.out.println("=============================="+isCoon);
+//            NumericLocator el = new NumericLocator(2, RegisterRange.HOLDING_REGISTER, 10, DataType.TWO_BYTE_INT_UNSIGNED);
+//            while (true) {
+//                for (int i = 0; i < 10; i++) {
+//                    Thread.sleep(1000);
+//                    try {
+//                        System.out.println("el: " + master.getValue(el));
+//                        boolean isCoon1 = master.testSlaveNode(0);
+//                        System.out.println("=============================="+isCoon);
+////                System.out.println("fjk: " + master.getValue(fjk));
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        boolean isCoon1 = master.testSlaveNode(0);
+//                        System.out.println("=============================="+isCoon);
+//                    }
+//                }
+//            }
+//        }catch (Exception e){
+//            logger.info("连接失败");
+//        }
 
-        //参数
-        IpParameters params = new IpParameters();
-        //获取主机串口编号
-        String com = "001";
-        //从站所在地址
-        params.setHost("192.168.52.50");
-        //从站端口
-        params.setPort(502);
-        //创建主站
-        ModbusMaster master = new ModbusFactory().createTcpMaster(params, false);
-        master.init();
-        NumericLocator el = new NumericLocator(2, RegisterRange.HOLDING_REGISTER, 10, DataType.TWO_BYTE_INT_UNSIGNED);
-        while (true) {
-            for (int i = 0; i < 10; i++) {
-                Thread.sleep(1000);
-                try {
-                    System.out.println("el: " + master.getValue(el));
-//                System.out.println("fjk: " + master.getValue(fjk));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
 
     }
 }

@@ -51,23 +51,24 @@ public class RduRunThread implements Runnable {
         }
         boolean isCoon = master.testSlaveNode(0);
         if (isCoon) {
-            hostInfo1.setIsConn(1);
-            //更新数据表
-            hostInfoService.updateHostInfo(hostInfo1);
-            //调用数据处理一
-            dealEventService.storeCommuData1(hostInfo1);
+//            hostInfo1.setIsConn(1);
+//            //更新数据表
+//            hostInfoService.updateHostInfo(hostInfo1);
+//            //调用数据处理一
+//            dealEventService.storeCommuData1(hostInfo1);
         } else {
             hostInfo1.setIsConn(0);
             //更新数据表
             hostInfoService.updateHostInfo(hostInfo1);
             //调用数据处理二
             dealEventService.storeCommuData2(hostInfo1);
+            Integer.valueOf("nnnnnn");
         }
         //todo:捕获异常,如果有异常,代表连接失败,要进行重新连接
         //测试数据0是否连接
         System.out.println(master.testSlaveNode(0));
         try {
-            runService.run(com, master);
+            runService.run(com, master, hostInfo1);
         } catch (Exception e) {
             e.printStackTrace();
         }

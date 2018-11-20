@@ -164,6 +164,7 @@ public class DealEventServiceImpl implements DealEventService {
             hisEvent.setConfirmDetail(realtimeEvent1.getConfirmDetail());
             hisEvent.setConfirmTime(realtimeEvent1.getConfirmTime());
             hisEvent.setDevCode(realtimeEvent1.getDevCode());
+            hisEvent.setEventType(1);
             hisEventService.insertHisEvent(hisEvent, createTableParam);
         }
     }
@@ -183,6 +184,7 @@ public class DealEventServiceImpl implements DealEventService {
             realtimeEvent1.setConfirmDetail("系统确认");
             realtimeEvent1.setConfirmTime(new Date());
             realtimeEvent1.setDevCode(hostInfo.getHostCode());
+            realtimeEvent1.setEventType(1);
             realtimeEventService.insertRealtimeEvent(realtimeEvent1);
         }
     }
