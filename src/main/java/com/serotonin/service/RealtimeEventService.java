@@ -45,4 +45,9 @@ public interface RealtimeEventService {
      * 建表
      */
     Integer createTable(CreateTableParam createTableParam);
+
+    /**
+     * 查询所有
+     */
+    List<RealtimeEvent> selectAll();
 }

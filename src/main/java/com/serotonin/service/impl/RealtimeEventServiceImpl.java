@@ -41,4 +41,9 @@ public class RealtimeEventServiceImpl implements RealtimeEventService {
     public Integer createTable(CreateTableParam createTableParam) {
         return realtimeEventDao.createTable(createTableParam);
     }
+
+    @Override
+    public List<RealtimeEvent> selectAll() {
+        return realtimeEventDao.selectAll();
+    }
 }

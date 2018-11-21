@@ -48,4 +48,9 @@ public interface RealtimeEventDao {
      * 建表
      */
     Integer createTable(@Param("createTableParam") CreateTableParam createTableParam);
+
+    /**
+     * 查询所有
+     */
+    List<RealtimeEvent> selectAll();
 }

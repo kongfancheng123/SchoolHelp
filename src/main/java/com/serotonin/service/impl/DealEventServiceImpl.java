@@ -1,19 +1,25 @@
 package com.serotonin.service.impl;
 
+import com.serotonin.RunnerApplication;
 import com.serotonin.entity.*;
 import com.serotonin.service.*;
 import com.serotonin.util.TimeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Create by fchkong on 2018/11/15.
  */
 @Service
 public class DealEventServiceImpl implements DealEventService {
+    private Logger logger = LoggerFactory.getLogger(RunnerApplication.class);
+
     @Autowired
     private GetKey getKey;
     @Autowired
@@ -26,7 +32,7 @@ public class DealEventServiceImpl implements DealEventService {
     private HisEventService hisEventService;
 
     @Override
-    public void dealEvent(Integer i, String result1, String com, Integer deviceNum) {
+    public void dealEvent(Integer i, String result1, String com, Integer deviceNum, Map<String, RealtimeEvent> faultMap) {
         try {
             String alarm = result1.substring(0, 1);
             if (alarm.equals("0")) {//无报警
@@ -35,60 +41,50 @@ public class DealEventServiceImpl implements DealEventService {
                 //获取key
                 String key = getKey.getKey(com, i, deviceNum);
                 this.storeData(key, 0, 1, "发生报警");
-                System.out.println("报警处理中.........");
+                logger.info("报警处理中.........");
             }
             String falut = result1.substring(1, 2);
             if (falut.equals("0")) {//无故障
+
                 //todo:对数据库进行处理
                 //todo:先查询数据库实时表中是否有这条数据,无就进行不进行操作,有就改变将故障存放在历史表中
                 //获取key
                 String key = getKey.getKey(com, i, deviceNum);
-                CollectorInfo collectorInfo = new CollectorInfo();
-                collectorInfo.setLowMachineKey(key);
-                List<CollectorInfo> collectorInfos = collectorInfoService.selectByCollectorInfo(collectorInfo);
-                if (collectorInfos.size() > 0) {
-                    CollectorInfo collectorInfo1 = collectorInfos.get(0);
-                    RealtimeEvent realtimeEvent = new RealtimeEvent();
-                    realtimeEvent.setDevCode(collectorInfo1.getCollectorCode());
-                    realtimeEvent.setDevType(collectorInfo1.getCollectorType());
-                    realtimeEvent.setEventType(1);
-                    realtimeEvent.setLowMachineKey(key);
-                    List<RealtimeEvent> realtimeEvents = realtimeEventService.selectByRealtimeEvent(realtimeEvent);
-                    if (realtimeEvents.size() > 0) {
-                        RealtimeEvent realtimeEvent1 = realtimeEvents.get(0);
-                        realtimeEventService.deleteRealtimeEvent(realtimeEvent1.getId());
-                        //todo:添加到历史表中,先查询是否存在表
-                        CreateTableParam createTableParam = this.getCreateTableParam();
-                        Integer integer = hisEventService.selectTable(createTableParam);
-                        if (integer <= 0) {
-                            realtimeEventService.createTable(createTableParam);
-                        }
-                        //插入数据
-                        HisEvent hisEvent = new HisEvent();
-                        hisEvent.setDevCode(realtimeEvent1.getDevCode());
-                        hisEvent.setIsConfirm(1);
-                        hisEvent.setDevType(realtimeEvent1.getDevType());
-                        hisEvent.setEventType(realtimeEvent1.getEventType());
-                        hisEvent.setLowMachineKey(realtimeEvent1.getLowMachineKey());
-                        hisEvent.setEventDetail(realtimeEvent1.getEventDetail());
-                        hisEvent.setEventSubType(realtimeEvent1.getEventSubType());
-                        hisEvent.setEventTime(realtimeEvent1.getEventTime());
-                        hisEvent.setIsSync(realtimeEvent1.getIsSync());
-                        hisEvent.setUpdateTime(new Date());
-                        hisEventService.insertHisEvent(hisEvent, createTableParam);
+                RealtimeEvent realtimeEvent2 = faultMap.get(key);
+                if (realtimeEvent2 != null && realtimeEvent2.getEventType() == 1) {
+                    realtimeEventService.deleteRealtimeEvent(realtimeEvent2.getId());
+                    //todo:添加到历史表中,先查询是否存在表
+                    CreateTableParam createTableParam = this.getCreateTableParam();
+                    Integer integer = hisEventService.selectTable(createTableParam);
+                    if (integer <= 0) {
+                        realtimeEventService.createTable(createTableParam);
                     }
+                    //插入数据
+                    HisEvent hisEvent = new HisEvent();
+                    hisEvent.setDevCode(realtimeEvent2.getDevCode());
+                    hisEvent.setIsConfirm(1);
+                    hisEvent.setDevType(realtimeEvent2.getDevType());
+                    hisEvent.setEventType(realtimeEvent2.getEventType());
+                    hisEvent.setLowMachineKey(realtimeEvent2.getLowMachineKey());
+                    hisEvent.setEventDetail(realtimeEvent2.getEventDetail());
+                    hisEvent.setEventSubType(realtimeEvent2.getEventSubType());
+                    hisEvent.setEventTime(realtimeEvent2.getEventTime());
+                    hisEvent.setConfirmOperator("SYSTEM");
+                    hisEvent.setConfirmDetail("系统确认");
+                    hisEvent.setConfirmTime(new Date());
+                    hisEvent.setIsSync(realtimeEvent2.getIsSync());
+                    hisEvent.setUpdateTime(new Date());
+                    hisEventService.insertHisEvent(hisEvent, createTableParam);
                 }
-                System.out.println("无故障,key为:" + key);
-                System.out.println(falut);
             } else {//有故障
                 //todo:对数据库进行处理
                 //todo:先查询数据库实时表中是否有这条数据,有就不存储,无就进行存储
                 //获取key
                 String key = getKey.getKey(com, i, deviceNum);
                 this.storeData(key, 1, 0, "发生故障");
-                System.out.println("有故障,key为:" + key);
-                System.out.println(falut);
-                System.out.println("故障处理中.........");
+                logger.info("有故障,key为:" + key);
+                logger.info(falut);
+                logger.info("故障处理中.........");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +96,6 @@ public class DealEventServiceImpl implements DealEventService {
         CollectorInfo collectorInfo = new CollectorInfo();
         collectorInfo.setLowMachineKey(key);
         System.out.println("有报警,对数据库进行处理,key为:" + key);
-//                Thread.sleep(1000);
         List<CollectorInfo> collectorInfos = collectorInfoService.selectByCollectorInfo(collectorInfo);
         if (collectorInfos.size() > 0) {
             CollectorInfo collectorInfo1 = collectorInfos.get(0);

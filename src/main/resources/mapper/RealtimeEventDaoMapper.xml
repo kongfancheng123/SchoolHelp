@@ -165,10 +165,9 @@
       CREATE TABLE ${createTableParam.tableName} LIKE ${createTableParam.originalTableName};
     </update>
 
-    <!--<select id="selectAll" resultMap="BaseResultMap">-->
-    <!--select * from dt_equipment_history_data-->
-    <!--order by id-->
-    <!--</select>-->
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from realtime_event
+    </select>
 
     <!--<select id="selectByid" resultMap="BaseResultMap">-->
     <!--select * from dt_equipment_history_data-->
