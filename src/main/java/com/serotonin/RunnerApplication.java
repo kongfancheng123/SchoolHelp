@@ -50,11 +50,9 @@ public class RunnerApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
 //        paramEntryService.paramEntry();
-        try {
-            salveService.salveRun();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        salveService.salveRun();
+
 //        try {
 //            //参数
 //            IpParameters params = new IpParameters();
