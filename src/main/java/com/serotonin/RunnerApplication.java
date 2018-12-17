@@ -38,6 +38,9 @@ public class RunnerApplication implements CommandLineRunner {
     @Autowired
     private ParamEntryService paramEntryService;
 
+    @Autowired
+    private SalveService salveService;
+
     public static void main(String[] args) throws Exception {
         SpringApplication application = new SpringApplication(RunnerApplication.class);
         application.run(args);
@@ -46,8 +49,12 @@ public class RunnerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        paramEntryService.paramEntry();
-
+//        paramEntryService.paramEntry();
+        try {
+            salveService.salveRun();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        try {
 //            //参数
 //            IpParameters params = new IpParameters();
