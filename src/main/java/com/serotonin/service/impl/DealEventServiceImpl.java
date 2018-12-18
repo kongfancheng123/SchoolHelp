@@ -104,7 +104,7 @@ public class DealEventServiceImpl implements DealEventService {
             containerInfo.setContainerCode(containerCode);
             List<ContainerInfo> containerInfos = containerInfoService.selectByContainerInfo(containerInfo);
             RealtimeEvent realtimeEvent = new RealtimeEvent();
-            realtimeEvent.setDevCode(collectorInfo1.getCollectorCode());
+            realtimeEvent.setDevCode(collectorInfo1.getContainerCode());
             realtimeEvent.setDevType(400);
             realtimeEvent.setEventType(i);
             realtimeEvent.setLowMachineKey(key);
