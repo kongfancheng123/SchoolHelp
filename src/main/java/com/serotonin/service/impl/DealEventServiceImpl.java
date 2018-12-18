@@ -1,11 +1,8 @@
 package com.serotonin.service.impl;
 
-import com.serotonin.RunnerApplication;
 import com.serotonin.entity.*;
 import com.serotonin.service.*;
 import com.serotonin.util.TimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +15,7 @@ import java.util.Map;
  */
 @Service
 public class DealEventServiceImpl implements DealEventService {
-    private Logger logger = LoggerFactory.getLogger(RunnerApplication.class);
+//    private Logger logger = LoggerFactory.getLogger(RunnerApplication.class);
 
     @Autowired
     private GetKey getKey;
@@ -41,7 +38,7 @@ public class DealEventServiceImpl implements DealEventService {
                 //获取key
                 String key = getKey.getKey(com, i, deviceNum);
                 this.storeData(key, 0, 1, "发生报警");
-                logger.info("报警处理中.........");
+//                logger.info("报警处理中.........");
             }
             String falut = result1.substring(1, 2);
             if (falut.equals("0")) {//无故障
@@ -82,9 +79,9 @@ public class DealEventServiceImpl implements DealEventService {
                 //获取key
                 String key = getKey.getKey(com, i, deviceNum);
                 this.storeData(key, 1, 0, "发生故障");
-                logger.info("有故障,key为:" + key);
-                logger.info(falut);
-                logger.info("故障处理中.........");
+//                logger.info("有故障,key为:" + key);
+//                logger.info(falut);
+//                logger.info("故障处理中.........");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,7 +92,7 @@ public class DealEventServiceImpl implements DealEventService {
     public void storeData(String key, Integer i, Integer j, String detail) {
         CollectorInfo collectorInfo = new CollectorInfo();
         collectorInfo.setLowMachineKey(key);
-        System.out.println("有报警,对数据库进行处理,key为:" + key);
+//        System.out.println("有报警,对数据库进行处理,key为:" + key);
         List<CollectorInfo> collectorInfos = collectorInfoService.selectByCollectorInfo(collectorInfo);
         if (collectorInfos.size() > 0) {
             CollectorInfo collectorInfo1 = collectorInfos.get(0);
