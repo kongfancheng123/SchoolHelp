@@ -105,7 +105,7 @@ public class DealEventServiceImpl implements DealEventService {
             List<ContainerInfo> containerInfos = containerInfoService.selectByContainerInfo(containerInfo);
             RealtimeEvent realtimeEvent = new RealtimeEvent();
             realtimeEvent.setDevCode(collectorInfo1.getCollectorCode());
-            realtimeEvent.setDevType(collectorInfo1.getCollectorType());
+            realtimeEvent.setDevType(400);
             realtimeEvent.setEventType(i);
             realtimeEvent.setLowMachineKey(key);
             List<RealtimeEvent> realtimeEvents = realtimeEventService.selectByRealtimeEvent(realtimeEvent);
@@ -159,6 +159,7 @@ public class DealEventServiceImpl implements DealEventService {
             hisEvent.setConfirmDetail(realtimeEvent1.getConfirmDetail());
             hisEvent.setConfirmTime(realtimeEvent1.getConfirmTime());
             hisEvent.setDevCode(realtimeEvent1.getDevCode());
+            hisEvent.setDevType(realtimeEvent1.getDevType());
             hisEvent.setEventType(1);
             hisEventService.insertHisEvent(hisEvent, createTableParam);
         }
@@ -180,6 +181,7 @@ public class DealEventServiceImpl implements DealEventService {
             realtimeEvent1.setConfirmTime(new Date());
             realtimeEvent1.setDevCode(hostInfo.getHostCode());
             realtimeEvent1.setEventType(1);
+            realtimeEvent1.setDevType(1000);
             realtimeEventService.insertRealtimeEvent(realtimeEvent1);
         }
     }
