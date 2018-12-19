@@ -34,11 +34,13 @@ public class DealEventServiceImpl implements DealEventService {
             String alarm = result1.substring(0, 1);
             if (alarm.equals("0")) {//无报警
                 //不做处理
+//                System.out.println("无报警,不处理");
             } else {//有报警
                 //获取key
                 String key = getKey.getKey(com, i, deviceNum);
                 this.storeData(key, 0, 1, "发生报警");
 //                logger.info("报警处理中.........");
+                System.out.println("报警处理中");
             }
             String falut = result1.substring(1, 2);
             if (falut.equals("0")) {//无故障
@@ -72,6 +74,7 @@ public class DealEventServiceImpl implements DealEventService {
                     hisEvent.setIsSync(realtimeEvent2.getIsSync());
                     hisEvent.setUpdateTime(new Date());
                     hisEventService.insertHisEvent(hisEvent, createTableParam);
+                    System.out.println("故障存入历史表");
                 }
             } else {//有故障
                 //todo:对数据库进行处理
@@ -82,6 +85,7 @@ public class DealEventServiceImpl implements DealEventService {
 //                logger.info("有故障,key为:" + key);
 //                logger.info(falut);
 //                logger.info("故障处理中.........");
+                System.out.println("故障处理中");
             }
         } catch (Exception e) {
             e.printStackTrace();

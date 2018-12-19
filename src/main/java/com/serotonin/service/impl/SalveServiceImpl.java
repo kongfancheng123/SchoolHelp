@@ -47,10 +47,12 @@ public class SalveServiceImpl implements SalveService {
         try {
             ModbusFactory modbusFactory = new ModbusFactory();
             final ModbusSlaveSet listener = modbusFactory.createTcpSlave(false);
-            listener.addProcessImage(getModscanProcessImage(1));
+            BasicProcessImage processImage1 = getModscanProcessImage(1);
+            listener.addProcessImage(processImage1);
             HostInfo hostInfo = new HostInfo();
             hostInfo.setHostType(3);
             HostInfo hostInfo1 = hostInfoService.selectByHostInfo(hostInfo).get(0);
+
             new Thread(new Runnable() {
                 public void run() {
                     try {
@@ -64,7 +66,7 @@ public class SalveServiceImpl implements SalveService {
             while (true) {
                 BasicProcessImage processImage = (BasicProcessImage) listener.getProcessImage(1);
                 String com = "001";
-                salveRunService.SalveRun(processImage, hostInfo1, com, listener);
+                salveRunService.SalveRun(processImage, hostInfo1, com);
             }
         } catch (Exception e) {
             HostInfo hostInfo = new HostInfo();

@@ -4,7 +4,6 @@ import com.serotonin.RunnerApplication;
 import com.serotonin.entity.HostInfo;
 import com.serotonin.entity.RealtimeEvent;
 import com.serotonin.modbus4j.BasicProcessImage;
-import com.serotonin.modbus4j.ModbusSlaveSet;
 import com.serotonin.modbus4j.code.DataType;
 import com.serotonin.modbus4j.code.RegisterRange;
 import com.serotonin.service.DealEventService;
@@ -39,7 +38,7 @@ public class SalveRunServiceImpl implements SalveRunService {
     private RealtimeEventService realtimeEventService;
 
     @Override
-    public void SalveRun(BasicProcessImage processImage, HostInfo hostInfo1, String com, ModbusSlaveSet listener) {
+    public void SalveRun(BasicProcessImage processImage, HostInfo hostInfo1, String com) {
         long startTime = System.currentTimeMillis();
         Map<String, RealtimeEvent> faultMap = new HashMap<>();
         //查询实时表
@@ -57,6 +56,8 @@ public class SalveRunServiceImpl implements SalveRunService {
                 Number numeric = processImage.getNumeric(RegisterRange.HOLDING_REGISTER, i, DataType.TWO_BYTE_INT_UNSIGNED);
                 Integer intValue = Integer.valueOf(String.valueOf(numeric));
                 longList.add(intValue);
+                //还原缓存数据
+                processImage.setNumeric(RegisterRange.HOLDING_REGISTER, i, DataType.TWO_BYTE_INT_UNSIGNED, 32767);
             }
             System.out.println(longList.size());
             hostInfo1.setIsConn(1);
@@ -109,15 +110,14 @@ public class SalveRunServiceImpl implements SalveRunService {
                 System.exit(0);
             }
         }
-
         long endTime = System.currentTimeMillis();
         System.out.println("=========================");
         Long time = endTime - startTime;
         System.out.println("共耗时间为:" + time);
 
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-        }
+//        try {
+//            Thread.sleep(50);
+//        } catch (InterruptedException e) {
+//        }
     }
 }

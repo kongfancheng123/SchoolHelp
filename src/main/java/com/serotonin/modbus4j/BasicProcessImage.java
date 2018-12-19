@@ -29,13 +29,14 @@ import com.serotonin.modbus4j.locator.BaseLocator;
 import com.serotonin.modbus4j.locator.NumericLocator;
 import com.serotonin.modbus4j.locator.StringLocator;
 
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BasicProcessImage implements ProcessImage {
+public class BasicProcessImage implements ProcessImage, Serializable {
     private final int slaveId;
     private final Map<Integer, Boolean> coils = new HashMap<>();
     private final Map<Integer, Boolean> inputs = new HashMap<>();
@@ -277,6 +278,9 @@ public class BasicProcessImage implements ProcessImage {
         return getShort(offset, holdingRegisters);
     }
 
+    public Map<Integer, Short> getHoldingRegister() throws IllegalDataAddressException {
+        return holdingRegisters;
+    }
     @Override
     public synchronized void setHoldingRegister(int offset, short value) {
         validateOffset(offset);
@@ -368,5 +372,21 @@ public class BasicProcessImage implements ProcessImage {
 
     private boolean getBit(short s, int bit) {
         return ((s >> bit) & 0x1) == 1;
+    }
+
+    public BasicProcessImage deepClone() {
+        try {
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            ObjectOutputStream ous = new ObjectOutputStream(bao);
+            ous.writeObject(this);
+
+            ByteArrayInputStream bai = new ByteArrayInputStream(bao.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bai);
+            BasicProcessImage result = (BasicProcessImage) ois.readObject();
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
