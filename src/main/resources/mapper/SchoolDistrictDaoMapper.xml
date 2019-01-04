@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.serotonin.dao.SchoolDistrictDao">
+    <resultMap id="BaseResultMap" type="com.serotonin.entity.SchoolDistrict">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="school_district_name" jdbcType="VARCHAR" property="schoolDistrictName"/>
+        <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
+    </resultMap>
+
+    <insert id="insertSchoolDistrict" parameterType="com.serotonin.entity.SchoolDistrict">
+        insert into sh_school_district
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="query.schoolDistrictName != null">
+                school_district_name,
+            </if>
+            <if test="query.schoolId != null">
+                school_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="query.schoolDistrictName != null">
+                #{query.schoolDistrictName},
+            </if>
+            <if test="query.schoolId != null">
+                #{query.schoolId},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteSchoolDistrict" parameterType="integer">
+    delete from sh_school_district
+    where id=#{id}
+    </delete>
+
+    <select id="selectBySchoolDistrict" parameterType="com.serotonin.entity.SchoolDistrict"
+            resultMap="BaseResultMap">
+        select * from sh_school_district
+        where 1=1
+        <if test="query.id != null">
+            and id = #{query.id}
+        </if>
+        <if test="query.schoolDistrictName != null">
+            and school_district_name = #{query.schoolDistrictName}
+        </if>
+        <if test="query.schoolId != null">
+            and school_id = #{query.schoolId}
+        </if>
+    </select>
+
+    <update id="updateSchoolDistrict" parameterType="com.serotonin.entity.SchoolDistrict">
+        UPDATE sh_school_district
+        <set>
+            <if test="query.schoolDistrictName != null">
+                school_district_name = #{query.schoolDistrictName}
+            </if>
+            <if test="query.schoolId != null">
+                school_id = #{query.schoolId}
+            </if>
+        </set>
+        WHERE id=#{query.id}
+    </update>
+
+
+    <!--<update id="createTable" parameterType="com.serotonin.entity.CreateTableParam">-->
+    <!--CREATE TABLE ${createTableParam.tableName} LIKE ${createTableParam.originalTableName};-->
+    <!--</update>-->
+
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from sh_school_district
+    </select>
+
+    <!--<select id="selectByid" resultMap="BaseResultMap">-->
+    <!--select * from dt_equipment_history_data-->
+    <!--where id=#{id}-->
+    <!--</select>-->
+
+
+</mapper>

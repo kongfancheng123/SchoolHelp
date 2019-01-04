@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.serotonin.dao.CityDao">
+    <resultMap id="BaseResultMap" type="com.serotonin.entity.City">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="city_name" jdbcType="VARCHAR" property="cityName"/>
+        <result column="province_id" jdbcType="INTEGER" property="provinceId"/>
+    </resultMap>
+
+    <insert id="insertCity" parameterType="com.serotonin.entity.City">
+        insert into sh_city
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="query.cityName != null">
+                city_name,
+            </if>
+            <if test="query.provinceId != null">
+                province_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="query.cityName != null">
+                #{query.cityName},
+            </if>
+            <if test="query.provinceId != null">
+                #{query.provinceId},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCity" parameterType="integer">
+    delete from sh_city
+    where id=#{id}
+    </delete>
+
+    <select id="selectByCity" parameterType="com.serotonin.entity.City"
+            resultMap="BaseResultMap">
+        select * from sh_city
+        where 1=1
+        <if test="query.id != null">
+            and id = #{query.id}
+        </if>
+        <if test="query.cityName != null">
+            and city_name = #{query.cityName}
+        </if>
+        <if test="query.provinceId != null">
+            and province_id = #{query.provinceId}
+        </if>
+    </select>
+
+    <update id="updateCity" parameterType="com.serotonin.entity.City">
+        UPDATE sh_city
+        <set>
+            <if test="query.userName != null">
+                city_name = #{query.userName}
+            </if>
+            <if test="query.provinceId != null">
+                province_id = #{query.provinceId}
+            </if>
+        </set>
+        WHERE id=#{query.id}
+    </update>
+
+
+    <!--<update id="createTable" parameterType="com.serotonin.entity.CreateTableParam">-->
+    <!--CREATE TABLE ${createTableParam.tableName} LIKE ${createTableParam.originalTableName};-->
+    <!--</update>-->
+
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from sh_city
+    </select>
+
+    <!--<select id="selectByid" resultMap="BaseResultMap">-->
+    <!--select * from dt_equipment_history_data-->
+    <!--where id=#{id}-->
+    <!--</select>-->
+
+
+</mapper>

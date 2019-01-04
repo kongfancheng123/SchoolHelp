@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.serotonin.dao.ProvinceDao">
+    <resultMap id="BaseResultMap" type="com.serotonin.entity.Province">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="province_name" jdbcType="VARCHAR" property="provinceName"/>
+    </resultMap>
+
+    <insert id="insertProvince" parameterType="com.serotonin.entity.Province">
+        insert into sh_province
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="query.provinceName != null">
+                province_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="query.provinceName != null">
+                #{query.provinceName},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteProvince" parameterType="integer">
+    delete from sh_province
+    where id=#{id}
+    </delete>
+
+    <select id="selectByProvince" parameterType="com.serotonin.entity.Province"
+            resultMap="BaseResultMap">
+        select * from sh_province
+        where 1=1
+        <if test="query.id != null">
+            and id = #{query.id}
+        </if>
+        <if test="query.provinceName != null">
+            and province_name = #{query.provinceName}
+        </if>
+    </select>
+
+    <update id="updateProvince" parameterType="com.serotonin.entity.Province">
+        UPDATE sh_province
+        <set>
+            <if test="query.provinceName != null">
+                province_name = #{query.provinceName}
+            </if>
+        </set>
+        WHERE id=#{query.id}
+    </update>
+
+
+    <!--<update id="createTable" parameterType="com.serotonin.entity.CreateTableParam">-->
+    <!--CREATE TABLE ${createTableParam.tableName} LIKE ${createTableParam.originalTableName};-->
+    <!--</update>-->
+
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from sh_province
+    </select>
+
+    <!--<select id="selectByid" resultMap="BaseResultMap">-->
+    <!--select * from dt_equipment_history_data-->
+    <!--where id=#{id}-->
+    <!--</select>-->
+
+
+</mapper>

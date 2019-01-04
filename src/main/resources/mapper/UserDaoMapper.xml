@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.serotonin.dao.UserDao">
+    <resultMap id="BaseResultMap" type="com.serotonin.entity.User">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+    </resultMap>
+
+    <insert id="insertUser" parameterType="com.serotonin.entity.User">
+        insert into sh_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="query.userName != null">
+                user_name,
+            </if>
+            <if test="query.password != null">
+                password,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="query.userName != null">
+                #{query.userName},
+            </if>
+            <if test="query.password != null">
+                #{query.password},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteUser" parameterType="integer">
+    delete from sh_user
+    where id=#{id}
+    </delete>
+
+    <select id="selectByUser" parameterType="com.serotonin.entity.User"
+            resultMap="BaseResultMap">
+        select * from sh_user
+        where 1=1
+        <if test="query.id != null">
+            and id = #{query.id}
+        </if>
+        <if test="query.userName != null">
+            and user_name = #{query.userName}
+        </if>
+        <if test="query.password != null">
+            and password = #{query.password}
+        </if>
+    </select>
+
+    <update id="updateUser" parameterType="com.serotonin.entity.User">
+        UPDATE sh_user
+        <set>
+            <if test="query.userName != null">
+                user_name = #{query.userName}
+            </if>
+            <if test="query.password != null">
+                password = #{query.password}
+            </if>
+        </set>
+        WHERE id=#{query.id}
+    </update>
+
+
+    <!--<update id="createTable" parameterType="com.serotonin.entity.CreateTableParam">-->
+    <!--CREATE TABLE ${createTableParam.tableName} LIKE ${createTableParam.originalTableName};-->
+    <!--</update>-->
+
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from sh_user
+    </select>
+
+    <!--<select id="selectByid" resultMap="BaseResultMap">-->
+    <!--select * from dt_equipment_history_data-->
+    <!--where id=#{id}-->
+    <!--</select>-->
+
+
+</mapper>

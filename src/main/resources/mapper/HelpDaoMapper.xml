@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.serotonin.dao.HelpDao">
+    <resultMap id="BaseResultMap" type="com.serotonin.entity.Help">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="publish_id" jdbcType="INTEGER" property="publishId"/>
+        <result column="accepter_id" jdbcType="INTEGER" property="accepterId"/>
+        <result column="requirement_desc" jdbcType="VARCHAR" property="requirementDesc"/>
+    </resultMap>
+
+    <insert id="insertHelp" parameterType="com.serotonin.entity.Help">
+        insert into sh_Help
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="query.publishId != null">
+                publish_id,
+            </if>
+            <if test="query.accepterId != null">
+                accepter_id,
+            </if>
+            <if test="query.requirementDesc != null">
+                requirement_desc,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="query.publishId != null">
+                #{query.publishId},
+            </if>
+            <if test="query.accepterId != null">
+                #{query.accepterId},
+            </if>
+            <if test="query.requirementDesc != null">
+                #{query.requirementDesc},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteHelp" parameterType="integer">
+    delete from sh_Help
+    where id=#{id}
+    </delete>
+
+    <select id="selectByHelp" parameterType="com.serotonin.entity.Help"
+            resultMap="BaseResultMap">
+        select * from sh_Help
+        where 1=1
+        <if test="query.id != null">
+            and id = #{query.id}
+        </if>
+        <if test="query.publishId != null">
+            and publish_id = #{query.publishId}
+        </if>
+        <if test="query.accepterId != null">
+            and accepter_id = #{query.accepterId}
+        </if>
+        <if test="query.requirementDesc != null">
+            and requirement_desc = #{query.requirementDesc}
+        </if>
+    </select>
+
+    <update id="updateHelp" parameterType="com.serotonin.entity.Help">
+        UPDATE sh_Help
+        <set>
+            <if test="query.publishId != null">
+                publish_id = #{query.publishId}
+            </if>
+            <if test="query.accepterId != null">
+                accepter_id = #{query.accepterId}
+            </if>
+            <if test="query.requirementDesc != null">
+                requirement_desc = #{query.requirementDesc}
+            </if>
+        </set>
+        WHERE id=#{query.id}
+    </update>
+
+
+    <!--<update id="createTable" parameterType="com.serotonin.entity.CreateTableParam">-->
+    <!--CREATE TABLE ${createTableParam.tableName} LIKE ${createTableParam.originalTableName};-->
+    <!--</update>-->
+
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from sh_Help
+    </select>
+
+    <!--<select id="selectByid" resultMap="BaseResultMap">-->
+    <!--select * from dt_equipment_history_data-->
+    <!--where id=#{id}-->
+    <!--</select>-->
+
+
+</mapper>

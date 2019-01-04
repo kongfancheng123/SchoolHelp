@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.serotonin</groupId>
-    <artifactId>ftp9000-modbus</artifactId>
+    <artifactId>school-help</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 
@@ -40,6 +40,14 @@
             <version>1.1.1</version>
         </dependency>
         <!-- spring-boot begin -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
