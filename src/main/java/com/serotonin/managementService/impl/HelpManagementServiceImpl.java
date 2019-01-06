@@ -4,6 +4,7 @@ import com.serotonin.BaseService.HelpService;
 import com.serotonin.entity.Help;
 import com.serotonin.entity.WebResponse;
 import com.serotonin.managementService.HelpManagementService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 /**
  * Create by fchkong on 2019/1/4.
  */
+@Service
 public class HelpManagementServiceImpl implements HelpManagementService {
     @Resource
     private HelpService helpService;
