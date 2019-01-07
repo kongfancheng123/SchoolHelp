@@ -21,4 +21,12 @@ public class User {
      * 密码 加解密业务
      */
     private String password;
+    /**
+     * 用户状态  0为不启用,1为启用
+     */
+    private Integer userState;
+    /**
+     * 用户账户金额
+     */
+    private Double accountBalance;
 }

@@ -42,4 +42,9 @@ public class HelpManagementServiceImpl implements HelpManagementService {
         helpService.updateHelp(help);
         return WebResponse.success();
     }
+
+    @Override
+    public WebResponse getOneHelp() {
+        return null;
+    }
 }

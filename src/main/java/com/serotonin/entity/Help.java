@@ -25,4 +25,25 @@ public class Help {
      * 需求描述
      */
     private String requirementDesc;
+    /**
+     * 帮忙金额
+     */
+    private Double helpMoney;
+    /**
+     * 发布人qq
+     */
+    private String qq;
+    /**
+     * 发布人电话
+     */
+    private String phoneNumber;
+    /**
+     * 发布人微信
+     */
+    private String weChat;
+    /**
+     * 发布状态
+     * 0为待审核,1为已发布,2为已接受,3为发布人取消
+     */
+    private Integer publishState;
 }

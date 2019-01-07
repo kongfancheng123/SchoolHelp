@@ -26,4 +26,9 @@ public interface HelpManagementService {
      * 更新帮帮忙
      */
     WebResponse updateHelp(Help help);
+
+    /**
+     * 根据id获取单条信息详情
+     */
+    WebResponse getOneHelp();
 }

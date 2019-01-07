@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.serotonin.dao.PermissionDao">
+    <resultMap id="BaseResultMap" type="com.serotonin.entity.Permission">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="permission_name" jdbcType="VARCHAR" property="permissionName"/>
+    </resultMap>
+
+    <insert id="insertPermission" parameterType="com.serotonin.entity.Permission">
+        insert into sh_permission
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="query.permissionName != null">
+                permission_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="query.permissionName != null">
+                #{query.permissionName},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deletePermission" parameterType="integer">
+    delete from sh_permission
+    where id=#{id}
+    </delete>
+
+    <select id="selectByPermission" parameterType="com.serotonin.entity.Permission"
+            resultMap="BaseResultMap">
+        select * from sh_permission
+        where 1=1
+        <if test="query.id != null">
+            and id = #{query.id}
+        </if>
+        <if test="query.permissionName != null">
+            and permission_name = #{query.permissionName}
+        </if>
+    </select>
+
+    <update id="updatePermission" parameterType="com.serotonin.entity.Permission">
+        UPDATE sh_permission
+        <set>
+            <if test="query.permissionName != null">
+                permission_name = #{query.permissionName}
+            </if>
+        </set>
+        WHERE id=#{query.id}
+    </update>
+
+
+    <!--<update id="createTable" parameterType="com.serotonin.entity.CreateTableParam">-->
+    <!--CREATE TABLE ${createTableParam.tableName} LIKE ${createTableParam.originalTableName};-->
+    <!--</update>-->
+
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from sh_permission
+    </select>
+
+    <!--<select id="selectByid" resultMap="BaseResultMap">-->
+    <!--select * from dt_equipment_history_data-->
+    <!--where id=#{id}-->
+    <!--</select>-->
+
+
+</mapper>
