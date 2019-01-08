@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping(value = "/web/management/permission")
-public class PermissionController {
+public class PermissionManagementController {
     @Resource
     private PermissionManagementService permissionManagementService;
 

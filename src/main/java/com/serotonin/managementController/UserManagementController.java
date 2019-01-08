@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping(value = "/web/management/user")
-public class UserController {
+public class UserManagementController {
     @Resource
     private UserManagementService userManagementService;
 

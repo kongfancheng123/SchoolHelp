@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping(value = "/web/management/login")
-public class ManagementLoginController {
+public class LoginManagementController {
     @Resource
     private LoginManagementService loginManagementService;
 

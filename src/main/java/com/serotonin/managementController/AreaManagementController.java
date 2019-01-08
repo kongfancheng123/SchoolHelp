@@ -11,7 +11,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping(value = "/web/management/area")
-public class AreaController {
+public class AreaManagementController {
     @Resource
     private AreaManagementService areaManagementService;
 

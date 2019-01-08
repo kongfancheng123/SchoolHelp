@@ -43,7 +43,7 @@ public class Help {
     private String weChat;
     /**
      * 发布状态
-     * 0为待审核,1为已发布,2为已接受,3为发布人取消
+     * 0为待审核,1为已发布,2为已接受,3为发布人取消,4为帮助完成
      */
     private Integer publishState;
 }
